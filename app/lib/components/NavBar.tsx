@@ -13,9 +13,6 @@ const NavBar: React.FC = () =>  {
         setIsMenuVisible(!isMenuVisible);
     }
     
-
-
-
     return (
     <>
         <nav className='header'>

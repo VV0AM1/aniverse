@@ -216,14 +216,8 @@ body {
     background-color: #23252b;
 }
 
-
-
-
-
-
-
 .home-container{
-    background: url(img/bg_series.jpg);
+    background: url(../lib/img/bg_series.jpg);
     background-repeat: no-repeat;
     background-size: cover;
     opacity: 0.6;

@@ -1,0 +1,15 @@
+[
+    {
+        "title": "Naruto",
+        "decription": "XXXXXX",
+        "image": "https://imgsrv.crunchyroll.com/cdn-cgi/image/fit=contain,format=auto,quality=85,width=480,height=720/catalog/crunchyroll/8532171bec0d05bfe45769a330fbab82.jpe"
+    },{
+        "title": "Dragon Ball",
+        "decription": "YYYYYYYY",
+        "image": "https://imgsrv.crunchyroll.com/cdn-cgi/image/fit=contain,format=auto,quality=85,width=480,height=720/catalog/crunchyroll/98ea4207e23a2ea3e3af39ad641d8800.jpg"
+    },{
+        "title": "One Peace",
+        "decription": "ZZZZZZZ",
+        "image": "https://static.wikia.nocookie.net/wiki-doblaje-espana/images/8/8d/One_Piece.png/revision/latest?cb=20230320200100&path-prefix=es"
+    }
+]

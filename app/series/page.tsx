@@ -1,21 +1,17 @@
 import * as React from 'react';
-import NavBar from './NavBar';
+import NavBar from '../lib/components/NavBar';
 import "./global.css";
-import Card from './Card';
-import Home from './Home';
+import Card from '../lib/components/Card';
+import Home from '../lib/components/Home';
 
 
-export default function BasicPagination() {
-  return (
-    <div>
-          <NavBar/>
-          <Home>
-            <Card name={'BLUE LOCK'}>
-            </Card>
-          </Home>
-    </div>
-  );
-}
+// export default function BasicPagination() {
+//   return (
+//     <div>
+          
+//     </div>
+//   );
+// }
 
 
 
