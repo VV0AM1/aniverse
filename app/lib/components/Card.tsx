@@ -9,7 +9,7 @@ export default function Card({data}:{data:{title: string,
     
     return(
         <div className="card-container mx-12">
-            <Image src={data?.image} width={280} height={520} alt="" className='w-[280px] h-[520px]'/>
+            <Image src={data?.image} width={195} height={370} alt="" className='w-[195px] h-[330px] brightness-60'/>
             <h2>{data.title}</h2>
             <p>{data.decription}</p>
         </div>

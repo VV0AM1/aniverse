@@ -1,11 +1,45 @@
+'use client'
+
 import Image from "next/image";
 import NavBar from "./lib/components/NavBar";
 import Card from "./lib/components/Card";
 import "./series/global.css";
 import Home from "./lib/components/Home";
 import AnimesArray from '@/app/lib/jsons/cards-anime.json'
+import { useEffect, useState } from "react";
+import { animeServices } from "./lib/services/animes";
+
 
 export default function HomePage() {
+
+  const [animes, setAnimes] = useState([]);
+
+
+  useEffect(() => {
+    
+    const getAllAnimes = async () => {
+      try {
+        const response = await animeServices.all();
+        setAnimes(response.data)
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  
+    getAllAnimes();
+
+  }, [])
+
+
+  useEffect(() => {
+    
+  console.log(animes)
+
+  }, [animes])
+  
+  
+
+
   return (
     <div>
         <NavBar/>
