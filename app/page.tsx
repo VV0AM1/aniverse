@@ -1,6 +1,5 @@
 'use client'
 
-import Image from "next/image";
 import NavBar from "./lib/components/NavBar";
 import Card from "./lib/components/Card";
 import "./series/global.css";
@@ -16,16 +15,17 @@ export default function HomePage() {
 
 
   useEffect(() => {
-    
     const getAllAnimes = async () => {
       try {
         const response = await animeServices.all();
-        setAnimes(response.data)
+        console.log("This is response",response)
+        if (response.status == 200){
+          setAnimes(response.data.data)
+        }
       } catch (error) {
         console.error(error);
       }
     }
-  
     getAllAnimes();
 
   }, [])
@@ -46,8 +46,7 @@ export default function HomePage() {
         <Home>
         <div className="flex w-[80%] justify-center flex-wrap">
         {
-        AnimesArray.map((anime)=>{
-          console.log("This is anime", anime)
+        animes.map((anime)=>{
         return (
             <Card data={anime} />
           )
