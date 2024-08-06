@@ -20,7 +20,7 @@ export default function HomePage() {
         const response = await animeServices.all();
         console.log("This is response",response)
         if (response.status == 200){
-          setAnimes(response.data.data)
+          setAnimes(response.data.data) //IMPORTANTE!! Aquí es donde apuntas a la data en concreto. Para saber la estructura, puedes hacerlo en la consola del navegador. En el console.log de arriba es donde podrás ver la estructura y toda la data que te devuelve. En la rest API también tienes un ejemplo de la data que devuelve con su estructura. Importante estudiar cómo acceder a ello.
         }
       } catch (error) {
         console.error(error);
