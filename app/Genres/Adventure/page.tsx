@@ -1,12 +1,16 @@
+"use client"
+
+
+
 'use client'
 
-import NavBar from "./lib/components/NavBar";
-import Card from "./lib/components/Card";
-import "./globals.css";
-import Home from "./lib/components/Home";
+import NavBar from "@/app/lib/components/NavBar";
+import Card from "@/app/lib/components/Card";
+import "@/app/globals.css";
+import Home from "@/app/lib/components/Home";
 import AnimesArray from '@/app/lib/jsons/cards-anime.json'
 import { useEffect, useState } from "react";
-import { animeServices } from "./lib/services/animes";
+import { animeServices } from "@/app/lib/services/animes";
 import axios from 'axios';
 
 
@@ -31,7 +35,7 @@ export default function HomePage() {
     
           // Filter animes with the "Action" genre and log their names
           const actionAnimes = animeData.filter(anime =>
-            anime.genres.some(genre => genre.name === "Sci-Fi")
+            anime.genres.some(genre => genre.name === "Adventure")
           );
     
           console.log("Animes with 'Sci-Fi' genre:");
@@ -55,7 +59,7 @@ export default function HomePage() {
         <div className="flex w-[100%] h-[80vh] justify-center flex-wrap mt-100">
           {
             animes && animes
-              .filter(anime => anime.genres.some(genre => genre.name === "Sci-Fi")) // Filter animes with "Action" genre
+              .filter(anime => anime.genres.some(genre => genre.name === "Adventure")) // Filter animes with "Action" genre
               .map((anime) => {
                 return (
                   <Card key={anime.mal_id} data={anime} /> // Include a unique key prop
@@ -67,3 +71,5 @@ export default function HomePage() {
     </div>
   );
 }
+
+

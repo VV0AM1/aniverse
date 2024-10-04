@@ -51,19 +51,19 @@ const NavBar: React.FC = () =>  {
             <div className="right-menu">
                 <div className="genre-title-container"><p className='genre-title'>GENRE</p></div>
                 <div className="genre-bars">
-                    <div className="genre"><a href="" className="genre-item">Action</a></div>
-                    <div className="genre"><a href="" className="genre-item">Adventure</a></div>
+                    <div className="genre"><a href="http://localhost:3000/Genres/Action" className="genre-item">Action</a></div>
+                    <div className="genre"><a href="http://localhost:3000/Genres/Adventure" className="genre-item">Adventure</a></div>
                     <div className="genre"><a href="" className="genre-item">Comedy</a></div>
-                    <div className="genre"><a href="" className="genre-item">Drama</a></div>
+                    <div className="genre"><a href="http://localhost:3000/Genres/Drama" className="genre-item">Drama</a></div>
                     <div className="genre"><a href="" className="genre-item">Fantasy</a></div>
                     <div className="genre"><a href="" className="genre-item">Musition</a></div>
-                    <div className="genre"><a href="" className="genre-item">Romantic</a></div>
+                    <div className="genre"><a href="http://localhost:3000/Genres/Romance" className="genre-item">Romantic</a></div>
                     <div className="genre"><a href="" className="genre-item">Si-Fi</a></div>
                     <div className="genre"><a href="" className="genre-item">Seinen</a></div>
                     <div className="genre"><a href="" className="genre-item">Shojo</a></div>
                     <div className="genre"><a href="" className="genre-item">Senen</a></div>
                     <div className="genre"><a href="" className="genre-item">Humdrum</a></div>
-                    <div className="genre"><a href="" className="genre-item">Sport</a></div>
+                    <div className="genre"><a href="http://localhost:3000/Genres/Sports" className="genre-item">Sport</a></div>
                     <div className="genre"><a href="" className="genre-item">Mystic</a></div>
                     <div className="genre"><a href="" className="genre-item">Triller</a></div>
                 </div>
