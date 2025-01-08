@@ -22,7 +22,7 @@ const nextConfig = {
       },
     ],
   },
-  output: 'export', // Add this line for static export
+  output: 'export', 
 };
 
 export default nextConfig;
