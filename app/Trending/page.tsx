@@ -1,59 +1,46 @@
 "use client";
 
 import NavBar from "@/app/lib/components/NavBar";
-import Genre from "@/app/lib/components/Genre";
+import Trending from "@/app/lib/components/Trending";
 import { useEffect, useState, useRef } from "react";
 import { animeServices } from "@/app/lib/services/animes";
 
 export default function HomePage() {
-  const [actionAnimes, setActionAnimes] = useState<any[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [trendingAnimes, setTrendingAnimes] = useState<any[]>([]);
+  const [currentPage, setCurrentPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMorePages, setHasMorePages] = useState(true);
-  const fetchedAnimeIds = useRef(new Set<number>()); // Track fetched anime IDs
-
   const observerRef = useRef<HTMLDivElement | null>(null);
 
-  const fetchActionAnimes = async () => {
+  const fetchTrendingAnimes = async () => {
     if (loading || !hasMorePages) return;
 
     setLoading(true);
 
     try {
-      const response = await animeServices.all(currentPage);
+      const response = await animeServices.top(currentPage);
 
       if (response.status === 200) {
         const fetchedAnimes = response.data.data;
 
-        const filteredAnimes = fetchedAnimes.filter((anime: any) => {
-          const isAction = anime.genres.some((genre: any) => genre.name === "Sci-Fi");
-          const isNewAnime = !fetchedAnimeIds.current.has(anime.mal_id); 
-          if (isAction && isNewAnime) {
-            fetchedAnimeIds.current.add(anime.mal_id); 
-            return true;
-          }
-          return false;
-        });
-
-        setActionAnimes((prevAnimes) => [...prevAnimes, ...filteredAnimes]);
-
-        if (response.data.pagination.has_next_page) {
-          setCurrentPage((prevPage) => prevPage + 1);
-        } else {
+        if (fetchedAnimes.length === 0) {
           setHasMorePages(false);
+        } else {
+          setTrendingAnimes((prevAnimes) => [...prevAnimes, ...fetchedAnimes]);
+          setCurrentPage((prevPage) => prevPage + 1);
         }
       } else {
         setHasMorePages(false);
       }
     } catch (error) {
-      console.error("Error fetching anime data:", error);
+      console.error("Error fetching trending anime data:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchActionAnimes();
+    fetchTrendingAnimes();
   }, [currentPage]);
 
   useEffect(() => {
@@ -80,7 +67,7 @@ export default function HomePage() {
   return (
     <div>
       <NavBar />
-      <Genre genre="Sci-Fi" animes={actionAnimes} />
+      <Trending animes={trendingAnimes} />
       {loading && <p style={{ textAlign: "center", color: "#fff" }}>Loading...</p>}
       <div ref={observerRef} style={{ height: "1px", margin: "10px 0" }}></div>
     </div>

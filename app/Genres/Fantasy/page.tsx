@@ -27,7 +27,7 @@ export default function HomePage() {
         const fetchedAnimes = response.data.data;
 
         const filteredAnimes = fetchedAnimes.filter((anime: any) => {
-          const isAction = anime.genres.some((genre: any) => genre.name === "Adventure");
+          const isAction = anime.genres.some((genre: any) => genre.name === "Fantasy");
           const isNewAnime = !fetchedAnimeIds.current.has(anime.mal_id);
           if (isAction && isNewAnime) {
             fetchedAnimeIds.current.add(anime.mal_id);
@@ -109,7 +109,7 @@ export default function HomePage() {
           <option value="score">Score</option>
         </select>
       </div>
-      <Genre genre="Adventure" animes={sortedAnimes} />
+      <Genre genre="Fantasy" animes={sortedAnimes} />
       {loading && <p style={{ textAlign: "center", color: "#fff" }}>Loading...</p>}
       <div ref={observerRef} style={{ height: "1px", margin: "10px 0" }}></div>
     </div>

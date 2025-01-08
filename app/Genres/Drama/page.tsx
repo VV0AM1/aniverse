@@ -1,73 +1,117 @@
-"use client"
-
-
-
+"use client";
 
 import NavBar from "@/app/lib/components/NavBar";
-import Card from "@/app/lib/components/Card";
-import Home from "@/app/lib/components/Home";
-import AnimesArray from '@/app/lib/jsons/cards-anime.json'
-import { useEffect, useState } from "react";
+import Genre from "@/app/lib/components/Genre";
+import { useEffect, useState, useRef } from "react";
 import { animeServices } from "@/app/lib/services/animes";
-import axios from 'axios';
-
-
 
 export default function HomePage() {
+  const [actionAnimes, setActionAnimes] = useState<any[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [hasMorePages, setHasMorePages] = useState(true);
+  const [sortCriteria, setSortCriteria] = useState<string>("name"); 
+  const fetchedAnimeIds = useRef(new Set<number>());
 
-  const [animes, setAnimes] = useState();
-  const [genres, setGenres] = useState();
+  const observerRef = useRef<HTMLDivElement | null>(null);
 
+  const fetchActionAnimes = async () => {
+    if (loading || !hasMorePages) return;
+
+    setLoading(true);
+
+    try {
+      const response = await animeServices.all(currentPage);
+
+      if (response.status === 200) {
+        const fetchedAnimes = response.data.data;
+
+        const filteredAnimes = fetchedAnimes.filter((anime: any) => {
+          const isAction = anime.genres.some((genre: any) => genre.name === "Drama");
+          const isNewAnime = !fetchedAnimeIds.current.has(anime.mal_id);
+          if (isAction && isNewAnime) {
+            fetchedAnimeIds.current.add(anime.mal_id);
+            return true;
+          }
+          return false;
+        });
+
+        setActionAnimes((prevAnimes) => [...prevAnimes, ...filteredAnimes]);
+
+        if (response.data.pagination.has_next_page) {
+          setCurrentPage((prevPage) => prevPage + 1);
+        } else {
+          setHasMorePages(false);
+        }
+      } else {
+        setHasMorePages(false);
+      }
+    } catch (error) {
+      console.error("Error fetching anime data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
+    fetchActionAnimes();
+  }, [currentPage]);
 
-    const getAllAnimes = async () => {
-      try {
-        const response = await animeServices.all();
-        console.log("This is response",response)
-        if (response.status == 200){
-          const animeData = response.data.data;
-
-          // Set animes
-          setAnimes(animeData);
-    
-          // Filter animes with the "Action" genre and log their names
-          const actionAnimes = animeData.filter(anime =>
-            anime.genres.some(genre => genre.name === "Drama")
-          );
-    
-          console.log("Animes with 'Sci-Fi' genre:");
-          actionAnimes.forEach(anime => console.log(anime.title));
-           //IMPORTANTE!! Aquí es donde apuntas a la data en concreto. Para saber la estructura, puedes hacerlo en la consola del navegador. En el console.log de arriba es donde podrás ver la estructura y toda la data que te devuelve. En la rest API también tienes un ejemplo de la data que devuelve con su estructura. Importante estudiar cómo acceder a ello.
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMorePages && !loading) {
+          setCurrentPage((prevPage) => prevPage + 1);
         }
-      } catch (error) {
-        console.error('Error fetching anime data:', error);
+      },
+      { threshold: 1.0 }
+    );
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observer.unobserve(observerRef.current);
       }
     };
-    
-    getAllAnimes();
-  }, [animes, genres]);
+  }, [hasMorePages, loading]);
 
-
+  const sortedAnimes = [...actionAnimes].sort((a, b) => {
+    if (sortCriteria === "name") {
+      return a.title.localeCompare(b.title);
+    } else if (sortCriteria === "year-old-new") {
+      return (a.year || 0) - (b.year || 0);
+    } else if (sortCriteria === "year-new-old") {
+      return (b.year || 0) - (a.year || 0);
+    } else if (sortCriteria === "score") {
+      return (b.score || 0) - (a.score || 0);
+    }
+    return 0;
+  });
 
   return (
     <div>
       <NavBar />
-      <Home>
-        <div className="flex w-[100%] h-[80vh] justify-center flex-wrap mt-100">
-          {
-            animes && animes
-              .filter(anime => anime.genres.some(genre => genre.name === "Drama")) // Filter animes with "Action" genre
-              .map((anime) => {
-                return (
-                  <Card key={anime.mal_id} data={anime} /> // Include a unique key prop
-                )
-              })
-          }
-        </div>
-      </Home>
+      <div style={{ display: "flex", width: "150px", height: "100px", textAlign: "center" }}>
+        <label htmlFor="sort-select" style={{ marginRight: "10px", color: "#fff" }}>
+          Sort by:
+        </label>
+        <select
+          id="sort-select"
+          onChange={(e) => setSortCriteria(e.target.value)}
+          style={{ padding: "5px", borderRadius: "5px" }}
+        >
+          <option value="name">Name</option>
+          <option value="year-old-new">Year (Old to New)</option>
+          <option value="year-new-old">Year (New to Old)</option>
+          <option value="score">Score</option>
+        </select>
+      </div>
+      <Genre genre="Drama" animes={sortedAnimes} />
+      {loading && <p style={{ textAlign: "center", color: "#fff" }}>Loading...</p>}
+      <div ref={observerRef} style={{ height: "1px", margin: "10px 0" }}></div>
     </div>
   );
 }
-
-

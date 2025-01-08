@@ -1,8 +1,17 @@
 import {api} from "./api"
 
 export const animeServices = {
-    all: () => {
-        return api.get("/anime");
+    all: (page = 1) => {
+        return api.get(`/anime?page=${page}`);
+    },
+    character: (id: string) => {
+        return api.get(`/anime/${id}/characters`);
+    },
+    characterFull: (id: any) => {
+        return api.get(`/characters/${id}/full`);
+    },
+    top: (page = 1) => {
+        return api.get(`/top/anime?page=${page}`);
     },
     getByIdFull: (anime_id:string)=>{
         return api.get(`/anime/${anime_id}/full`);
