@@ -1,11 +1,20 @@
 "use client";
-import React, { Suspense, useState, useEffect } from "react";
+import React, {useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { animeServices } from "@/app/lib/services/animes";
 import Character from "./Character";
 import { relative } from "path";
+import { Suspense } from 'react'
 
-const Anime = () => {
+export default function Anime() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AnimeContent />
+    </Suspense>
+  );
+}
+
+function AnimeContent(){
   const searchParams = useSearchParams();
 
   const title = searchParams.get("title");
@@ -167,4 +176,3 @@ const Anime = () => {
   );
 }
 
-export default Anime;
