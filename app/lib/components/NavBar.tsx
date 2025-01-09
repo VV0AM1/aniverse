@@ -171,7 +171,7 @@ const NavBar: React.FC = () => {
       >
         <div className="menu-bars">
           <div className="menu-item-container">
-            <a href="http://localhost:3000/Trending" className="menu-item">
+            <a href="/Trending" className="menu-item">
               Trending
             </a>
           </div>
