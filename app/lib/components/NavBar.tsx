@@ -194,21 +194,21 @@ const NavBar: React.FC = () => {
             <div className="right-menu">
                 <div className="genre-menu-title-container"><p className='genre-menu-title'>GENRE</p></div>
                 <div className="genre-bars">
-                    <div className="genre"><a href="http://localhost:3000/Genres/Action" className="genre-item">Action</a></div>
-                    <div className="genre"><a href="http://localhost:3000/Genres/Adventure" className="genre-item">Adventure</a></div>
-                    <div className="genre"><a href="http://localhost:3000/Genres/Comedy" className="genre-item">Comedy</a></div>
-                    <div className="genre"><a href="http://localhost:3000/Genres/Drama" className="genre-item">Drama</a></div>
-                    <div className="genre"><a href="http://localhost:3000/Genres/Fantasy" className="genre-item">Fantasy</a></div>
-                    <div className="genre"><a href="http://localhost:3000/Genres/Music" className="genre-item">Music</a></div>
-                    <div className="genre"><a href="http://localhost:3000/Genres/Romance" className="genre-item">Romantic</a></div>
-                    <div className="genre"><a href="http://localhost:3000/Genres/Sci-Fi" className="genre-item">Si-Fi</a></div>
-                    <div className="genre"><a href="http://localhost:3000/Genres/Seinen" className="genre-item">Seinen</a></div>
-                    <div className="genre"><a href="http://localhost:3000/Genres/Shoujo" className="genre-item">Shoujo</a></div>
-                    <div className="genre"><a href="http://localhost:3000/Genres/Isekai" className="genre-item">Isekai</a></div>
-                    <div className="genre"><a href="http://localhost:3000/Genres/Erotica" className="genre-item">Erotica</a></div>
-                    <div className="genre"><a href="http://localhost:3000/Genres/Sports" className="genre-item">Sport</a></div>
-                    <div className="genre"><a href="http://localhost:3000/Genres/Mystery" className="genre-item">Mystery</a></div>
-                    <div className="genre"><a href="http://localhost:3000/Genres/Horror" className="genre-item">Horror</a></div>
+                    <div className="genre"><a href="/Genres/Action" className="genre-item">Action</a></div>
+                    <div className="genre"><a href="/Genres/Adventure" className="genre-item">Adventure</a></div>
+                    <div className="genre"><a href="/Genres/Comedy" className="genre-item">Comedy</a></div>
+                    <div className="genre"><a href="/Genres/Drama" className="genre-item">Drama</a></div>
+                    <div className="genre"><a href="/Genres/Fantasy" className="genre-item">Fantasy</a></div>
+                    <div className="genre"><a href="/Genres/Music" className="genre-item">Music</a></div>
+                    <div className="genre"><a href="/Genres/Romance" className="genre-item">Romantic</a></div>
+                    <div className="genre"><a href="/Genres/Sci-Fi" className="genre-item">Si-Fi</a></div>
+                    <div className="genre"><a href="/Genres/Seinen" className="genre-item">Seinen</a></div>
+                    <div className="genre"><a href="/Genres/Shoujo" className="genre-item">Shoujo</a></div>
+                    <div className="genre"><a href="/Genres/Isekai" className="genre-item">Isekai</a></div>
+                    <div className="genre"><a href="/Genres/Erotica" className="genre-item">Erotica</a></div>
+                    <div className="genre"><a href="/Genres/Sports" className="genre-item">Sport</a></div>
+                    <div className="genre"><a href="/Genres/Mystery" className="genre-item">Mystery</a></div>
+                    <div className="genre"><a href="/Genres/Horror" className="genre-item">Horror</a></div>
                 </div>
             </div>
         </div>
