@@ -162,10 +162,12 @@ body {
 }
 
 .menu-item{
-  width: 290px;
+  width: 270px;
+  margin-left: 10px;
   font-weight: 400;
   margin-left: 20px;
   font-size: 16px;
+  border-radius: 20px;
   color: #e0e0e0
   ;
 }
