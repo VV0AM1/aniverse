@@ -34,13 +34,17 @@ body {
 }
 
 .header {
-  height: 70px;
-  width: 100%;
+  height: 60px;
+  margin-top: 30px;
+  width: 90%;
+  border-radius: 50px;
+  margin-left: 5%;
   display: flex;
   position: fixed;
   align-items: center;
   justify-content: center;
-  background-color: #23252b;
+  backdrop-filter: blur(20px);
+  background-color: #23252b5e;
   z-index: 20;
 }
 
@@ -58,7 +62,7 @@ body {
   align-items: center;
   justify-content: center;
   width: 30%;
-  height: 100%;
+  height: 70%;
 }
 
 .nav-btn-container button{
@@ -67,7 +71,7 @@ body {
 }
 
 .nav-btn {
-  width: 30%;
+  width: 25%;
   height: 100%;
   align-items: center;
   display: flex;
@@ -75,10 +79,12 @@ body {
   text-align: center;
   font-size: 14px;
   color: #fff;
+  border-radius: 30px;
   font-family: "Merriweather", serif;
   font-weight: 400;
   font-style: normal;
   transition: .5s;
+  margin-right: 15px;
 }
 
 .nav-btn:hover {
@@ -126,9 +132,12 @@ body {
   align-items: center;
   width: 900px;
   height: 320px;
-  margin-left: 60px;
+  margin-left: 80px;
+  margin-top: 30px;
+  border-radius: 40px;
   justify-content: center;
-  background-color: #121316;
+  background-color: #121316c9;
+  backdrop-filter: blur(20px);
   overflow: hidden;
   z-index: 9999;
 }
@@ -195,16 +204,16 @@ body {
 
 .genre{
   margin: 0;
-  background-color: #121316;
   color: #fff;
   display: flex;
-  justify-content: start;
+  justify-content: center;
   align-items: center;
   font-size: 24px;
-  width: 190px;
+  width: 150px;
   height: 45px;
   text-align: center;
-  margin-left: 20px;
+  margin-left: 40px;
+  border-radius: 20px;
 }
 
 .genre-menu-title-container{
@@ -225,24 +234,42 @@ body {
 }
 
 .genre-item{
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 13px;
   color: #e0e0e0;
-  margin-left: 20px;
 }
 
 .genre:hover{
-  background-color: #23252b;
+  background: #23252bf3;
+  backdrop-filter: blur(10px);
 }
 
+html {
+  scroll-behavior: smooth;
+}
 
 .home-container {
-  position: relative;
+  position: fixed; 
+  inset: 0;
   display: flex;
   background-size: cover;
   z-index: 0;
-  backdrop-filter: brightness(80%);
-  box-shadow: 0px 40px 44px 4px rgba(18,19,22,0.87);
+  filter: brightness(100%); 
 }
+
+.shadow{
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  z-index: 20;
+  left: 0;
+  box-shadow: inset 0px 0px 100px 100px rgba(0, 0, 0, 0.7); 
+  background: #0d0e1290;
+}
+
 
 .anime-content {
   display: flex;
@@ -251,16 +278,10 @@ body {
   width: 35%;
   position: relative;
   height: 100%;
-  backdrop-filter: blur(10px);
-}
-
-.anime-content::after{
-  position: absolute;
-  content: '';
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.3);
-  box-shadow: 42px 0px 70px 30px rgba(0, 0, 0, 0.3);
+  color: #a8a8a8;
+  text-align: start;
+  z-index: 999;
+  padding: 50px;
 }
 
 .anime-info {
@@ -270,11 +291,10 @@ body {
   padding: 50px;
   z-index: 10;
   position: relative;
-  color: #a8a8a8;
   display: flex;
   flex-direction: column;
-  justify-content:end;
-  text-align:start;
+  justify-content: end;
+  color: #a8a8a8;
 }
 
 .trendingAnimeAge{
@@ -292,11 +312,7 @@ body {
   margin-bottom: 15px;
 }
 
-.anime-title-img {
-  width: 320px;
-  height: 160px;
-  margin-bottom: 10px;
-}
+
 
 .trendingAnimeDescription{
   font-size: 16px;
@@ -306,8 +322,8 @@ body {
 }
 
 .anime-button {
-  background-color: #4d00dd;
-  color: #121316;
+  background-image: linear-gradient(to right, #660000, #8c3308, #ae5f0b, #ca8d17, #e0be2e);
+  color: #fff;
   padding: 8px 10px;
   border: none;
   width: 150px;
@@ -317,7 +333,6 @@ body {
   font-size: 16px;
   font-weight: 400;
   border-radius: 5px;
-  border: #121316 1px solid;
   transition: .5s;
 }
 
@@ -326,17 +341,22 @@ body {
 }
 
 .anime-button:hover {
-  background-color: #fff;
-  color: #4d00dd;
+  background: #fff;
+  color: #660000;
   transition: .5s;
 }
 
 
-.karusel-container{
-  width: 190vw;
+.karusel-container {
+  width: 190vw; 
   overflow-x: hidden;
-  margin-top: -20px;
-  position: relative;
+  background: #121316;
+  height: 100vh;
+  position: relative; 
+  margin: 0;
+  top: 100vh; 
+  z-index: 1;
+  padding-top: 20px; 
 
 }
 
@@ -368,7 +388,7 @@ body {
 .karusel-left-btn{
   width: 30px;
   height: 60%;
-  top: 30%;
+  top: 20%;
   left: 0;
   position: absolute;
   color: #fff;
@@ -391,7 +411,7 @@ body {
 .karusel-right-btn{
   width: 30px;
   height: 60%;
-  top: 25%;
+  top: 20%;
   right: 47.9%;
   position: absolute;
   color: #fff;
