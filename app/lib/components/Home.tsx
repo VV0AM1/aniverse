@@ -11,7 +11,6 @@ const trendingAnime = [
     description:
       "Dandadan is a popular Japanese manga series written and illustrated by Yukinobu Tatsu. The story combines elements of supernatural action, romance, and comedy, creating a unique and engaging experience.",
     background_video: "/img/gojo.mp4",
-    fallback_image: "/img/gojo.jpg",
   },
   {
     name: "Blue Lock",
@@ -20,7 +19,6 @@ const trendingAnime = [
     description:
       "Blue Lock is a Japanese manga series written by Muneyuki Kaneshiro and illustrated by Yusuke Nomura. It’s a high-stakes sports drama that redefines the soccer genre with a unique and intense premise.",
     background_video: "/img/codegeass.mp4",
-    fallback_image: "/img/codegeass.jpg",
   },
   {
     name: "DanDaDan",
@@ -29,7 +27,6 @@ const trendingAnime = [
     description:
       "Dandadan is a popular Japanese manga series written and illustrated by Yukinobu Tatsu. The story combines elements of supernatural action, romance, and comedy, creating a unique and engaging experience.",
     background_video: "/img/kanekiken.mp4",
-    fallback_image: "/img/kanekiken.jpg",
   },
   {
     name: "Blue Lock",
@@ -38,7 +35,6 @@ const trendingAnime = [
     description:
       "Blue Lock is a Japanese manga series written by Muneyuki Kaneshiro and illustrated by Yusuke Nomura. It’s a high-stakes sports drama that redefines the soccer genre with a unique and intense premise.",
     background_video: "/img/demonslayer.mp4",
-    fallback_image: "/img/demonslayer.jpg",
   },
   {
     name: "Tower of God",
@@ -47,14 +43,12 @@ const trendingAnime = [
     description:
       "Tower of God is a South Korean webtoon (manhwa) created by SIU (Slave In Utero). It’s an epic fantasy series that has captured readers worldwide with its intricate storytelling, vast world-building, and compelling characters.",
     background_video: "/img/evergarden.mp4",
-    fallback_image: "/img/evergarden.jpg",
   },
 ];
 
 export default function Home({ children }: { children: ReactNode }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [fade, setFade] = useState(true);
-  const [videoReady, setVideoReady] = useState(true);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -64,7 +58,6 @@ export default function Home({ children }: { children: ReactNode }) {
           prevIndex === trendingAnime.length - 1 ? 0 : prevIndex + 1
         );
         setFade(true);
-        setVideoReady(true); 
       }, 300);
     }, 5000);
 
@@ -73,30 +66,16 @@ export default function Home({ children }: { children: ReactNode }) {
 
   const anime = trendingAnime[currentIndex];
 
-  const handleVideoError = () => {
-    setVideoReady(false); 
-  };
-
   return (
     <div className="home-container h-screen w-full relative">
       <div className="shadow"></div>
-      {videoReady ? (
-        <video
-          className="absolute top-0 left-0 w-full h-full object-cover"
-          src={anime.background_video}
-          autoPlay
-          loop
-          muted
-          onCanPlay={() => setVideoReady(true)}
-          onError={handleVideoError}
-        ></video>
-      ) : (
-        <img
-          className="absolute top-0 left-0 w-full h-full object-cover"
-          src={anime.fallback_image}
-          alt={anime.name}
-        />
-      )}
+      <video
+        className="absolute top-0 left-0 w-full h-full object-cover"
+        src={anime.background_video}
+        autoPlay
+        loop
+        muted
+      ></video>
       <div
         className={`anime-content relative z-10 transition-opacity duration-300 ${
           fade ? "opacity-100" : "opacity-0"
