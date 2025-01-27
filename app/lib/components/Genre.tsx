@@ -19,7 +19,7 @@ const Genre: React.FC<GenreProps> = ({ genre, animes }) => {
       <div className="genre-title-container">
         <h1 className="genre-title">{genre} Animes</h1>
       </div>
-      <div className="genre-item-container grid grid-cols-8 gap-4">
+      <div className="genre-item-container grid grid-cols-5 gap-4">
         {filteredAnimes?.map((anime, index) => (
           <SmallCard key={index} data={anime} />
         ))}

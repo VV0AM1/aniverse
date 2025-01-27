@@ -54,24 +54,24 @@ export default function SmallCard({
             <div
                 className={`small-card-container ${isFlipped ? 'flipped' : ''}`}
                 style={{
-                    height: 290,
+                    height: 320,
                     padding: '12px 24px',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
-                    alignItems: 'flex-start',
+                    alignItems: 'center',
                 }}
             >
                 <div className="small-card-front">
                     <Image
                         src={data?.images?.jpg.image_url}
-                        width={140}
-                        height={190}
+                        width={150}
+                        height={210}
                         alt={data.title}
                         className="card-img"
                         style={{
-                            width: '140px',
-                            height: '190px',
+                            width: '150px',
+                            height: '210px',
                             marginBottom: '12px',
                             borderRadius: '5px',
                         }}
@@ -182,17 +182,6 @@ export default function SmallCard({
                     >
                         {data.synopsis}
                     </p>
-                    <button
-                        className="small-play-btn"
-                        style={{
-                            background: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            marginTop: 10,
-                        }}
-                    >
-                        <img src="/img/small-player-play.svg" alt="" />
-                    </button>
                     <button className='small-back-btn'
                     onClick={() => setIsFlipped(false)}
 >                      Back

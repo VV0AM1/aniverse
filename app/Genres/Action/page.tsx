@@ -94,20 +94,6 @@ export default function HomePage() {
   return (
     <div>
       <NavBar />
-      <div className="sort-container" style={{ display: "flex", width: "150px", height: "100px", textAlign: "center", background: "#131418" }}>
-          <p className="sort-text">Sort by:</p>
-        <select
-        className="sort-inner"
-          id="sort-select"
-          onChange={(e) => setSortCriteria(e.target.value)}
-          style={{ padding: "5px", borderRadius: "5px", background: "#38393a" }}
-        >
-          <option value="name">Name</option>
-          <option value="year-old-new">Year (Old to New)</option>
-          <option value="year-new-old">Year (New to Old)</option>
-          <option value="score">Score</option>
-        </select>
-      </div>
       <Genre genre="Action" animes={sortedAnimes} />
       {loading && <p className="loading" style={{ textAlign: "center", color: "#fff", background: "#131418" }}>Loading...</p>}
       <div ref={observerRef} style={{ height: "1px", margin: "10px 0" }}></div>
