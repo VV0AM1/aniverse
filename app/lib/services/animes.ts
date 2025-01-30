@@ -19,6 +19,9 @@ export const animeServices = {
     getById: (anime_id:string)=>{
         return api.get(`/anime/${anime_id}`);
     },
+    getGenreAnimes: (genre_id: any, page = 1) => {
+        return api.get(`/anime?page=${page}&genres=${genre_id}`);
+    },
     getAnimeGenres: () => {
         return api.get("/genres/anime");
     }

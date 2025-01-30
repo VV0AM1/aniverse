@@ -13,7 +13,7 @@ const Trending: React.FC<TrendingProps> = ({ animes }) => {
       <div className="genre-title-container">
         <h1 className="genre-title">Trending Animes</h1>
       </div>
-      <div className="genre-item-container grid grid-cols-8 gap-4">
+      <div className="genre-item-container grid grid-cols-5 gap-4">
         {animes?.map((anime, index) => (
           <SmallCard key={index} data={anime} />
         ))}

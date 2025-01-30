@@ -2,6 +2,8 @@
 
 import React, { useState, MouseEvent } from "react";
 import { animeServices } from "@/app/lib/services/animes";
+import Link from "next/link";
+
 
 const NavBar: React.FC = () => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
@@ -194,21 +196,21 @@ const NavBar: React.FC = () => {
             <div className="right-menu">
                 <div className="genre-menu-title-container"><p className='genre-menu-title'>GENRE</p></div>
                 <div className="genre-bars">
-                    <div className="genre"><a href="/Genres/Action" className="genre-item">Action</a></div>
-                    <div className="genre"><a href="/Genres/Adventure" className="genre-item">Adventure</a></div>
-                    <div className="genre"><a href="/Genres/Comedy" className="genre-item">Comedy</a></div>
-                    <div className="genre"><a href="/Genres/Drama" className="genre-item">Drama</a></div>
-                    <div className="genre"><a href="/Genres/Fantasy" className="genre-item">Fantasy</a></div>
-                    <div className="genre"><a href="/Genres/Music" className="genre-item">Music</a></div>
-                    <div className="genre"><a href="/Genres/Romance" className="genre-item">Romantic</a></div>
-                    <div className="genre"><a href="/Genres/Sci-Fi" className="genre-item">Si-Fi</a></div>
-                    <div className="genre"><a href="/Genres/Seinen" className="genre-item">Seinen</a></div>
-                    <div className="genre"><a href="/Genres/Shoujo" className="genre-item">Shoujo</a></div>
-                    <div className="genre"><a href="/Genres/Isekai" className="genre-item">Isekai</a></div>
-                    <div className="genre"><a href="/Genres/Erotica" className="genre-item">Erotica</a></div>
-                    <div className="genre"><a href="/Genres/Sports" className="genre-item">Sport</a></div>
-                    <div className="genre"><a href="/Genres/Mystery" className="genre-item">Mystery</a></div>
-                    <div className="genre"><a href="/Genres/Horror" className="genre-item">Horror</a></div>
+                  <div className="genre"><Link href="/Genres/Action" className="genre-item">Action</Link></div>
+                  <div className="genre"><Link href="/Genres/Adventure" className="genre-item">Adventure</Link></div>
+                  <div className="genre"><Link href="/Genres/Comedy" className="genre-item">Comedy</Link></div>
+                  <div className="genre"><Link href="/Genres/Drama" className="genre-item">Drama</Link></div>
+                  <div className="genre"><Link href="/Genres/Fantasy" className="genre-item">Fantasy</Link></div>
+                  <div className="genre"><Link href="/Genres/Music" className="genre-item">Music</Link></div>
+                  <div className="genre"><Link href="/Genres/Romance" className="genre-item">Romantic</Link></div>
+                  <div className="genre"><Link href="/Genres/Sci-Fi" className="genre-item">Si-Fi</Link></div>
+                  <div className="genre"><Link href="/Genres/Seinen" className="genre-item">Seinen</Link></div>
+                  <div className="genre"><Link href="/Genres/Shoujo" className="genre-item">Shoujo</Link></div>
+                  <div className="genre"><Link href="/Genres/Isekai" className="genre-item">Isekai</Link></div>
+                  <div className="genre"><Link href="/Genres/Erotica" className="genre-item">Erotica</Link></div>
+                  <div className="genre"><Link href="/Genres/Sports" className="genre-item">Sport</Link></div>
+                  <div className="genre"><Link href="/Genres/Mystery" className="genre-item">Mystery</Link></div>
+                  <div className="genre"><Link href="/Genres/Horror" className="genre-item">Horror</Link></div>
                 </div>
             </div>
         </div>
