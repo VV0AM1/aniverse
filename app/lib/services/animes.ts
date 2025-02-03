@@ -24,5 +24,8 @@ export const animeServices = {
     },
     getAnimeGenres: () => {
         return api.get("/genres/anime");
+    },
+    getAnimeByName: (name:any) => {
+        return api.get(`https://api.jikan.moe/v4/anime?q=${name}`);
     }
 }

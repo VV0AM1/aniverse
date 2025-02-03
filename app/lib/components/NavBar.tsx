@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState, MouseEvent } from "react";
+import React, { useState, useEffect } from "react";
 import { animeServices } from "@/app/lib/services/animes";
 import Link from "next/link";
-
 
 const NavBar: React.FC = () => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
@@ -12,8 +11,7 @@ const NavBar: React.FC = () => {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const toggleMenu = (event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
+  const toggleMenu = () => {
     setIsMenuVisible(!isMenuVisible);
   };
 
@@ -23,10 +21,7 @@ const NavBar: React.FC = () => {
     setSearchResults([]);
   };
 
-  const handleSearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const query = event.target.value;
-    setSearchQuery(query);
-
+  const fetchAnime = async (query: string) => {
     if (!query.trim()) {
       setSearchResults([]);
       return;
@@ -35,12 +30,9 @@ const NavBar: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await animeServices.all(); 
+      const response = await animeServices.getAnimeByName(query);
       if (response.status === 200) {
-        const results = response.data.data.filter((anime: any) =>
-          anime.title.toLowerCase().includes(query.toLowerCase())
-        );
-        setSearchResults(results);
+        setSearchResults(response.data.data);
       }
     } catch (error) {
       console.error("Error fetching search results:", error);
@@ -48,6 +40,16 @@ const NavBar: React.FC = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (searchQuery) {
+        fetchAnime(searchQuery);
+      }
+    }, 500); 
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery]);
 
   return (
     <>
@@ -93,9 +95,9 @@ const NavBar: React.FC = () => {
           className="search-box"
           style={{
             position: "absolute",
-            top: "70px",
-            left: "10px",
-            width: "300px",
+            top: "100px",
+            right: "90px",
+            width: "450px",
             backgroundColor: "#121316",
             padding: "10px",
             borderRadius: "5px",
@@ -107,7 +109,7 @@ const NavBar: React.FC = () => {
             type="text"
             placeholder="Search for anime..."
             value={searchQuery}
-            onChange={handleSearch}
+            onChange={(e) => setSearchQuery(e.target.value)}
             style={{
               width: "100%",
               padding: "8px",
@@ -131,24 +133,28 @@ const NavBar: React.FC = () => {
                 <li key={anime.mal_id}>
                   <a
                     href={`/Anime?mal_id=${encodeURIComponent(anime.mal_id)}&title=${encodeURIComponent(anime.title)}&episodes=${anime.episodes}&image_url=${encodeURIComponent(
-                anime.images.jpg.large_image_url
-            )}&synopsis=${encodeURIComponent(anime.synopsis)}&score=${anime.score}&year=${anime.year}&genres=${encodeURIComponent(
-                anime.genres.map((g:any) => g.name).join(', ')
-            )}&producers=${encodeURIComponent(
-                anime.producers.map((p:any) => p.name).join(', ')
-            )}&studios=${encodeURIComponent(
-                anime.studios.map((s:any) => s.name).join(', ')
-            )}&trailerImageUrl=${encodeURIComponent(
-                anime.trailer.images.medium_image_url
-            )}&trailerUrl=${encodeURIComponent(anime.trailer.url)}&rating=${anime.rating}&scored_by=${anime.scored_by}`}
+                      anime.images.jpg.large_image_url
+                    )}&synopsis=${encodeURIComponent(anime.synopsis)}&score=${anime.score}&year=${anime.year}&genres=${encodeURIComponent(
+                      anime.genres.map((g: any) => g.name).join(", ")
+                    )}&producers=${encodeURIComponent(
+                      anime.producers.map((p: any) => p.name).join(", ")
+                    )}&studios=${encodeURIComponent(
+                      anime.studios.map((s: any) => s.name).join(", ")
+                    )}&trailerImageUrl=${encodeURIComponent(
+                      anime.trailer.images.medium_image_url
+                    )}&trailerUrl=${encodeURIComponent(anime.trailer.url)}&rating=${anime.rating}&scored_by=${anime.scored_by}`}
                     style={{
-                      display: "block",
+                      display: "flex",
                       padding: "5px 0",
-                      color: "#1e90ff",
+                      color: "#fff",
                       textDecoration: "none",
                     }}
                   >
-                    {anime.image_url}
+                    <img
+                      src={anime.images.jpg.small_image_url}
+                      alt={anime.title}
+                      style={{ width: "50px", height: "60px", marginRight: "10px" }}
+                    />
                     {anime.title}
                   </a>
                 </li>
@@ -160,7 +166,6 @@ const NavBar: React.FC = () => {
           )}
         </div>
       )}
-
       <div
         className="menu"
         style={{

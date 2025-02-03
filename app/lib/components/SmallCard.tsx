@@ -50,145 +50,111 @@ export default function SmallCard({
     const genreNames = data.genres ? data.genres.map((genre) => genre.name).join(', ') : 'No genres available';
 
     return (
-        <div className="small-card">
-            <div
-                className={`small-card-container ${isFlipped ? 'flipped' : ''}`}
-                style={{
-                    height: 320,
-                    padding: '12px 24px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}
-            >
-                <div className="small-card-front">
-                    <Image
-                        src={data?.images?.jpg.image_url}
-                        width={150}
-                        height={210}
-                        alt={data.title}
-                        className="card-img"
-                        style={{
-                            width: '150px',
-                            height: '210px',
-                            marginBottom: '12px',
-                            borderRadius: '5px',
-                        }}
-                        onClick={() => {
-                            handleRedirect();
-                          }}
-                    />
-                    <h2
-                        className="small-cardTitle"
-                        style={{
-                            width: 130,
-                            textAlign: 'start',
-                            color: 'white',
-                            fontSize: 12,
-                            fontWeight: 500,
-                            height: 20,
-                            display: '-webkit-box',
-                            WebkitLineClamp: 1,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                        }}
-                    >
-                        {data.title}
-                    </h2>
-                    <p
-                        className="small-cardEp"
-                        style={{
-                            maxWidth: 130,
-                            height: 15,
-                            textAlign: 'start',
-                            color: 'grey',
-                            fontSize: 10,
-                        }}
-                    >
-                        {data.episodes} EP
-                    </p>
-                    <button className="small-more-btn" onClick={() => setIsFlipped(true)}>More</button>
-                </div>
-                <div
-                    className="small-card-hovered"
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        marginTop: 10,
-                    }}
-                >
-                    <h2
-                        style={{
-                            width: 140,
-                            marginBottom: 5,
-                            textAlign: 'start',
-                            color: '#fff',
-                            fontSize: 12,
-                            fontWeight: 600,
-                        }}
-                    >
-                        {data.title}
-                    </h2>
-                    <p
-                        style={{
-                            maxWidth: 140,
-                            height: 20,
-                            textAlign: 'start',
-                            color: 'grey',
-                            fontSize: 11,
-                            fontWeight: 500,
-                        }}
-                    >
-                        {data.episodes} EP
-                    </p>
-                    <p
-                        style={{
-                            maxWidth: 140,
-                            height: 20,
-                            textAlign: 'start',
-                            color: 'grey',
-                            fontSize: 11,
-                            fontWeight: 500,
-                        }}
-                    >
-                        Year: {data.year}
-                    </p>
-                    <p
-                        style={{
-                            maxWidth: 140,
-                            height: 20,
-                            textAlign: 'start',
-                            color: 'grey',
-                            fontSize: 11,
-                            fontWeight: 500,
-                        }}
-                    >
-                        Rating: {data.score}
-                    </p>
-                    <p
-                        className="small-synopsis-text"
-                        style={{
-                            maxWidth: 140,
-                            color: '#fff',
-                            fontSize: 10,
-                            display: '-webkit-box',
-                            WebkitLineClamp: 7,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                        }}
-                    >
-                        {data.synopsis}
-                    </p>
-                    <button className='small-back-btn'
-                    onClick={() => setIsFlipped(false)}
->                      Back
-                    </button>
-                </div>
+        <div className="small-card" onClick={handleRedirect}>
+          <div className="small-card-container">
+            <div className="small-card-front">
+              <Image
+                src={data?.images?.jpg.image_url}
+                width={170}
+                height={280}
+                alt={data.title}
+                className="card-img"
+              />
+              <h2 className="small-cardTitle">{data.title}</h2>
             </div>
+    
+            <div className="small-card-hovered">
+              <h2
+                style={{
+                  width: 150,
+                  marginTop: 0,
+                  marginBottom: 5,
+                  textAlign: "start",
+                  color: "#fff",
+                  fontSize: 16,
+                  fontWeight: 600,
+                }}
+              >
+                {data.title}
+              </h2>
+              <p
+                style={{
+                  maxWidth: 140,
+                  width: 50,
+                  height: 25,
+                  textAlign: "start",
+                  color: "#fff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textAlignLast: "center",
+                  background: "#27779b",
+                  borderRadius: 5,
+                  marginBottom: 5,
+                  fontSize: 11,
+                  fontWeight: 500,
+                }}
+              >
+                {data.episodes} EP
+              </p>
+              <p
+                style={{
+                  maxWidth: 140,
+                  width: 70,
+                  height: 25,
+                  textAlign: "start",
+                  color: "#fff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textAlignLast: "center",
+                  background: "#7636bf",
+                  borderRadius: 5,
+                  marginBottom: 5,
+                  fontSize: 11,
+                  fontWeight: 500,
+                }}
+              >
+                Year: {data.year}
+              </p>
+              <p
+                style={{
+                  maxWidth: 140,
+                  width: 70,
+                  height: 25,
+                  textAlign: "start",
+                  color: "#fff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textAlignLast: "center",
+                  background: "#c9c749",
+                  borderRadius: 5,
+                  marginBottom: 5,
+                  fontSize: 11,
+                  fontWeight: 500,
+                }}
+              >
+                Rating: {data.score}
+              </p>
+              <p
+                className="small-synopsis-text"
+                style={{
+                  maxWidth: 140,
+                  color: "#fff",
+                  fontSize: 10,
+                  display: "-webkit-box",
+                  WebkitLineClamp: 8,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {data.synopsis}
+              </p>
+            </div>
+          </div>
         </div>
-    );
+      );
 }
 

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import SmallCard from "./SmallCard";
-import Skeleton from "./Skeleton";
+import SkeletonLoader from "./Skeleton";
 
 
 interface GenreProps {
@@ -11,9 +11,11 @@ interface GenreProps {
   currentPages: number;
   lastPages: number;
   setCurrentPages: (page: number) => void;
+  loading: boolean; 
+
 }
 
-const Genre: React.FC<GenreProps> = ({ genre, animes, currentPages, lastPages, setCurrentPages }) => {
+const Genre: React.FC<GenreProps> = ({ genre, animes, currentPages, lastPages, setCurrentPages, loading}) => {
   const [inputPage, setInputPage] = useState<number | string>("");
 
   const handlePageChange = (page: number) => {
@@ -92,9 +94,9 @@ const Genre: React.FC<GenreProps> = ({ genre, animes, currentPages, lastPages, s
       </div>
 
       <div className="genre-item-container grid grid-cols-5 gap-4">
-        {animes.map((anime, index) => (
-          <SmallCard key={index} data={anime} />
-        ))}
+        {loading
+        ? Array.from({ length: 25 }).map((_, index) => <SkeletonLoader key={index} />)
+        : animes.map((anime, index) => <SmallCard key={index} data={anime} />)}
       </div>
     </div>
   );

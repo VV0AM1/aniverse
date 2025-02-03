@@ -452,6 +452,7 @@ html {
 }
 
 .genre-item-container{
+  margin-top: 20px;
   width: 70%;
 }
 
@@ -528,77 +529,90 @@ html {
 }
 
 
-.small-more-btn{
-  width: 80px;
-  font-size: 14px;
-  color: #fff;
-  background-image: linear-gradient(to right, #660000, #8c3308, #ae5f0b, #ca8d17, #e0be2e);
-  border-radius: 5px;
-  margin-top: 5px;
-  padding: 3px 3px;
-  transition: .5s;
-}
-
-.small-more-btn:hover{
-  background: #fff;
-  color: #660000;
-  transition: .5s;
-}
-
-.small-back-btn{
-  width: 80px;
-  font-size: 14px;
-  color: #fff;
-  background-image: linear-gradient(to right, #660000, #8c3308, #ae5f0b, #ca8d17, #e0be2e);
-  border-radius: 5px;
-  margin-top: 5px;
-  padding: 3px 3px;
-  transition: .5s;
-}
-
-.small-back-btn:hover{
-  background: #fff;
-  color: #660000;
-  transition: .5s;
-}
-
-.small-card{
+.small-card {
   perspective: 1000px;
+  width: 170px;
+  height: 280px;
   margin-bottom: 20px;
 }
 
-
 .small-card-container {
   position: relative;
-  align-items: center;
-  border-radius: 10px;
-  transition: transform 0.5s;
+  width: 100%;
+  height: 100%;
   transform-style: preserve-3d;
+  transition: transform 0.5s;
 }
 
-.small-card-container:hover{
-  transform: scale(1.2);
-}
-
-.small-card-container.flipped {
+.small-card-container:hover {
   transform: rotateY(180deg);
 }
 
-.small-card-hovered, .small-card-front {
+/* Front Side */
+.small-card-front {
   position: absolute;
-  left: 11px;
-  top: 10px;
   width: 100%;
   height: 100%;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
 
-.small-card-hovered {
-  transform: rotateY(180deg);
-  margin-left: -20px;
+.skeleton-card {
+  width: 170px;
+  height: 280px;
+  border-radius: 8px;
 }
 
+@keyframes pulse {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: 200px 0;
+  }
+}
+
+.animate-pulse {
+  background-size: 400% 100%;
+  animation: pulse 1.5s infinite linear;
+}
+.card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.small-cardTitle {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #252528a7;
+  color: white;
+  font-size: 12px;
+  text-align: center;
+  padding: 5px 0;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  backdrop-filter: blur(5px);
+}
+
+/* Back Side (Unchanged) */
+.small-card-hovered {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #1a1a1a;
+  color: white;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  transform: rotateY(180deg);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
 .anime-container{
   color: #fff;
 }
@@ -867,6 +881,11 @@ html {
 }
 
 
+.page-input::placeholder{
+  color: #8c3308;
+}
+
+
 .go-btn{
   width: 40px;
   height: 40px;
@@ -879,20 +898,5 @@ html {
   font-size: 10px;
   transition: .5s;
 
-}
-
-.skeleton-card{
-  height: 320px;
-  animation: pulse 1.5s infinite;
-
-}
-
-@keyframes pulse {
-  0%, 100% {
-    background-color: #2d2d2d; /* Dark Gray */
-  }
-  50% {
-    background-color: #4a4a4a; /* Light Gray */
-  }
 }
 
