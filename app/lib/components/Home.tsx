@@ -46,11 +46,36 @@ const trendingAnime = [
   },
 ];
 
+const Loading: React.FC = () => (
+  <div className="loading-screen">
+    <p>Loading...</p>
+  </div>
+);
+
 export default function Home({ children }: { children: ReactNode }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [fade, setFade] = useState(true);
+  const [videosLoaded, setVideosLoaded] = useState(false);
 
   useEffect(() => {
+    let loadedCount = 0;
+
+    // Preload all videos
+    trendingAnime.forEach((anime) => {
+      const video = document.createElement("video");
+      video.src = anime.background_video;
+      video.preload = "auto";
+      video.muted = true;
+      video.loop = true;
+
+      video.oncanplaythrough = () => {
+        loadedCount++;
+        if (loadedCount === trendingAnime.length) {
+          setVideosLoaded(true); // All videos are loaded
+        }
+      };
+    });
+
     const interval = setInterval(() => {
       setFade(false);
       setTimeout(() => {
@@ -65,6 +90,10 @@ export default function Home({ children }: { children: ReactNode }) {
   }, []);
 
   const anime = trendingAnime[currentIndex];
+
+  if (!videosLoaded) {
+    return <Loading />;
+  }
 
   return (
     <div className="home-container h-screen w-full relative">
