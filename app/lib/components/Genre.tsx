@@ -87,7 +87,7 @@ const Genre: React.FC<GenreProps> = ({ genre, animes, currentPages, lastPages, s
       <div className="genre-item-container grid grid-cols-5 gap-2">
         {loading
         ? Array.from({ length: 25 }).map((_, index) => <SkeletonLoader key={index} />)
-        : animes.map((anime, index) => <SmallCard key={index} data={anime} />)}
+        : animes.map((anime, index) => <SmallCard key={index} index={index} data={anime} />)}
       </div>
     </div>
   );
