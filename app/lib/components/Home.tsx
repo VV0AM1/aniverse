@@ -10,7 +10,7 @@ const trendingAnime = [
     age: "+16",
     description:
       "Dandadan is a popular Japanese manga series written and illustrated by Yukinobu Tatsu. The story combines elements of supernatural action, romance, and comedy, creating a unique and engaging experience.",
-    background_video: "/img/gojo.mp4",
+    background_video: "/img/gojosatoru.mp4",
   },
   {
     name: "Code Gease",
