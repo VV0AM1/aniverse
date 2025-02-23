@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 
 export default function SmallCard({
     data,
+    index,
 }: {
     data: {
         mal_id: string;
@@ -18,7 +19,12 @@ export default function SmallCard({
         synopsis: string;
         score: string;
         year: string;
+        duration: string;
         rating: string;
+        type: string;
+        rank: string;
+        popularity: string;
+        members: string;
         producers: { name: string }[];
         studios: { name: string }[];
         trailer: {
@@ -27,8 +33,9 @@ export default function SmallCard({
         };
         scored_by: string;
     };
+    index: number;
 }) {
-    const [isFlipped, setIsFlipped] = useState(false);
+    const [isVisible, setIsVisible] = useState(false);
     const router = useRouter();
 
     const handleRedirect = () => {
@@ -49,112 +56,180 @@ export default function SmallCard({
 
     const genreNames = data.genres ? data.genres.map((genre) => genre.name).join(', ') : 'No genres available';
 
+    const isLastInRow = (index + 1) % 5 === 0;
+
+    const formatRating = (rating: string) => {
+      return rating.replace(/(-.{3}).*/, "$1");
+    };
+
+
     return (
-        <div className="small-card" onClick={handleRedirect}>
-          <div className="small-card-container">
-            <div className="small-card-front">
-              <Image
-                src={data?.images?.jpg.image_url}
-                width={170}
-                height={280}
-                alt={data.title}
-                className="card-img"
-              />
-              <h2 className="small-cardTitle">{data.title}</h2>
-            </div>
-    
-            <div className="small-card-hovered">
-              <h2
-                style={{
-                  width: 150,
-                  marginTop: 0,
-                  marginBottom: 5,
-                  textAlign: "start",
-                  color: "#fff",
-                  fontSize: 16,
-                  fontWeight: 600,
-                }}
-              >
-                {data.title}
-              </h2>
-              <p
-                style={{
-                  maxWidth: 140,
-                  width: 50,
-                  height: 25,
-                  textAlign: "start",
-                  color: "#fff",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  textAlignLast: "center",
-                  background: "#27779b",
-                  borderRadius: 5,
-                  marginBottom: 5,
-                  fontSize: 11,
-                  fontWeight: 500,
-                }}
-              >
-                {data.episodes} EP
-              </p>
-              <p
-                style={{
-                  maxWidth: 140,
-                  width: 70,
-                  height: 25,
-                  textAlign: "start",
-                  color: "#fff",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  textAlignLast: "center",
-                  background: "#7636bf",
-                  borderRadius: 5,
-                  marginBottom: 5,
-                  fontSize: 11,
-                  fontWeight: 500,
-                }}
-              >
-                Year: {data.year}
-              </p>
-              <p
-                style={{
-                  maxWidth: 140,
-                  width: 70,
-                  height: 25,
-                  textAlign: "start",
-                  color: "#fff",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  textAlignLast: "center",
-                  background: "#c9c749",
-                  borderRadius: 5,
-                  marginBottom: 5,
-                  fontSize: 11,
-                  fontWeight: 500,
-                }}
-              >
-                Rating: {data.score}
-              </p>
-              <p
-                className="small-synopsis-text"
-                style={{
-                  maxWidth: 140,
-                  color: "#fff",
-                  fontSize: 10,
-                  display: "-webkit-box",
-                  WebkitLineClamp: 8,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {data.synopsis}
-              </p>
-            </div>
+      <div
+        className="small-card-container"
+        onMouseEnter={() => setIsVisible(true)}
+        onMouseLeave={() => setIsVisible(false)}
+        style={{position: "relative",
+                cursor: "pointer",
+                width: "170px",
+                height: "300px",
+                borderRadius: "5px"
+          }}
+      >
+      <img src="/img/player-big.svg" alt="play" className='play-big-btn'/>
+        <div
+          className='small-card'
+          onClick={handleRedirect}
+          style={{
+            width: "160px",
+            height: "300px", 
+            borderRadius: "5px",
+            overflow: "hidden",
+            position: "relative",
+          }}
+        >
+        
+          <Image
+            src={data?.images?.jpg.image_url}
+            width={150}
+            height={270} 
+            alt={data.title}
+            style={{ borderRadius: "5px",
+              width: "100%", 
+              height: "80%"
+             }}
+          />
+          <div className="title-data-container">
+          <h1 className="anime-small-tittle" 
+          style={{
+            fontSize: "12px",
+            color: "#ddd",
+            marginTop: "8px",
+            marginLeft: "10px",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "-webkit-box",
+            WebkitLineClamp: 1,
+            WebkitBoxOrient: "vertical",
+          }}
+          >
+            {data.title}
+          </h1>
+          <div className="aditional-info">
+          <p className="duration-small">{data.duration.replace(' per ep', '')}</p>
+          <p className="small-type">{data.type}</p>
           </div>
         </div>
-      );
-}
-
+        </div>
+  
+        {isVisible && (
+          <div
+            className="info-card"
+            style={{
+              position: "absolute",
+              top: "0",
+              left: "100px",
+              width: "320px", 
+              height: "270px", 
+              padding: "10px",
+              background: "rgba(25, 25, 25, 0.6)",
+              backdropFilter: "blur(12px)",
+              borderRadius: "12px",
+              color: "111",
+              boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.4)",
+              zIndex: 100,
+              display: "block",
+              pointerEvents: "none", 
+              opacity: 1,
+            }}
+          >
+            <h2 style={{ fontSize: "18px", fontWeight: "600", margin: "0 0 8px", color: "#fff" }}>{data.title}</h2>
+            <p style={{ fontSize: "13px", color: "#ddd", marginBottom: "6px" }}>
+              {data.episodes} Episodes | {data.year}
+            </p>
+            <div className="caracteistics">
+            <p
+              style={{
+                fontSize: "10px",
+                background: "#79a3b1",
+                padding: "4px 8px",
+                borderRadius: "3px",
+                display: "flex",
+                height: "24px",
+                alignItems: "center"
+              }}
+            >
+              {/**B0E3AF FFDD95 E3B5CD FFFFFF */}
+              <img src="/img/star.svg" alt="star" className='star'/>{data.score}
+            </p>
+            <p
+              style={{
+                fontSize: "10px",
+                background: "#a3b179",
+                padding: "4px 8px",
+                borderRadius: "3px",
+                display: "flex",
+                height: "24px",
+                alignItems: "center"
+              }}
+            >
+              {formatRating(data.rating)}
+            </p>
+            <p
+              style={{
+                fontSize: "10px",
+                background: "#FFFFFF",
+                padding: "4px 8px",
+                borderRadius: "3px",
+                display: "flex",
+                height: "24px",
+                alignItems: "center"
+              }}
+            >
+              <img src="/img/medal.svg" alt="star" className='medal'/>{data.rank}
+            </p>
+            <p
+              style={{
+                fontSize: "10px",
+                background: "#B0E3AF",
+                padding: "4px 8px",
+                borderRadius: "3px",
+                display: "flex",
+                height: "24px",
+                alignItems: "center"
+              }}
+            >
+            <img src="/img/heart.svg" alt="star" className='heart'/>{data.popularity}
+            </p>
+            <p
+              style={{
+                fontSize: "10px",
+                background: "#FFDD95",
+                padding: "4px 8px",
+                borderRadius: "3px",
+                display: "flex",
+                height: "24px",
+                alignItems: "center"
+              }}
+            >
+              <img src="/img/eye.svg" alt="star" className='eye'/>{data.members}
+            </p>
+            </div>
+            <p
+              style={{
+                fontSize: "12px",
+                color: "#ddd",
+                marginTop: "8px",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                display: "-webkit-box",
+                WebkitLineClamp: 5,
+                WebkitBoxOrient: "vertical",
+              }}
+            >
+              {data.synopsis}
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  }

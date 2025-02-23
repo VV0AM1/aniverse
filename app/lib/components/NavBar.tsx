@@ -74,7 +74,7 @@ const NavBar: React.FC = () => {
         </div>
         <div className="menu-container">
           <a href="/" className="logo">
-            EliteAnimeAcademy
+            AniBook.
           </a>
         </div>
         <div className="nav-btn-container">

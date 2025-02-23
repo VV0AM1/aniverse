@@ -252,6 +252,100 @@ html {
   scroll-behavior: smooth;
 }
 
+.info-card{
+  transition: ".5s";
+  animation: opacity .2s ease-in-out;
+}
+
+@keyframes opacity{
+  0%{
+    opacity: 0;
+  }
+  100%{
+    opacity: 1;
+  }
+}
+
+.title-data-container {
+  height: 50px;
+  width: 100%;
+  background: #23252b;
+  bottom: 25px;
+  text-align: start;
+  border-radius: 5px;
+  font-size: 16px;
+  position: absolute;
+  box-shadow: 0px -5px 12px 10px rgba(35,37,43,1);
+}
+
+.small-card-container:hover .small-card{
+  filter: blur(5px);
+  transition: .5s;
+}
+
+
+.small-card-container:hover .play-big-btn{
+  opacity: 1;
+  transition: .5s;
+}
+
+.caracteistics{
+  display: flex;
+  width: 110%;
+}
+
+.caracteistics p{
+  margin-right: 3px;
+}
+
+.play-big-btn{
+  position: absolute;
+  content: '';
+  width: 30px;
+  height: 30px;
+  z-index: 8;
+  left: 60px;
+  top: 100px;
+  opacity: 0;
+  transition: .5s;
+}
+
+
+
+.star{
+  margin-right: 5px;
+}
+
+.eye{
+  margin-right: 5px;
+}
+
+.heart{
+  margin-right: 5px;
+}
+
+.medal{
+  margin-right: 5px;
+}
+
+.small-card-container{
+  transition: .5s;
+}
+
+.aditional-info{
+  height: 25px;
+  width: 100%;
+  background: #23252b;
+  margin-top: 0;
+  top: 0;
+  font-size: 10px;
+  color: #5d5c5c;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
 .home-container {
   position: fixed; 
   inset: 0;
@@ -529,37 +623,11 @@ html {
 }
 
 
-.small-card {
-  perspective: 1000px;
-  width: 170px;
-  height: 280px;
-  margin-bottom: 20px;
-}
 
-.small-card-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  transition: transform 0.5s;
-}
-
-.small-card-container:hover {
-  transform: rotateY(180deg);
-}
-
-/* Front Side */
-.small-card-front {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-}
 
 .skeleton-card {
   width: 170px;
-  height: 280px;
+  height: 300px;
   border-radius: 8px;
 }
 
@@ -583,36 +651,8 @@ html {
   border-radius: 10px;
 }
 
-.small-cardTitle {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: #252528a7;
-  color: white;
-  font-size: 12px;
-  text-align: center;
-  padding: 5px 0;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-  backdrop-filter: blur(5px);
-}
 
-/* Back Side (Unchanged) */
-.small-card-hovered {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: #1a1a1a;
-  color: white;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  border-radius: 10px;
-  transform: rotateY(180deg);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-}
+
 .anime-container{
   color: #fff;
 }
@@ -625,19 +665,21 @@ html {
   left: 0;
   width: 110%;
   height: 110%;
-  background: #191919d9;
-  filter: blur(30px);
+  background: #0b0b0be6;
+  backdrop-filter: blur(8px);
 }
 
 .anime-img-container{
   position: relative;
   z-index: 3;
-  margin-top: 70px;
+  height: 90vh;
 }
 
 
 .img-anime{
   filter: brightness(90%);
+  margin-left: 12%;
+  margin-top: -5%;
 }
 
 .anime-info-container{

@@ -39,61 +39,52 @@ const Genre: React.FC<GenreProps> = ({ genre, animes, currentPages, lastPages, s
       </div>
 
       <div className="navigation-btn flex items-center gap-2">
-        <button 
-          className="navigation" 
-          onClick={() => handlePageChange(1)} 
-          disabled={currentPages === 1}
-        >
-          1
-        </button>
+  <button className="navigation" onClick={() => handlePageChange(1)} disabled={currentPages === 1}>
+    1
+  </button>
 
-        <button 
-          className="navigation" 
-          onClick={() => handlePageChange(currentPages)} 
-          disabled={currentPages > lastPages}
-        >
-          {currentPages}
-        </button>
+  {currentPages > 3 && <p className="dots">...</p>}
 
-        <button 
-          className="navigation" 
-          onClick={() => handlePageChange(currentPages + 1)} 
-          disabled={currentPages + 1 > lastPages}
-        >
-          {currentPages + 1}
-        </button>
+  {currentPages > 2 && (
+    <button className="navigation" onClick={() => handlePageChange(currentPages - 1)}>
+      {currentPages - 1}
+    </button>
+  )}
 
-        <button 
-          className="navigation" 
-          onClick={() => handlePageChange(currentPages + 2)} 
-          disabled={currentPages + 2 > lastPages}
-        >
-          {currentPages + 2}
-        </button>
+  {currentPages !== 1 && currentPages !== lastPages && (
+    <button className="navigation current-page" disabled>
+      {currentPages}
+    </button>
+  )}
 
-        <p className="dots">...</p>
+  {currentPages < lastPages - 1 && (
+    <button className="navigation" onClick={() => handlePageChange(currentPages + 1)}>
+      {currentPages + 1}
+    </button>
+  )}
 
-        <button 
-          className="navigation" 
-          onClick={() => handlePageChange(lastPages)}
-        >
-          {lastPages}
-        </button>
+  {currentPages < lastPages - 2 && <p className="dots">...</p>}
 
-        <input
-          className="page-input"
-          placeholder="Page"
-          value={inputPage}
-          onChange={(e) => setInputPage(e.target.value)}
-          min={1}
-          max={lastPages}
-        />
-        <button className="go-btn" onClick={handleGoToPage}>
-          Go
-        </button>
-      </div>
+  {lastPages > 1 && (
+    <button className="navigation" onClick={() => handlePageChange(lastPages)}>
+      {lastPages}
+    </button>
+  )}
 
-      <div className="genre-item-container grid grid-cols-5 gap-4">
+  <input
+    className="page-input"
+    placeholder="Page"
+    value={inputPage}
+    onChange={(e) => setInputPage(e.target.value)}
+    min={1}
+    max={lastPages}
+  />
+  <button className="go-btn" onClick={handleGoToPage}>
+    Go
+  </button>
+</div>
+
+      <div className="genre-item-container grid grid-cols-5 gap-2">
         {loading
         ? Array.from({ length: 25 }).map((_, index) => <SkeletonLoader key={index} />)
         : animes.map((anime, index) => <SmallCard key={index} data={anime} />)}

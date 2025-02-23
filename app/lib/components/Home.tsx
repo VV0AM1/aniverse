@@ -5,7 +5,7 @@ import "@/app/globals.css";
 
 const trendingAnime = [
   {
-    name: "DanDaDan",
+    name: "Jujutsu Kaisen",
     anime_id: 1,
     age: "+16",
     description:
@@ -13,36 +13,36 @@ const trendingAnime = [
     background_video: "/img/gojo.mp4",
   },
   {
-    name: "Blue Lock",
+    name: "Code Gease",
     anime_id: 2,
     age: "+16",
     description:
       "Blue Lock is a Japanese manga series written by Muneyuki Kaneshiro and illustrated by Yusuke Nomura. It’s a high-stakes sports drama that redefines the soccer genre with a unique and intense premise.",
-    background_video: "/img/codegeass.mp4",
+    background_video: "/img/solo.mp4",
   },
   {
-    name: "DanDaDan",
+    name: "Tokyo Ghoul",
     anime_id: 3,
-    age: "+16",
+    age: "+18",
     description:
       "Dandadan is a popular Japanese manga series written and illustrated by Yukinobu Tatsu. The story combines elements of supernatural action, romance, and comedy, creating a unique and engaging experience.",
-    background_video: "/img/kanekiken.mp4",
+    background_video: "/img/friren.mp4",
   },
   {
-    name: "Blue Lock",
+    name: "Demon Slayer",
     anime_id: 4,
     age: "+16",
     description:
       "Blue Lock is a Japanese manga series written by Muneyuki Kaneshiro and illustrated by Yusuke Nomura. It’s a high-stakes sports drama that redefines the soccer genre with a unique and intense premise.",
-    background_video: "/img/demonslayer.mp4",
+    background_video: "/img/itachi.mp4",
   },
   {
-    name: "Tower of God",
+    name: "Fate: Another Story",
     anime_id: 5,
     age: "+16",
     description:
       "Tower of God is a South Korean webtoon (manhwa) created by SIU (Slave In Utero). It’s an epic fantasy series that has captured readers worldwide with its intricate storytelling, vast world-building, and compelling characters.",
-    background_video: "/img/evergarden.mp4",
+    background_video: "/img/chainsaw.mp4",
   },
 ];
 

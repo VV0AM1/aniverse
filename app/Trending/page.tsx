@@ -2,74 +2,55 @@
 
 import NavBar from "@/app/lib/components/NavBar";
 import Trending from "@/app/lib/components/Trending";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { animeServices } from "@/app/lib/services/animes";
 
 export default function HomePage() {
   const [trendingAnimes, setTrendingAnimes] = useState<any[]>([]);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [lastPage, setLastPage] = useState<number>(1);
   const [loading, setLoading] = useState(false);
-  const [hasMorePages, setHasMorePages] = useState(true);
-  const observerRef = useRef<HTMLDivElement | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const fetchTrendingAnimes = async () => {
-    if (loading || !hasMorePages) return;
-
+  const fetchTrendingAnimes = async (page: number) => {
     setLoading(true);
+    setError(null);
 
     try {
-      const response = await animeServices.top(currentPage);
-
+      const response = await animeServices.top(page);
       if (response.status === 200) {
-        const fetchedAnimes = response.data.data;
-
-        if (fetchedAnimes.length === 0) {
-          setHasMorePages(false);
-        } else {
-          setTrendingAnimes((prevAnimes) => [...prevAnimes, ...fetchedAnimes]);
-          setCurrentPage((prevPage) => prevPage + 1);
-        }
+        setTrendingAnimes(response.data.data);
+        setLastPage(response.data.pagination.last_visible_page);
       } else {
-        setHasMorePages(false);
+        setError("Failed to fetch trending animes.");
       }
     } catch (error) {
       console.error("Error fetching trending anime data:", error);
+      setError("Failed to fetch trending animes.");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchTrendingAnimes();
+    fetchTrendingAnimes(currentPage);
   }, [currentPage]);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMorePages && !loading) {
-          setCurrentPage((prevPage) => prevPage + 1);
-        }
-      },
-      { threshold: 1.0 }
-    );
-
-    if (observerRef.current) {
-      observer.observe(observerRef.current);
-    }
-
-    return () => {
-      if (observerRef.current) {
-        observer.unobserve(observerRef.current);
-      }
-    };
-  }, [hasMorePages, loading]);
 
   return (
     <div>
       <NavBar />
-      <Trending animes={trendingAnimes} />
+      {error ? (
+        <p style={{ textAlign: "center", color: "red" }}>{error}</p>
+      ) : (
+        <Trending 
+          animes={trendingAnimes} 
+          currentPage={currentPage} 
+          lastPage={lastPage} 
+          setCurrentPage={setCurrentPage} 
+          loading={loading} // Pass the loading state
+        />
+      )}
       {loading && <p style={{ textAlign: "center", color: "#fff" }}>Loading...</p>}
-      <div ref={observerRef} style={{ height: "1px", margin: "10px 0" }}></div>
     </div>
   );
 }

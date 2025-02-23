@@ -102,18 +102,19 @@ function AnimeContent(){
   const formattedScoredNum = formatNumber(scoredNum);
 
   return (
-    <div className="anime-container h-screen w-full flex items-center flex-col">
-      <div className="anime-img-container w-full flex items-center justify-center"
-      style={{
+    <div className="anime-container w-full flex items-center flex-col">
+      <div className="anime-img-container w-full flex items-center"
+        style={{
           backgroundImage: `url(${trailerImageUrl})`,
           backgroundSize: "cover",
           backgroundRepeat: "no repeat",
           backgroundPosition: "center",
-      }}>
+        }}>
         <img src={image_url || ""} alt={`${title} Poster`} className="img-anime"
         style={{
           height: 300,
-          zIndex: 5
+          zIndex: 5,
+          borderRadius: 15
         }}
         />
       </div>
