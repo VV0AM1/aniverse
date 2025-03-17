@@ -536,11 +536,11 @@ html {
   text-align: start;
   font-family: "Bebas Neue", serif;
   font-weight: 400;
+  margin-bottom: 0;
 }
 
 .karusel-title{
   font-size: 42px;
-  margin-top: 40px;
   margin-left: 50px;
   font-family: "Bebas Neue", serif;
   font-weight: 500;
@@ -549,7 +549,7 @@ html {
 .karusel-items-container{
   width: 100%;
   margin: 0;  
-  margin-top: 10px;
+  
   transition: transform 0.5s ease-in-out
 }
 
