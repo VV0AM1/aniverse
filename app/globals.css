@@ -544,12 +544,13 @@ html {
   margin-left: 50px;
   font-family: "Bebas Neue", serif;
   font-weight: 500;
+  margin-top: 40px;
 }
 
 .karusel-items-container{
   width: 100%;
   margin: 0;  
-  
+
   transition: transform 0.5s ease-in-out
 }
 
