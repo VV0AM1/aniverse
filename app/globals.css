@@ -450,8 +450,8 @@ html {
   height: 80vh;
   position: relative; 
   margin: 0;
-  top: 100vh; 
-  z-index: 1;
+  top: 105vh; 
+  z-index: 0;
   padding-top: 20px; 
 
 }
@@ -539,7 +539,7 @@ html {
 
 .karusel-title{
   font-size: 42px;
-  margin-top: 70px;
+  margin-top: 40px;
   margin-left: 50px;
   font-family: "Bebas Neue", serif;
   font-weight: 500;
