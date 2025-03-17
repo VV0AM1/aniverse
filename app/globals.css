@@ -458,11 +458,11 @@ html {
 
 .top-section-container{
   z-index: 1;
-  top: 190vh;
+  top: 180vh;
   width: 100vw;
   justify-content: center;
   position: absolute;
-  height: 100vh;
+  height: 105vh;
   margin-right: 10px;
   background: #23252b;
 }
