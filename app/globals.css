@@ -446,6 +446,7 @@ html {
 .karusel-container {
   width: 190vw; 
   overflow-x: hidden;
+  overflow-y: hidden;
   background: #121316;
   height: 80vh;
   position: relative; 
