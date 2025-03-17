@@ -452,7 +452,7 @@ html {
   position: relative; 
   margin: 0;
   top: 105vh; 
-  z-index: 0;
+  z-index: 2;
   padding-top: 20px; 
 
 }
