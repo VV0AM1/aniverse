@@ -15,7 +15,12 @@ export default function SmallCard({
             jpg: { image_url: string; large_image_url: string; small_image_url: string };
             webp: { image_url: string; large_image_url: string; small_image_url: string };
         };
+        aired: {
+          string: string
+        }
         genres: { name: string }[];
+        titles: { type: string; title: string }[];
+        status: string;
         synopsis: string;
         score: string;
         year: string;
@@ -37,6 +42,9 @@ export default function SmallCard({
 }) {
     const [isVisible, setIsVisible] = useState(false);
     const router = useRouter();
+
+    const japaneseTitle = data.titles.find(t => t.type === "Japanese")?.title || "N/A";
+
 
     const handleRedirect = () => {
         router.push(
@@ -158,7 +166,6 @@ export default function SmallCard({
                 alignItems: "center"
               }}
             >
-              {/**B0E3AF FFDD95 E3B5CD FFFFFF */}
               <img src="/img/star.svg" alt="star" className='star'/>{data.score}
             </p>
             <p
@@ -222,12 +229,15 @@ export default function SmallCard({
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 display: "-webkit-box",
-                WebkitLineClamp: 5,
+                WebkitLineClamp: 3,
                 WebkitBoxOrient: "vertical",
               }}
             >
               {data.synopsis}
             </p>
+
+              <p>{japaneseTitle}</p>
+
           </div>
         )}
       </div>

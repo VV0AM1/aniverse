@@ -27,5 +27,17 @@ export const animeServices = {
     },
     getAnimeByName: (name:any) => {
         return api.get(`https://api.jikan.moe/v4/anime?q=${name}`);
-    }
+    },
+    getAnimeUpcoming: (page = 1) => {
+        return api.get(`/seasons/upcoming?page=${page}`)
+    },
+    getAnimeAiring: (page = 1) => {
+        return api.get(`/seasons/now?page=${page}`)
+    },
+    getTopCharacters: (page = 1) => {
+        return api.get(`/top/characters?page=${page}`)
+    },
+    getTopManga: (page = 1) => {
+        return api.get(`/top/manga?page=${page}`)
+    }  
 }

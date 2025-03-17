@@ -447,7 +447,7 @@ html {
   width: 190vw; 
   overflow-x: hidden;
   background: #121316;
-  height: 100vh;
+  height: 80vh;
   position: relative; 
   margin: 0;
   top: 100vh; 
@@ -456,6 +456,77 @@ html {
 
 }
 
+.top-section-container{
+  z-index: 1;
+  top: 180vh;
+  width: 100vw;
+  justify-content: center;
+  position: absolute;
+  height: 100vh;
+  margin-right: 10px;
+  background: #23252b;
+}
+
+.top-card-container{
+  display: flex;
+  position: relative;
+  width: 350px;
+  height: 80px;
+  margin-bottom: 20px;
+  margin-top: 10px;
+}
+
+.top-card-info{
+  flex-direction: column;
+  width: 250px;
+  justify-content: center;
+  height: 100%;
+}
+
+.top-card-description{
+  width: 65px;
+  height: 15px;
+  margin-left: 5%;
+  margin-top: 5px;
+  font-weight: 600;
+
+}
+
+.top-section-container h1{
+  color: #fff;
+  font-size: 20px;
+  font-weight: 500;
+  margin-top: 60px;
+  margin-left: -10px;
+  margin-bottom: 25px;
+  color: #972eb7;
+}
+
+.top-card-container::after{
+  position: absolute;
+  bottom: -21px;
+  left: -5px;
+  content: '';
+  width: 90%;
+  height: 1px;
+  background: #5d5c5c;
+}
+
+.top-title-home{
+  width: 70%;
+  margin-left: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+  transition: .5s;
+
+}
+
+.top-title-home:hover{
+  color: #972eb7;
+  transition: .5s;
+}
 
 .karusel-title-container{
   width: 100%;
