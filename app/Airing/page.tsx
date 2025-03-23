@@ -1,25 +1,25 @@
 "use client";
 
 import NavBar from "@/app/lib/components/NavBar";
-import Trending from "@/app/lib/components/Trending";
+import Airing from "@/app/lib/components/Airing";
 import { useEffect, useState } from "react";
 import { animeServices } from "@/app/lib/services/animes";
 
 export default function HomePage() {
-  const [trendingAnimes, setTrendingAnimes] = useState<any[]>([]);
+  const [airingAnimes, setAiringAnimes] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [lastPage, setLastPage] = useState<number>(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchTrendingAnimes = async (page: number) => {
+  const fetchAiringAnimes = async (page: number) => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await animeServices.top(page);
+      const response = await animeServices.getAnimeAiring(page);
       if (response.status === 200) {
-        setTrendingAnimes(response.data.data);
+        setAiringAnimes(response.data.data);
         setLastPage(response.data.pagination.last_visible_page);
       } else {
         setError("Failed to fetch trending animes.");
@@ -33,7 +33,7 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    fetchTrendingAnimes(currentPage);
+    fetchAiringAnimes(currentPage);
   }, [currentPage]);
 
   return (
@@ -42,8 +42,8 @@ export default function HomePage() {
       {error ? (
         <p style={{ textAlign: "center", color: "red" }}>{error}</p>
       ) : (
-        <Trending 
-          animes={trendingAnimes} 
+        <Airing 
+          animes={airingAnimes} 
           currentPage={currentPage} 
           lastPage={lastPage} 
           setCurrentPage={setCurrentPage} 

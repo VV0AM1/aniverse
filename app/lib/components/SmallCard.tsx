@@ -137,7 +137,7 @@ export default function SmallCard({
               top: "0",
               left: "100px",
               width: "320px", 
-              height: "270px", 
+              height: "300px", 
               padding: "10px",
               background: "rgba(25, 25, 25, 0.6)",
               backdropFilter: "blur(12px)",
@@ -150,7 +150,20 @@ export default function SmallCard({
               opacity: 1,
             }}
           >
-            <h2 style={{ fontSize: "18px", fontWeight: "600", margin: "0 0 8px", color: "#fff" }}>{data.title}</h2>
+            <h2
+              style={{
+                fontSize: "18px",
+                fontWeight: 600,
+                margin: "0 0 8px",
+                color: "#fff",
+                display: "-webkit-box",
+                WebkitBoxOrient: "vertical",
+                WebkitLineClamp: 2,
+                overflow: "hidden",
+              }}
+            >
+              {data.title}
+            </h2>
             <p style={{ fontSize: "13px", color: "#ddd", marginBottom: "6px" }}>
               {data.episodes} Episodes | {data.year}
             </p>
@@ -235,9 +248,17 @@ export default function SmallCard({
             >
               {data.synopsis}
             </p>
-
-              <p>{japaneseTitle}</p>
-
+              <div className="additional-info-container flex flex-col mt-2">
+                <p className='additional-info'><b style={{
+                  fontSize: "12px",
+                }}>Japanese: </b>{japaneseTitle}</p>
+                <p className='additional-info'><b style={{
+                  fontSize: "12px",
+                }}>Aired: </b>  {data.aired.string?.split(" to ")[0]}</p>
+                <p className='additional-info'><b style={{
+                  fontSize: "12px",
+                }}>Status: </b>{data.status}</p>
+              </div>
           </div>
         )}
       </div>

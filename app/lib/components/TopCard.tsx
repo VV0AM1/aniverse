@@ -49,16 +49,29 @@ export default function TopCard({
                 style={{
                     fontSize: "10px",
                     background: "#FFDD95",
-                    padding: "1px 2px",
                     borderRadius: "3px",
                     display: "flex",
                     justifyContent: "center",
-                    height: "24px",
+                    height: "20px",
                     alignItems: "center"
                 
                 }}
                 >
                     CC: {data.episodes ? `${data.episodes} EP` : data.chapters ? `${data.chapters} CH` : "??"}                
+                    </p>
+                    <p className="top-card-description"
+                style={{
+                    fontSize: "10px",
+                    background: "#972eb7",
+                    borderRadius: "3px",
+                    display: "flex",
+                    justifyContent: "center",
+                    height: "20px",
+                    alignItems: "center"
+                
+                }}
+                >
+                    <img src="/img/small-start.svg" alt="star" className='star'/>{data.score || data.favorites}              
                     </p>
             </div>
         </div>

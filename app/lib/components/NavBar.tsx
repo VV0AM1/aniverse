@@ -183,8 +183,8 @@ const NavBar: React.FC = () => {
             </a>
           </div>
           <div className="menu-item-container">
-            <a href="" className="menu-item">
-              New In
+            <a href="/Airing" className="menu-item">
+              Airing
             </a>
           </div>
           <div className="menu-item-container">

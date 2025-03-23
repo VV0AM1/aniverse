@@ -8,40 +8,45 @@ const trendingAnime = [
     name: "Jujutsu Kaisen",
     anime_id: 1,
     age: "+16",
+    logo: "/img/juju-logo.png",
     description:
-      "Dandadan is a popular Japanese manga series written and illustrated by Yukinobu Tatsu. The story combines elements of supernatural action, romance, and comedy, creating a unique and engaging experience.",
+      "A thrilling dark fantasy anime that follows Yuji Itadori as he battles curses and uncovers the secrets of Jujutsu sorcery.",
     background_video: "/img/gojosatoru.mp4",
   },
   {
-    name: "Code Gease",
+    name: "Solo Leveling",
     anime_id: 2,
     age: "+16",
+    logo: "/img/solo-logo.png",
     description:
-      "Blue Lock is a Japanese manga series written by Muneyuki Kaneshiro and illustrated by Yusuke Nomura. It’s a high-stakes sports drama that redefines the soccer genre with a unique and intense premise.",
+      "An action-packed series about Sung Jin-Woo, a weak hunter who gains incredible powers and rises to the top.",
     background_video: "/img/solo.mp4",
   },
   {
-    name: "Tokyo Ghoul",
+    name: "Friren",
     anime_id: 3,
     age: "+18",
+    logo: "/img/friren-logo.png",
     description:
-      "Dandadan is a popular Japanese manga series written and illustrated by Yukinobu Tatsu. The story combines elements of supernatural action, romance, and comedy, creating a unique and engaging experience.",
+      "A beautifully crafted fantasy anime that explores the journey of an elven mage, reflecting on the passage of time and lost friendships.",
     background_video: "/img/friren.mp4",
   },
   {
-    name: "Demon Slayer",
+    name: "Naruto Shippuden",
     anime_id: 4,
     age: "+16",
+    logo: "/img/naruto-logo.png",
     description:
-      "Blue Lock is a Japanese manga series written by Muneyuki Kaneshiro and illustrated by Yusuke Nomura. It’s a high-stakes sports drama that redefines the soccer genre with a unique and intense premise.",
+      "The legendary continuation of Naruto’s journey, filled with epic battles, emotional moments, and the pursuit of becoming Hokage.",
     background_video: "/img/itachi.mp4",
   },
   {
-    name: "Fate: Another Story",
+    name: "Chainsaw Man",
     anime_id: 5,
     age: "+16",
+    logo: "/img/chainsaw-logo.png",
     description:
-      "Tower of God is a South Korean webtoon (manhwa) created by SIU (Slave In Utero). It’s an epic fantasy series that has captured readers worldwide with its intricate storytelling, vast world-building, and compelling characters.",
+      "A dark and brutal action anime about Denji, a devil hunter with the power of a chainsaw, facing off against terrifying devils.",
     background_video: "/img/chainsaw.mp4",
   },
 ];
@@ -82,11 +87,12 @@ export default function Home({ children }: { children: ReactNode }) {
         }`}
       >
         <div className="anime-info p-6 text-white">
+          <img src={anime.logo} alt="" className="mb-3" />
           <p className="trendingAnimeAge">{anime.age}</p>
           <p className="trendingAnimeDescription">{anime.description}</p>
           <button className="anime-button flex items-center gap-2 text-white px-4 py-2 rounded-lg">
             <img src="/img/player-play.svg" alt="Play Icon" className="w-5 h-5" />
-            Watch S1 E1
+            See More
           </button>
         </div>
       </div>
