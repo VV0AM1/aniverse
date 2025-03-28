@@ -65,7 +65,6 @@ body {
 
 .nav-btn-container button{
   height: 100%;
-  background-color: #121316;
 }
 
 .nav-btn {
@@ -453,14 +452,17 @@ html {
 
 }
 
+#top-col{
+  width: 22%;
+}
+
 .top-section-container{
   z-index: 1;
   top: 185vh;
-  width: 100vw;
+  width: 100%;
   justify-content: center;
   position: absolute;
   height: 105vh;
-  margin-right: 10px;
   background: #23252b;
 }
 
@@ -537,8 +539,10 @@ html {
   background: #5d5c5c;
 }
 
+
+
 .top-title-home{
-  width: 70%;
+  width: 200px;
   margin-left: 10px;
   font-size: 14px;
   font-weight: 500;

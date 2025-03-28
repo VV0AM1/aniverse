@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import SmallCard from "./SmallCard";
 import SkeletonLoader from "./Skeleton"; 
 
-interface AiringProps {
+interface UpcomingProps {
   animes: any[];
   currentPage: number;
   lastPage: number;
@@ -12,7 +12,7 @@ interface AiringProps {
   loading: boolean;
 }
 
-const Airing: React.FC<AiringProps> = ({ animes, currentPage, lastPage, setCurrentPage, loading }) => {
+const Upcoming: React.FC<UpcomingProps> = ({ animes, currentPage, lastPage, setCurrentPage, loading }) => {
   const [inputPage, setInputPage] = useState<number | string>("");
 
   const handlePageChange = (page: number) => {
@@ -90,4 +90,4 @@ const Airing: React.FC<AiringProps> = ({ animes, currentPage, lastPage, setCurre
   );
 };
 
-export default Airing;
+export default Upcoming;
