@@ -778,6 +778,30 @@ html {
   height: 90vh;
 }
 
+.anime-page-img-container{
+  height: 100%;
+  width: 25%;
+  align-items: center;
+  justify-content: end;
+}
+
+.anime-page-info{
+  width: 70%;
+  height: 100%;
+  color: #fff;
+  z-index: 5;
+}
+.anime-page-tittle{
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.aime-page-detailed-info{
+  background-image: linear-gradient(to right, #8c5cf6, #a158f6, #b453f4, #c64ef2, #d847ef);
+  color: #fff;
+  width: 60px;
+  justify-content: center;
+}
 
 .img-anime{
   filter: brightness(90%);

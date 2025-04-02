@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Card from "./Card";
+import SkeletonCard from "./SkeletonCard";
 
 interface KaruselProps {
   animes: any[];
@@ -47,9 +48,9 @@ const Karusel: React.FC<KaruselProps> = ({ animes }) => {
           transition: "transform 0.5s ease-in-out",
         }}
       >
-        {animes.map((anime, index) => (
-          <Card key={index} data={anime} />
-        ))}
+        {animes.length > 0
+          ? animes.map((anime, index) => <Card key={index} data={anime} />)
+          : [...Array(5)].map((_, index) => <SkeletonCard key={index} />)}
       </div>
     </div>
   );

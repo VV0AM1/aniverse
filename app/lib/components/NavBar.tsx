@@ -101,7 +101,7 @@ const NavBar: React.FC = () => {
           <a href="#" className="nav-btn">News</a>
         </div>
         <div className="menu-container">
-          <a href="/" className="logo">AniBook.</a>
+          <a href="/" className="logo">AniVere</a>
         </div>
         <div className="nav-btn-container">
           <button id="nav-btn-search" className="nav-btn" onClick={toggleSearch}>

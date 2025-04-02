@@ -31,6 +31,7 @@ function AnimeContent(){
   const rating = searchParams.get("rating");
   const scoredNum = searchParams.get("scored_by");
   const malID = searchParams.get("mal_id");
+  const type = searchParams.get("type");
 
   const [mainCharacters, setMainCharacters] = useState<any[]>([]);
   const [supportingCharacters, setSupportingCharacters] = useState<any[]>([]);
@@ -54,7 +55,7 @@ function AnimeContent(){
           console.log("Main Characters Array:", main);
 
           const support = allCharacters.filter((char: any) => char.role === "Supporting").slice(0, 5);
-          console.log("Main Characters Array:", support);
+          console.log("Support Characters Array:", support);
 
           const mainDetails = [];
           for (const char of main) {
@@ -104,12 +105,14 @@ function AnimeContent(){
   return (
     <div className="anime-container w-full flex items-center flex-col">
       <div className="anime-img-container w-full flex items-center"
-        style={{
-          backgroundImage: `url(${trailerImageUrl})`,
-          backgroundSize: "cover",
-          backgroundRepeat: "no repeat",
-          backgroundPosition: "center",
-        }}>
+          style={{
+            backgroundImage: `url("/img/back-amime.jpg")`, 
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
+          }}
+        >
+        <div className="anime-page-img-container flex mr-4">
         <img src={image_url || ""} alt={`${title} Poster`} className="img-anime"
         style={{
           height: 300,
@@ -117,6 +120,24 @@ function AnimeContent(){
           borderRadius: 15
         }}
         />
+        </div>
+        <div className="anime-page-info flex flex-col justify-center">
+          <h1 className="anime-page-tittle">{title}</h1>
+          <div className="anime-page-detailed-info-container">
+          <p className="aime-page-detailed-info"
+              style={{
+                fontSize: "14px",
+                padding: "4px 8px",
+                borderRadius: "3px",
+                display: "flex",
+                height: "28px",
+                alignItems: "center"
+              }}
+            >
+              {type}
+            </p>
+          </div>
+        </div>
       </div>
       <div className="anime-info-container flex w-4/5">
         <div className="anime-text-info-container w-2/3">

@@ -58,7 +58,7 @@ export default function SmallCard({
                 data.studios.map((s) => s.name).join(', ')
             )}&trailerImageUrl=${encodeURIComponent(
                 data.trailer.images.medium_image_url
-            )}&trailerUrl=${encodeURIComponent(data.trailer.url)}&rating=${data.rating}&scored_by=${data.scored_by}`
+            )}&trailerUrl=${encodeURIComponent(data.trailer.url)}&rating=${data.rating}&scored_by=${data.scored_by}&type=${data.type}`
         );
     };
 
