@@ -39,5 +39,9 @@ export const animeServices = {
     },
     getTopManga: (page = 1) => {
         return api.get(`/top/manga?page=${page}`)
+    },
+    geManga: (page = 1) => {
+        return api.get(`/manga?page=${page}`)
     }  
+
 }

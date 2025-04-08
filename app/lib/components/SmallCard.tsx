@@ -18,13 +18,18 @@ export default function SmallCard({
         aired: {
           string: string
         }
+        published: {
+          string: string
+        }
         genres: { name: string }[];
         titles: { type: string; title: string }[];
         status: string;
         synopsis: string;
         score: string;
         year: string;
+        chapters: string;
         duration: string;
+        volumes: string;
         rating: string;
         type: string;
         rank: string;
@@ -47,26 +52,15 @@ export default function SmallCard({
 
 
     const handleRedirect = () => {
-        router.push(
-            `/Anime?mal_id=${encodeURIComponent(data.mal_id)}&title=${encodeURIComponent(data.title)}&episodes=${data.episodes}&image_url=${encodeURIComponent(
-                data.images.jpg.large_image_url
-            )}&synopsis=${encodeURIComponent(data.synopsis)}&score=${data.score}&year=${data.year}&genres=${encodeURIComponent(
-                data.genres.map((g) => g.name).join(', ')
-            )}&producers=${encodeURIComponent(
-                data.producers.map((p) => p.name).join(', ')
-            )}&studios=${encodeURIComponent(
-                data.studios.map((s) => s.name).join(', ')
-            )}&trailerImageUrl=${encodeURIComponent(
-                data.trailer.images.medium_image_url
-            )}&trailerUrl=${encodeURIComponent(data.trailer.url)}&rating=${data.rating}&scored_by=${data.scored_by}&type=${data.type}`
-        );
+      router.push(`/animes/${data.mal_id}`)
     };
 
     const genreNames = data.genres ? data.genres.map((genre) => genre.name).join(', ') : 'No genres available';
 
     const isLastInRow = (index + 1) % 5 === 0;
 
-    const formatRating = (rating: string) => {
+    const formatRating = (rating?: string) => {
+      if (!rating) return "14+";
       return rating.replace(/(-.{3}).*/, "$1");
     };
 
@@ -123,8 +117,12 @@ export default function SmallCard({
             {data.title}
           </h1>
           <div className="aditional-info">
-          <p className="duration-small">{data.duration.replace(' per ep', '')}</p>
-          <p className="small-type">{data.type}</p>
+            <p className="duration-small">
+            {data.duration
+            ? data.duration.replace(' per ep', '')
+            : `${data.volumes} per chapter`}
+            </p>
+            <p className="small-type">{data.type}</p>
           </div>
         </div>
         </div>
@@ -165,7 +163,7 @@ export default function SmallCard({
               {data.title}
             </h2>
             <p style={{ fontSize: "13px", color: "#ddd", marginBottom: "6px" }}>
-              {data.episodes} Episodes | {data.year}
+              {data.episodes ? `${data.episodes} Episodes` : `${data.chapters} Chapters`} | {data.year}
             </p>
             <div className="caracteistics">
             <p
@@ -254,7 +252,7 @@ export default function SmallCard({
                 }}>Japanese: </b>{japaneseTitle}</p>
                 <p className='additional-info'><b style={{
                   fontSize: "12px",
-                }}>Aired: </b>  {data.aired.string?.split(" to ")[0]}</p>
+                }}>Aired: </b> {data.aired?.string ? data.aired.string.split(" to ")[0] : data.published?.string}</p>
                 <p className='additional-info'><b style={{
                   fontSize: "12px",
                 }}>Status: </b>{data.status}</p>
