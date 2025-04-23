@@ -24,37 +24,33 @@ const Review = forwardRef(({ mal_id }: ReviewProps, ref) => {
     fetchData();
   }, [mal_id]);
 
-  useImperativeHandle(ref, () => ({
-    scrollLeft: () => {
-      scrollRef.current?.scrollBy({ left: -450, behavior: "smooth" });
-    },
-    scrollRight: () => {
-      scrollRef.current?.scrollBy({ left: 450, behavior: "smooth" });
-    },
-  }));
+
 
   if (!reviewData || reviewData.length === 0) {
     return <div>Loading reviews...</div>;
   }
 
   return (
+    
     <div
-      ref={scrollRef}
       className="reviews-component-container flex overflow-x-auto scroll-smooth no-scrollbar"
     >
       {reviewData.slice(0, 12).map((review: any, index: number) => {
         const { review: text, user, score } = review;
-
         return (
           <div
             key={index}
             className="review-card bg-[#1c1c1c] text-white rounded-xl p-4 flex flex-col justify-between mr-4"
             style={{ width: "450px", height: "250px" }}
           >
-            <div className="text-gray-400 text-3xl mb-2">“</div>
-            <p className="text-sm text-white leading-snug mb-4 line-clamp-4">
+            <div className="text-gray-400 text-5xl mb-2">“</div>
+            
+            <div className="text-review-xontainer flex justify-center">
+            <p className="review-text text-sm text-gray-300 leading-snug mb-4 line-clamp-4">
               {text}
             </p>
+            </div>
+
 
             <div className="flex items-center justify-between mt-auto">
               <div className="flex items-center gap-2">

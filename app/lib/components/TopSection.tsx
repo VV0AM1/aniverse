@@ -23,7 +23,7 @@ const TopSection: React.FC<TopProps> = ({ upcomingAnimes, airingAnimes, topChara
   return (
     <div className="top-section-container flex">
       <div id="top-col" className="top-upcoming-col flex flex-col">
-        <h1 className="top-title-home">Top Upcoming</h1>
+        <h1 className="top-title-home-col">Top Upcoming</h1>
         {loading
           ? [...Array(5)].map((_, index) => <TopSkeletonLoader key={index} />)
           : upcomingAnimes.slice(0, 5).map((anime, index) => (
@@ -32,7 +32,7 @@ const TopSection: React.FC<TopProps> = ({ upcomingAnimes, airingAnimes, topChara
       </div>
 
       <div id="top-col" className="top-airing-col flex flex-col">
-        <h1 className="top-title-home">Top Airing</h1>
+        <h1 className="top-title-home-col">Top Airing</h1>
         {loading
           ? [...Array(5)].map((_, index) => <TopSkeletonLoader key={index} />)
           : airingAnimes.slice(0, 5).map((anime, index) => (
@@ -41,7 +41,7 @@ const TopSection: React.FC<TopProps> = ({ upcomingAnimes, airingAnimes, topChara
       </div>
 
       <div id="top-col" className="fav-character-col flex flex-col">
-        <h1 className="top-title-home">Favorite Characters</h1>
+        <h1 className="top-title-home-col">Favorite Characters</h1>
         {loading
           ? [...Array(5)].map((_, index) => <TopSkeletonLoader key={index} />) 
           : topCharacters.slice(0, 5).map((anime, index) => (
@@ -50,7 +50,7 @@ const TopSection: React.FC<TopProps> = ({ upcomingAnimes, airingAnimes, topChara
       </div>
 
       <div id="top-col" className="fav-manga-col flex flex-col">
-        <h1 className="top-title-home">Favorite Manga</h1>
+        <h1 className="top-title-home-col">Favorite Manga</h1>
         {loading
           ? [...Array(5)].map((_, index) => <TopSkeletonLoader key={index} />) 
           : topManga.slice(0, 5).map((anime, index) => (

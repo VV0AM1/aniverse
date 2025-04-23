@@ -24,6 +24,7 @@ const Karusel: React.FC<KaruselProps> = ({ animes }) => {
   };
 
   return (
+    
     <div className="karusel-container flex flex-col">
       <div className="karusel-title-container">
         <h1 className="karusel-title">Top Animes Of All Time</h1>

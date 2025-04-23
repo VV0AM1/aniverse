@@ -6,6 +6,8 @@ import "./globals.css";
 import Home from "./lib/components/Home";
 import Karusel from "./lib/components/Karusel";
 import TopSection from "./lib/components/TopSection";
+import Socials from "./lib/components/Socials";
+
 import { useEffect, useState } from "react";
 import { animeServices } from "./lib/services/animes";
 
@@ -91,6 +93,7 @@ export default function HomePage() {
       <div>
         <TopSection upcomingAnimes={upcomingAnimes} airingAnimes={airingAnimes} topCharacters={topCharacters} topManga={topManga}/>
       </div>
+      <Socials />
     </div>
   );
 }

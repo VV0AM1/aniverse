@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { animeServices } from "@/app/lib/services/animes";
 import Link from "next/link";
-import SkeletonLoader from "./SkeletonLoader"; // Import skeleton loader
+import SkeletonLoader from "./SkeletonLoader"; 
 
 const NavBar: React.FC = () => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
@@ -34,7 +34,6 @@ const NavBar: React.FC = () => {
     const searchButton = document.getElementById("nav-btn-search");
     const searchIcon = document.getElementById("nav-icon-search");
   
-    // Close Menu if clicking outside of it AND not on Catalog button
     if (
       menuRef.current &&
       !menuRef.current.contains(event.target as Node) &&
@@ -43,7 +42,6 @@ const NavBar: React.FC = () => {
       setIsMenuVisible(false);
     }
   
-    // Close Search if clicking outside of it
     if (
       searchRef.current &&
       !searchRef.current.contains(event.target as Node) &&
@@ -121,7 +119,7 @@ const NavBar: React.FC = () => {
           <a href="#" className="nav-btn">News</a>
         </div>
         <div className="menu-container">
-          <a href="/" className="logo">AniVere</a>
+          <a href="/" className="logo">AniVerse</a>
         </div>
         <div className="nav-btn-container">
           <button id="nav-btn-search" className="nav-btn" onClick={toggleSearch}>

@@ -52,7 +52,11 @@ export default function SmallCard({
 
 
     const handleRedirect = () => {
-      router.push(`/animes/${data.mal_id}`)
+      if ("episodes" in data && typeof data.episodes !== "undefined") {
+        router.push(`/animes/${data.mal_id}`);
+      } else if ("chapters" in data && typeof data.chapters !== "undefined") {
+        router.push(`/mangas/${data.mal_id}`);
+      }
     };
 
     const genreNames = data.genres ? data.genres.map((genre) => genre.name).join(', ') : 'No genres available';

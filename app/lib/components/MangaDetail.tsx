@@ -3,28 +3,28 @@ import React, { useEffect, useState, forwardRef, useImperativeHandle, useRef } f
 import { useParams } from "next/navigation";
 import { animeServices } from "@/app/lib/services/animes";
 import Image from 'next/image';
-import Character from "./Character";
+import MangaChar from "./MangaChar";
 import Review from "./Review"
-import AnimeSocials from "./AnimeSocials";
 
 
-export default function Anime() {
+
+export default function MangaDetailed() {
   const { mal_id } = useParams();
-  const [animeData, setAnimeData] = useState<any>(null);
+  const [mangaData, setMangaData] = useState<any>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   if (!mal_id || Array.isArray(mal_id)) {
     return <div>Invalid anime ID</div>;
   }
 
-  const animeId = String(mal_id);
+  const mangaID = String(mal_id);
 
   useEffect(() => {
     
     const fetchData = async () => {
       try {
-        const animeRes = await animeServices.getByIdFull(String(mal_id));
-        setAnimeData(animeRes.data.data);
+        const mangaRes = await animeServices.getMangaById(String(mal_id));
+        setMangaData(mangaRes.data.data);
       } catch (error) {
         console.error("Error fetching anime details:", error);
       }
@@ -35,7 +35,7 @@ export default function Anime() {
 
 
 
-  if (!animeData) {
+  if (!mangaData) {
     return <div>Loading...</div>;
   }
 
@@ -46,10 +46,10 @@ export default function Anime() {
                 <div className="inner-anime-content">
                     <div className="anime-detailed-image-container">
                     <Image
-                        src={animeData?.images?.jpg.image_url}
+                        src={mangaData?.images?.jpg.image_url}
                         width={170}
                         height={240} 
-                        alt={animeData.title}
+                        alt={mangaData.title}
                         style={{ borderRadius: "15px",
                         width: "170px", 
                         height: "240px"
@@ -57,7 +57,7 @@ export default function Anime() {
                     />
                     </div>
                     <div className="anime-detailed-text-content flex flex-col">
-                        <p className="anime-detailed-title mb-1">{animeData.title}</p>
+                        <p className="anime-detailed-title mb-1">{mangaData.title}</p>
                         <div className="anime-detailed-category-container flex">
                         <p
                         style={{
@@ -70,7 +70,7 @@ export default function Anime() {
                             alignItems: "center"
                         }}
                         >
-                        <img src="/img/star-white.svg" alt="star" className='star'/>{animeData.score}
+                        <img src="/img/star-white.svg" alt="star" className='star'/>{mangaData.score}
                         </p>
                         <p
                         style={{
@@ -83,9 +83,9 @@ export default function Anime() {
                             alignItems: "center"
                         }}
                         >
-                            {animeData.duration
-                                ? animeData.duration
-                                : `${animeData.volumes} per chapter`}
+                            {mangaData.duration
+                                ? mangaData.duration
+                                : `${mangaData.volumes} per chapter`}
                         </p>
                         <p
                         style={{
@@ -98,7 +98,7 @@ export default function Anime() {
                             alignItems: "center"
                         }}
                         >
-                            {animeData.episodes ? `${animeData.episodes} Episodes` : `${animeData.chapters} Chapters`}
+                            {mangaData.episodes ? `${mangaData.episodes} Episodes` : `${mangaData.chapters} Chapters`}
                         </p>
                         <p
                         style={{
@@ -111,7 +111,7 @@ export default function Anime() {
                             alignItems: "center"
                         }}
                         >
-                            {animeData.type}
+                            {mangaData.type}
                         </p>
                         <p
                         style={{
@@ -124,7 +124,7 @@ export default function Anime() {
                             alignItems: "center"
                         }}
                         >
-                            <img src="/img/heart-white.svg" alt="star" className='star'/>{animeData.members}
+                            <img src="/img/heart-white.svg" alt="star" className='star'/>{mangaData.members}
                         </p>
                         </div>
                         <div className="anime-detailed-buttons-container flex mt-2">
@@ -156,10 +156,10 @@ export default function Anime() {
                         </p>
                         </div>
                         <p className="anime-detailed-description">
-                            {animeData.synopsis}
+                            {mangaData.synopsis}
                         </p>
                         <div className="anime-detailed-genres-list flex flex-wrap mt-3">
-                        {animeData.genres && animeData.genres.map((genre: any) => (
+                        {mangaData.genres && mangaData.genres.map((genre: any) => (
                         <p
                         key={genre.mal_id}
                         style={{
@@ -182,23 +182,21 @@ export default function Anime() {
         </div>
         <div className="character-container flex-col">
             <h1 className="characters-tittle">Characters</h1>
-            <Character mal_id={animeId} />
+            <MangaChar mal_id={mangaID} />
         </div>
         <div className="anime-review-container flex-col">
                 <div className="reviews-upper-container flex">
                 <h1 className="reviews-tittle">Reviews</h1>
                   <div className="reviews-button-control">
                   <button className="reviews-btn-prev">
-                    {"<"}
-                  </button>
-                  <button className="reviews-btn-next">
-                    {">"}
-                  </button>
+        {"<"}
+      </button>
+      <button className="reviews-btn-next">
+        {">"}
+      </button>
                   </div>
                 </div>
-                <Review mal_id={animeId}/>
         </div>
-        <AnimeSocials />
     </div>
   );
 }

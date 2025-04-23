@@ -45,7 +45,12 @@ export const animeServices = {
     },
     getReviews: (mal_id: string) => {
         return api.get(`anime/${mal_id}/reviews`)
-    }    
+    },    
+    getMangaById: (mal_id: string) => {
+        return api.get(`manga/${mal_id}`)
+    },   
+    getMangaCharacters: (mal_id: string) => {
+        return api.get(`manga/${mal_id}/characters`)
+    },  
 
 }
-
