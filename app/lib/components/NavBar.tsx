@@ -11,6 +11,7 @@ const NavBar: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isFadingOut, setIsFadingOut] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -26,28 +27,36 @@ const NavBar: React.FC = () => {
       setSearchResults([]);
     }
   };
+  const catalogButtonRef = useRef<HTMLButtonElement>(null);
 
   const searchButtonRef = useRef<HTMLButtonElement>(null); 
   const handleClickOutside = (event: MouseEvent) => {
     const searchButton = document.getElementById("nav-btn-search");
     const searchIcon = document.getElementById("nav-icon-search");
   
+    // Close Menu if clicking outside of it AND not on Catalog button
     if (
-      menuRef.current && 
+      menuRef.current &&
       !menuRef.current.contains(event.target as Node) &&
-      event.target !== searchButton &&
-      event.target !== searchIcon
+      !catalogButtonRef.current?.contains(event.target as Node)
     ) {
       setIsMenuVisible(false);
     }
-    
+  
+    // Close Search if clicking outside of it
     if (
-      searchRef.current && 
+      searchRef.current &&
       !searchRef.current.contains(event.target as Node) &&
       event.target !== searchButton &&
       event.target !== searchIcon
     ) {
-      setIsSearchVisible(false);
+      setIsFadingOut(true);
+      setTimeout(() => {
+        setIsSearchVisible(false);
+        setIsFadingOut(false);
+        setSearchQuery("");
+        setSearchResults([]);
+      }, 300);
     }
   };
 
@@ -85,7 +94,7 @@ const NavBar: React.FC = () => {
       if (searchQuery) {
         fetchAnime(searchQuery);
       }
-    }, 500);
+    }, 1500);
 
     return () => clearTimeout(delayDebounceFn);
   }, [searchQuery]);
@@ -94,9 +103,20 @@ const NavBar: React.FC = () => {
     <>
       <nav className="header">
         <div className="nav-btn-container">
-          <button id="nav-btn" onClick={toggleMenu} className="nav-btn">
-            Catalog
-          </button>
+        <button
+          id="nav-btn"
+          ref={catalogButtonRef}
+          onClick={() => {
+          if (isMenuVisible) {
+            setIsMenuVisible(false);
+          } else {
+            setIsMenuVisible(true);
+          }
+          }}
+          className="nav-btn"
+        >
+          Catalog
+        </button>
           <a href="/" className="nav-btn">Home</a>
           <a href="#" className="nav-btn">News</a>
         </div>
@@ -115,23 +135,24 @@ const NavBar: React.FC = () => {
       </nav>
 
       {isSearchVisible && (
-        <div ref={searchRef} 
-          className="search-box"
-          style={{
-            position: "fixed",
-            opacity: 1,
-            top: "100px",
-            right: "90px",
-            width: "450px",
-            backgroundColor: "#121316",
-            padding: "10px",
-            borderRadius: "5px",
-            zIndex: 100,
-            boxShadow: "0px 4px 6px rgba(0,0,0,0.2)",
-            transition: "opacity 0.3s ease-in-out"
-          }}
-        >
-          <input
+  <div
+    ref={searchRef}
+    className="search-box"
+    style={{
+      position: "fixed",
+      opacity: isFadingOut ? 0 : 1,
+      top: "100px",
+      right: "90px",
+      width: "400px",
+      backgroundColor: "#121316",
+      padding: "10px",
+      borderRadius: "30px",
+      zIndex: 100,
+      boxShadow: "0px 4px 6px rgba(0,0,0,0.2)",
+      transition: "opacity 0.3s ease-in-out"
+    }}
+  >
+          <input className="search-input-box"
             type="text"
             placeholder="Search for anime..."
             value={searchQuery}
@@ -139,8 +160,7 @@ const NavBar: React.FC = () => {
             style={{
               width: "100%",
               padding: "8px",
-              borderRadius: "4px",
-              border: "1px solid #ccc",
+              borderRadius: "20px",
             }}
           />
           {loading ? (
@@ -153,22 +173,28 @@ const NavBar: React.FC = () => {
             <>
               {!loading && searchResults.length > 0 && (
                 <ul
-                  style={{
-                    listStyle: "none",
-                    marginTop: "10px",
-                    padding: 0,
-                    color: "#fff",
-                    maxHeight: "200px",
-                    overflowY: "auto",
-                  }}
-                >
+                style={{
+                  listStyle: "none",
+                  marginTop: "10px",
+                  padding: 0,
+                  color: "#fff",
+                  maxHeight: "200px",
+                  overflowY: "auto",
+              
+                
+                  scrollbarWidth: "thin", 
+                  scrollbarColor: "#1c1d20 transparent", 
+              
+                }}
+                className="custom-scroll"
+              >
                   {searchResults.map((anime) => (
                     <li key={anime.mal_id}>
                       <a
                         href={`/Anime?mal_id=${encodeURIComponent(anime.mal_id)}`}
                         style={{
                           display: "flex",
-                          padding: "5px 0",
+                          padding: "10px 5px",
                           color: "#fff",
                           textDecoration: "none",
                         }}

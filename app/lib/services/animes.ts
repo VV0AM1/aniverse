@@ -42,6 +42,10 @@ export const animeServices = {
     },
     geManga: (page = 1) => {
         return api.get(`/manga?page=${page}`)
-    }  
+    },
+    getReviews: (mal_id: string) => {
+        return api.get(`anime/${mal_id}/reviews`)
+    }    
 
 }
+

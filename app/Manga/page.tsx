@@ -17,7 +17,6 @@ export default function HomePage() {
     setError(null);
   
     try {
-      // Delay for 2 seconds
       await new Promise(resolve => setTimeout(resolve, 2000));
   
       const response = await animeServices.geManga(page);

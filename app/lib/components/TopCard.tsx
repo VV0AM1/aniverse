@@ -1,5 +1,6 @@
 import Image from "next/image";
 import TopCardSkeleton from "./TopSkeletonLoader";
+import { useRouter } from "next/navigation";
 
 export default function TopCard({
     data,
@@ -9,10 +10,21 @@ export default function TopCard({
       mal_id: string;
       title_english?: string;
       name?: string;
-      chapters: string;
-      favorites: string;
+      chapters?: string;
+      favorites?: string;
       score: string;
-      episodes: string;
+      nicknames?: string;
+      episodes?: string;
+      anime?: {
+        role: string;
+        anime: {
+          mal_id: number;
+          title: string;
+          images: {
+            jpg: { image_url: string; small_image_url: string };
+          };
+        };
+      }[];
       images: {
         jpg: { image_url: string; large_image_url: string; small_image_url: string };
         webp: { image_url: string; large_image_url: string; small_image_url: string };
@@ -20,14 +32,33 @@ export default function TopCard({
     };
     index: number;
   }) {
-    const isLoading = !data;
-  
-    if (isLoading) {
-      return <TopCardSkeleton />; 
-    }
+
+      const router = useRouter();
+      const isLoading = !data;
+    
+      if (isLoading) {
+        return <TopCardSkeleton />;
+      }
+    
+      const handleRedirect = () => {
+        if ("episodes" in data && typeof data.episodes !== "undefined") {
+          router.push(`/animes/${data.mal_id}`);
+        } else if ("chapters" in data && typeof data.chapters !== "undefined") {
+          router.push(`/mangas/${data.mal_id}`);
+        } else if (
+          "anime" in data &&
+          Array.isArray(data.anime) &&
+          data.anime.length > 0 &&
+          "mal_id" in data.anime[0].anime
+        ) {
+          const animeId = data.anime[0].anime.mal_id;
+          router.push(`/characters/${data.mal_id}?featuredAnime=${animeId}`);
+        }
+      };
+    
   
     return (
-      <div className="top-card-container">
+      <div onClick={handleRedirect} className="top-card-container">
         <Image
           src={data?.images?.jpg.image_url}
           alt={data.title_english || data.name || "Unknown"}
