@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-export default function SmallCard({
+export default function SeasonalCard({
     data,
     index,
 }: {
@@ -76,18 +76,18 @@ export default function SmallCard({
         onMouseLeave={() => setIsVisible(false)}
         style={{position: "relative",
                 cursor: "pointer",
-                width: "170px",
-                height: "300px",
+                width: "210px",
+                height: "340px",
                 borderRadius: "5px"
           }}
       >
       <img src="/img/player-big.svg" alt="play" className='play-big-btn'/>
         <div
-          className='small-card'
+          className='small-card-seasonal'
           onClick={handleRedirect}
           style={{
-            width: "160px",
-            height: "300px", 
+            width: "200px",
+            height: "340px", 
             borderRadius: "5px",
             overflow: "hidden",
             position: "relative",
@@ -104,7 +104,7 @@ export default function SmallCard({
               height: "80%"
              }}
           />
-          <div className="title-data-container">
+          <div className="title-data-container-seasonal">
           <h1 className="anime-small-tittle" 
           style={{
             fontSize: "12px",
@@ -120,7 +120,7 @@ export default function SmallCard({
           >
             {data.title}
           </h1>
-          <div className="aditional-info">
+          <div className="aditional-info-seasonal">
             <p className="duration-small">
             {data.duration
             ? data.duration.replace(' per ep', '')

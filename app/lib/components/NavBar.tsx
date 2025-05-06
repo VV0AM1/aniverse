@@ -12,6 +12,15 @@ const NavBar: React.FC = () => {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
+  const [nickname, setNickname] = useState<string | null>(null);
+
+useEffect(() => {
+  const storedNickname = localStorage.getItem("nickname");
+  if (storedNickname) {
+    setNickname(storedNickname);
+  }
+}, []);
+
 
   const menuRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -116,7 +125,7 @@ const NavBar: React.FC = () => {
           Catalog
         </button>
           <a href="/" className="nav-btn">Home</a>
-          <a href="#" className="nav-btn">News</a>
+          <a href="#" className="nav-btn">Random</a>
         </div>
         <div className="menu-container">
           <a href="/" className="logo">AniVerse</a>
@@ -125,9 +134,20 @@ const NavBar: React.FC = () => {
           <button id="nav-btn-search" className="nav-btn" onClick={toggleSearch}>
             <img id="nav-icon-search"  src="/img/search.svg" alt="Search" />
           </button>
-          <a href="#" className="nav-btn">Log-In</a>
+          {nickname ? (
+  <Link href={`/${nickname}/My`} className="nav-btn">
+    <img
+      src="/img/user.svg" 
+      alt="Profile"
+      style={{ width: "20px", height: "20px", marginRight: "8px" }}
+    />
+    {nickname}
+  </Link>
+) : (
+  <Link href="/Login" className="nav-btn">Log-In</Link>
+)}
           <a href="#" className="nav-btn">
-            <img src="/img/bookmark.svg" alt="Cart" />
+            <img src="/img/brand-line.svg" alt="Cart" />
           </a>
         </div>
       </nav>
@@ -189,7 +209,7 @@ const NavBar: React.FC = () => {
                   {searchResults.map((anime) => (
                     <li key={anime.mal_id}>
                       <a
-                        href={`/Anime?mal_id=${encodeURIComponent(anime.mal_id)}`}
+                        href={`/animes/${anime.mal_id}`}
                         style={{
                           display: "flex",
                           padding: "10px 5px",

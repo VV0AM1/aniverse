@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import TopSkeletonLoader  from "./TopSkeletonLoader";  // Import your TopSkeletonLoader component
-import TopCard from "./TopCard";  // Import your TopCard component
+import TopSkeletonLoader  from "./TopSkeletonLoader";  
+import TopCard from "./TopCard"; 
 
 interface TopProps {
   upcomingAnimes: any[]; 
@@ -15,7 +15,7 @@ const TopSection: React.FC<TopProps> = ({ upcomingAnimes, airingAnimes, topChara
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false); 
-    }, 5000); 
+    }, 2000); 
 
     return () => clearTimeout(timer);
   }, []);

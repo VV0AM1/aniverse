@@ -5,13 +5,15 @@ import { animeServices } from "@/app/lib/services/animes";
 import Image from 'next/image';
 import Character from "./Character";
 import Review from "./Review"
-import AnimeSocials from "./AnimeSocials";
-
+import Socials from "./Socials";
+import AnimeRecomendation from "./AnimeRecomendations";
+import Footer from "./Footer"
 
 export default function Anime() {
   const { mal_id } = useParams();
   const [animeData, setAnimeData] = useState<any>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [nickname, setNickname] = useState<string | null>(null);
 
   if (!mal_id || Array.isArray(mal_id)) {
     return <div>Invalid anime ID</div>;
@@ -33,7 +35,40 @@ export default function Anime() {
     fetchData();
   }, [mal_id]);
 
+  useEffect(() => {
+    const storedNickname = localStorage.getItem('nickname');
+    if (storedNickname) {
+      setNickname(storedNickname);
+    }
+  }, []);
 
+
+  const handleAnimeAction = async (actionType: string) => {
+    if (!nickname) {
+      alert("You're not logged in!");
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/anime/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nickname,
+          animeId,
+          action: actionType,
+        }),
+      });
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message || "Failed to update");
+
+      alert(`Successfully updated: ${actionType}`);
+    } catch (error: any) {
+      console.error("Error updating anime status:", error.message);
+      alert(`Error: ${error.message}`);
+    }
+  };
 
   if (!animeData) {
     return <div>Loading...</div>;
@@ -128,7 +163,7 @@ export default function Anime() {
                         </p>
                         </div>
                         <div className="anime-detailed-buttons-container flex mt-2">
-                        <p className="anime-watch-trailer-btn"
+                        <a className="anime-watch-trailer-btn mt-4"
                         style={{
                             fontSize: "16px",
                             padding: "6px 10px",
@@ -138,22 +173,32 @@ export default function Anime() {
                             fontWeight: 200,
                             alignItems: "center"
                         }}
+                        href={animeData.trailer?.url}
                         >
                             <img src="/img/player-play-white.svg" alt="star" className='play-icon'/>Watch Trailer
-                        </p>
-                        <p className="anime-bookmark-btn"
-                        style={{
-                            fontSize: "16px",
-                            padding: "6px 10px",
-                            display: "flex",
-                            width: "auto",
-                            height: "34px",
-                            fontWeight: 200,
-                            alignItems: "center"
-                        }}
-                        >
-                        <img src="/img/bookmark-white.svg" alt="star" className='bookmark'/>Bookmark
-                        </p>
+                        </a>
+                        <div className="anime-action-buttons">
+                          {["bookmark", "later", "liked", "watched"].map((action) => (
+                          <button
+                          key={action}
+                          className="anime-action-btn mt-4 ml-2"
+                          style={{
+                          fontSize: "16px",
+                          padding: "6px 10px",
+                          width: "auto",
+                          height: "34px",
+                          fontWeight: 200,
+                          display: "flex",
+                          alignItems: "center",
+                          color: "white",
+                          borderRadius: "2px"
+                          }}
+                          onClick={() => handleAnimeAction(action)}
+                          >
+                          <a href="">{action.charAt(0).toUpperCase() + action.slice(1)}</a>
+                          </button>
+                          ))}
+                        </div>
                         </div>
                         <p className="anime-detailed-description">
                             {animeData.synopsis}
@@ -198,7 +243,14 @@ export default function Anime() {
                 </div>
                 <Review mal_id={animeId}/>
         </div>
-        <AnimeSocials />
+        <div className="mt-6 w-full">
+          <Socials />
+        </div>
+        <div className="recomends-container flex-col mt-6 w-full">
+          <h1 className="recomends-tittle">Recommendations</h1>
+          <AnimeRecomendation  mal_id={animeId}/>
+        </div>
+        <Footer />
     </div>
   );
 }

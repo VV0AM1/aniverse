@@ -58,7 +58,7 @@ export default function Character({ mal_id }: CharacterProps) {
               {role}
             </span>
   
-            <span className="character-role absolute bottom-1 left-1 text-white">
+            <span className="character-title-detailed absolute bottom-1 left-1 text-white">
               {charInfo.name}
             </span>
           </div>

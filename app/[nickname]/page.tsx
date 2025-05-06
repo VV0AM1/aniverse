@@ -1,16 +1,23 @@
 'use client'
 
-import NavBar from "./lib/components/NavBar";
-import Card from "./lib/components/Card";
-import "./globals.css";
-import Home from "./lib/components/Home";
-import Karusel from "./lib/components/Karusel";
-import KaruselSeasonal from "./lib/components/KaruselSeasonal";
-import TopSection from "./lib/components/TopSection";
-import Socials from "./lib/components/Socials";
+import NavBar from "@/app/lib/components/NavBar";
+import Card from "@/app/lib/components/Card";
+import "@/app/globals.css";
+import Home from "@/app/lib/components/Home";
+import Karusel from "@/app/lib/components/Karusel";
+import KaruselSeasonal from "@/app/lib/components/KaruselSeasonal";
+import TopSection from "@/app/lib/components/TopSection";
+import Socials from "@/app/lib/components/Socials";
 
 import { useEffect, useState } from "react";
-import { animeServices } from "./lib/services/animes";
+import { animeServices } from "@/app/lib/services/animes";
+
+import { useParams } from 'next/navigation';
+
+import React from "react";
+import { notFound } from "next/navigation";
+
+
 
 export default function HomePage() {
   const [animes, setAnimes] = useState<any[]>([]);
@@ -21,6 +28,20 @@ export default function HomePage() {
   const [airingAnimes, setAiringAnimes] = useState<any[]>([]);
   const [topCharacters, setTopCharacters] = useState<any[]>([]);
   const [topManga, setTopManga] = useState<any[]>([]);
+
+  const params = useParams();
+  const nicknameParam = typeof params?.nickname === 'string' ? params.nickname : '';
+  const [nickname, setNickname] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedNickname = localStorage.getItem('nickname');
+
+    if (storedNickname && storedNickname === nicknameParam) {
+      setNickname(storedNickname);
+    } else {
+      setNickname(null); 
+    }
+  }, [nicknameParam]);
 
 
   useEffect(() => {
@@ -84,6 +105,8 @@ export default function HomePage() {
     getAllAnimes();
   }, [page]);
 
+
+  
   return (
     <div className="flex flex-col">
       <div>

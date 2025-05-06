@@ -5,7 +5,7 @@ import { FaGithub, FaLinkedin, FaInstagram } from "react-icons/fa";
 export default function Socials() {
   return (
     <section
-      className="social-container w-full h-[400px] flex items-center justify-center bg-cover bg-center text-white"
+      className="social-container relative w-full h-[400px] flex items-center justify-center bg-cover bg-center text-white"
       style={{
         backgroundImage: "url('/img/social-bg.jpg')", 
       }}
