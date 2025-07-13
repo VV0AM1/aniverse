@@ -11,12 +11,10 @@ export async function POST(req: NextRequest) {
 
   const { email, password, token: captchaToken } = await req.json();
 
-  // Validate captcha presence
   if (!captchaToken) {
     return NextResponse.json({ message: 'Captcha token missing' }, { status: 400 });
   }
 
-  // Verify reCAPTCHA with Google
   const captchaRes = await fetch('https://www.google.com/recaptcha/api/siteverify', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -29,22 +27,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: 'Captcha verification failed' }, { status: 400 });
   }
 
-  // DB connection
   await dbConnect();
 
-  // Check user
   const user = await Client.findOne({ email });
   if (!user) {
     return NextResponse.json({ message: 'Invalid credentials' }, { status: 400 });
   }
 
-  // Check password
   const passwordMatch = await bcrypt.compare(password, user.password);
   if (!passwordMatch) {
     return NextResponse.json({ message: 'Invalid credentials' }, { status: 400 });
   }
 
-  // Generate token
   const token = jwt.sign(
     { userId: user._id, email: user.email },
     process.env.JWT_SECRET!,

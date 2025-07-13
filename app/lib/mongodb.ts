@@ -6,7 +6,6 @@ if (!MONGODB_URI) {
   throw new Error('❌ MongoDB URI not defined in environment variables.');
 }
 
-// Tell TypeScript: we already made sure it's a string
 const uri: string = MONGODB_URI;
 
 interface MongooseGlobal {
@@ -34,12 +33,24 @@ if (!globalWithMongoose.mongooseGlobal) {
 async function dbConnect() {
   const cached = globalWithMongoose.mongooseGlobal;
 
-  if (cached.conn) return cached.conn;
+  if (cached.conn) {
+    console.log("✅ MongoDB connection already established");
+    return cached.conn;
+  }
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(uri, {
-      bufferCommands: false,
-    });
+    cached.promise = mongoose
+      .connect(uri, {
+        bufferCommands: false,
+      })
+      .then((mongooseInstance) => {
+        console.log("✅ Successfully connected to MongoDB");
+        return mongooseInstance;
+      })
+      .catch((err) => {
+        console.error("❌ MongoDB connection error:", err);
+        throw err;
+      });
   }
 
   cached.conn = await cached.promise;
