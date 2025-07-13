@@ -11,21 +11,21 @@ export async function POST(req: NextRequest) {
 
   const { email, password, token: captchaToken } = await req.json();
 
-  if (!captchaToken) {
-    return NextResponse.json({ message: 'Captcha token missing' }, { status: 400 });
-  }
+//  if (!captchaToken) {
+ //   return NextResponse.json({ message: 'Captcha token missing' }, { status: 400 });
+ // }
 
-  const captchaRes = await fetch('https://www.google.com/recaptcha/api/siteverify', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `secret=${process.env.RECAPTCHA_SECRET}&response=${captchaToken}`,
-  });
+ // const captchaRes = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+ //   method: 'POST',
+ //   headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+ //   body: `secret=${process.env.RECAPTCHA_SECRET}&response=${captchaToken}`,
+//  });
 
-  const captchaData = await captchaRes.json();
+ // const captchaData = await captchaRes.json();
 
-  if (!captchaData.success) {
-    return NextResponse.json({ message: 'Captcha verification failed' }, { status: 400 });
-  }
+ // if (!captchaData.success) {
+//    return NextResponse.json({ message: 'Captcha verification failed' }, { status: 400 });
+  //}
 
   await dbConnect();
 

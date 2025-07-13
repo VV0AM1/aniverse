@@ -180,11 +180,7 @@ export default function Login() {
                   className="p-2 bg-white/10 rounded placeholder-white text-white focus:outline-none"
                 />
 
-                <ReCAPTCHA
-                  ref={recaptchaRef}
-                  sitekey={RECAPTCHA_SITE_KEY}
-                  size="invisible"
-                />
+          
 
                 <button
                   type="submit"
