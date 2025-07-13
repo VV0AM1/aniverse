@@ -115,11 +115,7 @@ export default function Login() {
                   Forgot password?
                 </a>
 
-                <ReCAPTCHA
-                  ref={recaptchaRef}
-                  sitekey={RECAPTCHA_SITE_KEY}
-                  size="invisible"
-                />
+          
 
                 <button
                   type="submit"
