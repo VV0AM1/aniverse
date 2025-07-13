@@ -3,7 +3,7 @@ import { FaGithub, FaLinkedin, FaInstagram } from "react-icons/fa";
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-[#111] z-20 text-white px-6 py-10 mt-[-10px]">
+    <footer className="relative w-full bg-[#111] z-10 text-white px-6 py-10 mt-[-10px]">
       <div className="flex flex-wrap justify-between gap-10 max-w-7xl mx-auto">
         <div className="flex-1 min-w-[250px]">
           <h2 className="text-2xl font-bold mb-2">Aniverse</h2>

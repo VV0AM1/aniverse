@@ -27,6 +27,7 @@ const config: Config = {
   },
   plugins: [
   require('@tailwindcss/line-clamp'),
+  require('tailwind-scrollbar-hide'),
   plugin(function ({ addUtilities }) {
     addUtilities({
       '.perspective': {

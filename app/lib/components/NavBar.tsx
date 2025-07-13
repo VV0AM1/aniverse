@@ -8,6 +8,7 @@ import SkeletonLoader from "./SkeletonLoader";
 
 const NavBar: React.FC = () => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -26,6 +27,7 @@ const NavBar: React.FC = () => {
   }, []);
 
   const toggleMenu = () => setIsMenuVisible(!isMenuVisible);
+  const toggleMobileMenu = () => setIsMobileMenuVisible(!isMobileMenuVisible);
   const toggleSearch = () => {
     setIsSearchVisible(prev => !prev);
     if (isSearchVisible) {
@@ -46,38 +48,13 @@ const NavBar: React.FC = () => {
     }
   };
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (
-      menuRef.current && !menuRef.current.contains(event.target as Node) &&
-      !catalogButtonRef.current?.contains(event.target as Node)
-    ) {
-      setIsMenuVisible(false);
-    }
-
-    const searchButton = document.getElementById("nav-btn-search");
-    const searchIcon = document.getElementById("nav-icon-search");
-    if (
-      searchRef.current && !searchRef.current.contains(event.target as Node) &&
-      event.target !== searchButton && event.target !== searchIcon
-    ) {
-      setIsFadingOut(true);
-      setTimeout(() => {
-        setIsSearchVisible(false);
-        setIsFadingOut(false);
-        setSearchQuery("");
-        setSearchResults([]);
-      }, 300);
-    }
+  const handleLogout = () => {
+    localStorage.removeItem("nickname");
+    localStorage.removeItem("token");
+    setNickname(null);
+    router.push("/");
+    toggleMobileMenu();
   };
-
-  useEffect(() => {
-    if (isMenuVisible || isSearchVisible) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isMenuVisible, isSearchVisible]);
 
   const fetchAnime = async (query: string) => {
     if (!query.trim()) {
@@ -104,18 +81,11 @@ const NavBar: React.FC = () => {
     return () => clearTimeout(delayDebounceFn);
   }, [searchQuery]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("nickname");
-    localStorage.removeItem("token");
-    setNickname(null);
-    router.push("/");
-  };
-
   return (
     <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[95%] z-[9999]">
       <div className="relative w-full">
         <nav className="h-[80px] bg-[#23252b5e] backdrop-blur-xl rounded-full px-4 sm:px-6 flex justify-between items-center">
-          <div className="flex gap-2 sm:gap-4 items-center">
+          <div className="hidden sm:flex gap-2 items-center">
             <button
               ref={catalogButtonRef}
               onClick={toggleMenu}
@@ -124,10 +94,7 @@ const NavBar: React.FC = () => {
               Catalog
             </button>
             {nickname ? (
-              <Link
-                href={`/Dashboard`}
-                className="text-white text-sm px-4 py-3 rounded-full hover:bg-[#121316] hover:text-purple-400 transition flex items-center gap-2"
-              >
+              <Link href="/Dashboard" className="text-white text-sm px-4 py-3 rounded-full hover:bg-[#121316] hover:text-purple-400 transition flex items-center gap-2">
                 <img src="/img/user.svg" className="w-4 h-4" alt="User" />
                 {nickname}
               </Link>
@@ -143,12 +110,12 @@ const NavBar: React.FC = () => {
 
           <Link
             href="/"
-            className="hidden sm:block text-xl font-bold bg-gradient-to-r from-[#43bee3] via-[#4d00dd] to-[#e343ae] text-transparent bg-clip-text animate-[gradientShift_5s_ease_infinite]"
+            className="text-xl font-bold bg-gradient-to-r from-[#43bee3] via-[#4d00dd] to-[#e343ae] text-transparent bg-clip-text animate-[gradientShift_5s_ease_infinite]"
           >
             AniVerse
           </Link>
 
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="hidden sm:flex items-center gap-4">
             <button
               id="nav-btn-search"
               onClick={toggleSearch}
@@ -156,7 +123,6 @@ const NavBar: React.FC = () => {
             >
               <img id="nav-icon-search" src="/img/search.svg" className="w-4 h-4" alt="Search" />
             </button>
-
             {nickname ? (
               <button onClick={handleLogout} className="text-white text-sm px-4 py-3 rounded-full hover:bg-[#121316] hover:text-purple-400 transition">
                 Log Out
@@ -166,11 +132,14 @@ const NavBar: React.FC = () => {
                 Home
               </Link>
             )}
-
             <Link href="/chat" className="text-white p-3 rounded-full hover:bg-[#121316] hover:text-purple-400 transition">
               <img src="/img/brand-line.svg" className="w-4 h-4" alt="Chat" />
             </Link>
           </div>
+
+          <button onClick={toggleMobileMenu} className="sm:hidden text-white p-3">
+            <img src="/img/menu-deep.svg" className="w-6 h-6" alt="Menu" />
+          </button>
         </nav>
 
         <div
@@ -187,9 +156,7 @@ const NavBar: React.FC = () => {
                 </Link>
               ))}
             </div>
-
             <div className="w-[2px] bg-[#23252b]" />
-
             <div className="flex-1">
               <h3 className="text-gray-300 mb-3">GENRE</h3>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -207,11 +174,83 @@ const NavBar: React.FC = () => {
           </div>
         </div>
 
+        <div className={`sm:hidden overflow-y-auto fixed inset-0 h-[80vh] scrollbar-hide bg-[#121316] top-[100px] rounded-2xl  z-[9998] p-8  transform transition-all duration-300 ease-in-out ${isMobileMenuVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"}`}>
+          <button onClick={toggleMobileMenu} className="self-end p-2 mb-4">
+            <img src="/img/x.svg" className="w-6 h-6" alt="Close" />
+          </button>
+
+          <input
+            className="w-full mb-4 px-4 py-2 rounded-full bg-[#2b2d2d] text-white text-sm outline-none placeholder:text-gray-400"
+            placeholder="Search for anime..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          {loading ? (
+            <>
+              <SkeletonLoader />
+              <SkeletonLoader />
+              <SkeletonLoader />
+            </>
+          ) : (
+            searchQuery && (
+              <ul className="mb-6 space-y-2 max-h-[200px] overflow-y-auto text-white text-sm custom-scroll">
+                {searchResults.length > 0 ? (
+                  searchResults.map((anime) => (
+                    <li key={anime.mal_id}>
+                      <Link href={`/animes/${anime.mal_id}`} className="flex items-center gap-3 p-2 hover:bg-[#23252b] rounded-lg" onClick={toggleMobileMenu}>
+                        <img src={anime.images.jpg.small_image_url} alt={anime.title} className="w-[50px] h-[60px] object-cover rounded" />
+                        {anime.title}
+                      </Link>
+                    </li>
+                  ))
+                ) : (
+                  <p className="text-white text-sm mt-2">No results found.</p>
+                )}
+              </ul>
+            )
+          )}
+
+          <div className="flex flex-col gap-4 text-white">
+            <h3 className="text-lg font-semibold">Sections</h3>
+            {["Trending", "Airing", "Upcoming", "Manga"].map((item) => (
+              <Link key={item} href={`/${item}`} onClick={toggleMobileMenu} className="block text-base px-2 py-2 rounded hover:bg-[#23252b] transition">
+                {item}
+              </Link>
+            ))}
+
+            <hr className="my-4 border-[#23252b]" />
+
+            <h3 className="text-lg font-semibold">Genres</h3>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                "Action", "Adventure", "Comedy", "Drama", "Fantasy",
+                "Music", "Romance", "Sci-Fi", "Seinen", "Shoujo",
+                "Isekai", "Erotica", "Sports", "Mystery", "Horror"
+              ].map((genre) => (
+                <Link key={genre} href={`/Genres/${genre}`} onClick={toggleMobileMenu} className="text-sm px-2 py-1 rounded hover:bg-[#23252b] transition">
+                  {genre}
+                </Link>
+              ))}
+            </div>
+
+            <hr className="my-4 border-[#23252b]" />
+
+            <h3 className="text-lg font-semibold">Menu</h3>
+            <button onClick={() => { handleRedirect(); toggleMobileMenu(); }} className="text-base text-left px-2 py-2 rounded hover:bg-[#23252b] transition">🎲 Random</button>
+            {nickname ? (
+              <>
+                <Link href="/Dashboard" onClick={toggleMobileMenu} className="text-base px-2 py-2 rounded hover:bg-[#23252b] transition">👤 {nickname}</Link>
+                <button onClick={handleLogout} className="text-base text-left px-2 py-2 rounded hover:bg-[#23252b] transition">🚪 Log Out</button>
+              </>
+            ) : (
+              <Link href="/Login" onClick={toggleMobileMenu} className="text-base px-2 py-2 rounded hover:bg-[#23252b] transition">🔐 Log In</Link>
+            )}
+            <Link href="/chat" onClick={toggleMobileMenu} className="text-base px-2 py-2 rounded hover:bg-[#23252b] transition">💬 Chat</Link>
+          </div>
+        </div>
+
         {isSearchVisible && (
-          <div
-            ref={searchRef}
-            className="absolute top-full right-0 mt-2 w-[90%] sm:w-[400px] p-3 rounded-[30px] bg-[#121316] shadow-lg z-50"
-          >
+          <div ref={searchRef} className="absolute top-full right-0 mt-2 w-[90%] sm:w-[400px] p-3 rounded-[30px] bg-[#121316] shadow-lg z-50">
             <input
               className="w-full px-4 py-2 rounded-full bg-[#2b2d2d] text-white text-sm outline-none placeholder:text-gray-400"
               placeholder="Search for anime..."

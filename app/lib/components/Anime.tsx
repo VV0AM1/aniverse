@@ -87,43 +87,47 @@ export default function Anime() {
       >
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-0"></div>
 
-        <div className="relative max-w-7xl px-24 flex justify-start gap-6 z-10">
-          <div className="flex-shrink-0">
+        <div className="relative z-10 max-w-7xl mx-auto flex flex-col md:flex-row gap-6 px-4 md:px-8">
+          {/* Anime Cover Image */}
+          <div className="flex-shrink-0 mx-auto md:mx-0">
             <Image
               src={animeData?.images?.jpg?.image_url}
-              width={170}
-              height={240}
+              width={180}
+              height={260}
               alt={animeData.title}
-              className="rounded-lg object-cover"
+              className="rounded-lg object-cover w-[180px] h-[260px]"
             />
           </div>
 
-          <div className="flex flex-col gap-2 max-w-4xl">
-            <h1 className="text-3xl font-bold text-purple-300">{animeData.title}</h1>
+          {/* Anime Info */}
+          <div className="flex flex-col gap-3 text-white max-w-4xl">
+            {/* Title */}
+            <h1 className="text-2xl sm:text-3xl font-bold text-purple-300">{animeData.title}</h1>
 
-            <div className="flex gap-2 flex-wrap text-sm">
-              <span className="bg-gray-800 px-2 py-1 rounded-md flex items-center gap-1">
-                ⭐ {animeData.score}
-              </span>
+            {/* Stats */}
+            <div className="flex gap-2 flex-wrap text-xs sm:text-sm">
+              <span className="bg-gray-800 px-2 py-1 rounded-md flex items-center gap-1">⭐ {animeData.score}</span>
               <span className="bg-gray-800 px-2 py-1 rounded-md">{animeData.duration || `${animeData.volumes} per chapter`}</span>
               <span className="bg-gray-800 px-2 py-1 rounded-md">
                 {animeData.episodes ? `${animeData.episodes} Episodes` : `${animeData.chapters} Chapters`}
               </span>
               <span className="bg-gray-800 px-2 py-1 rounded-md">{animeData.type}</span>
-              <span className="bg-gray-800 px-2 py-1 rounded-md flex items-center gap-1">
-                ❤️ {animeData.members}
-              </span>
+              <span className="bg-gray-800 px-2 py-1 rounded-md flex items-center gap-1">❤️ {animeData.members}</span>
             </div>
 
-            <div className="flex gap-2 mt-2 flex-wrap">
-              <a
-                href={animeData.trailer?.url}
-                className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-md text-white text-sm"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                ▶ Watch Trailer
-              </a>
+            {/* Buttons */}
+            <div className="flex flex-wrap gap-2 mt-2">
+              {animeData.trailer?.url && (
+                <a
+                  href={animeData.trailer?.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-md text-white text-sm"
+                >
+                  ▶ Watch Trailer
+                </a>
+              )}
+
               {["bookmark", "later", "liked", "watched"].map((action) => (
                 <button
                   key={action}
@@ -135,9 +139,13 @@ export default function Anime() {
               ))}
             </div>
 
-            <p className="text-sm text-gray-200 mt-4">{animeData.synopsis}</p>
+            {/* Description */}
+            <p className="text-gray-200 text-sm mt-2 line-clamp-5 md:line-clamp-none">
+              {animeData.synopsis}
+            </p>
 
-            <div className="flex flex-wrap gap-2 mt-3">
+            {/* Genres */}
+            <div className="flex flex-wrap gap-2 mt-2">
               {animeData.genres?.map((genre: any) => (
                 <span key={genre.mal_id} className="bg-[#1D0D39] text-xs px-2 py-1 rounded-md">
                   {genre.name}
