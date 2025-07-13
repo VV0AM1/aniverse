@@ -31,35 +31,36 @@ export default function Card({
   };
 }) {
 
-  const [isMobileOverlayVisible, setIsMobileOverlayVisible] = useState(false);
+    const [isMobileOverlayVisible, setIsMobileOverlayVisible] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const movedRef = useRef(false);
   const router = useRouter();
 
   useEffect(() => {
-  if (isMobileOverlayVisible) {
-    const hideTimer = setTimeout(() => {
-      setIsMobileOverlayVisible(false);
-    }, 5000);
-    return () => clearTimeout(hideTimer);
-  }
+    if (isMobileOverlayVisible) {
+      const hideTimer = setTimeout(() => {
+        setIsMobileOverlayVisible(false);
+      }, 5000);
+      return () => clearTimeout(hideTimer);
+    }
   }, [isMobileOverlayVisible]);
 
-  const genreNames = data.genres
-    ? data.genres.map((genre) => genre.name).join(", ")
-    : "No genres available";
-
   const handleTouchStart = () => {
+    movedRef.current = false;
     timerRef.current = setTimeout(() => {
       setIsMobileOverlayVisible(true);
-    }, 600); // Long press duration
+    }, 600);
+  };
+
+  const handleTouchMove = () => {
+    movedRef.current = true; 
+    if (timerRef.current) clearTimeout(timerRef.current); 
   };
 
   const handleTouchEnd = () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      if (!isMobileOverlayVisible) {
-        router.push(`/animes/${data.mal_id}`);
-      }
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (!movedRef.current && !isMobileOverlayVisible) {
+      router.push(`/animes/${data.mal_id}`);
     }
   };
 
@@ -67,10 +68,15 @@ export default function Card({
     if (timerRef.current) clearTimeout(timerRef.current);
   };
 
-  return (
+  const genreNames = data.genres
+    ? data.genres.map((genre) => genre.name).join(", ")
+    : "No genres available";
+
+    return (
     <div
       className="relative group flex flex-col items-start justify-start"
       onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onTouchCancel={handleTouchCancel}
     >
@@ -88,11 +94,9 @@ export default function Card({
       </div>
 
       <div
-        className={`
-          absolute top-0 left-0 w-[195px] h-full p-3 bg-black/80 rounded-lg 
-          ${isMobileOverlayVisible ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} 
-          transition-opacity duration-300 z-9 overflow-hidden
-        `}
+        className={`absolute top-0 left-0 w-[195px] h-full p-3 bg-black/80 rounded-lg 
+          ${isMobileOverlayVisible ? "opacity-100" : "opacity-0 group-hover:opacity-100"} 
+          transition-opacity duration-300 z-9 overflow-hidden`}
       >
         <h2 className="text-white font-semibold text-sm mb-1">{data.title}</h2>
         <p className="text-gray-400 text-xs">{data.episodes} EP</p>

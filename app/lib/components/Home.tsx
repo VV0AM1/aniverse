@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState, useEffect, ReactNode } from "react";
+import { useRouter } from "next/navigation";
 
 const trendingAnime = [
   {
     name: "Jujutsu Kaisen",
     anime_id: 1,
+    mal_id: 40748,
     age: "+16",
     logo: "/img/juju-logo.png",
     description:
@@ -15,6 +17,7 @@ const trendingAnime = [
   {
     name: "Solo Leveling",
     anime_id: 2,
+    mal_id: 52299,
     age: "+16",
     logo: "/img/solo-logo.png",
     description:
@@ -24,6 +27,7 @@ const trendingAnime = [
   {
     name: "Friren",
     anime_id: 3,
+    mal_id: 52991,
     age: "+18",
     logo: "/img/friren-logo.png",
     description:
@@ -33,6 +37,7 @@ const trendingAnime = [
   {
     name: "Naruto Shippuden",
     anime_id: 4,
+    mal_id: 1735,
     age: "+16",
     logo: "/img/naruto-logo.png",
     description:
@@ -42,6 +47,7 @@ const trendingAnime = [
   {
     name: "Chainsaw Man",
     anime_id: 5,
+    mal_id: 44511,
     age: "+16",
     logo: "/img/chainsaw-logo.png",
     description:
@@ -53,6 +59,7 @@ const trendingAnime = [
 export default function Home({ children }: { children: ReactNode }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [fade, setFade] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -72,13 +79,15 @@ export default function Home({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <div className="fixed inset-0 w-full h-[80vh] z-0 overflow-hidden p-8">
+      <div className="fixed inset-0 w-full h-[80vh] z-0 overflow-hidden">
         <video
-          className="absolute top-0 left-0 w-full h-full object-cover blur-[2px] brightness-[0.3]"
-          src={anime.background_video}
+          key={anime.background_video}
           autoPlay
-          loop
           muted
+          loop
+          playsInline
+          className="absolute top-0 left-0 w-full h-full object-cover blur-[2px] brightness-[0.3] pointer-events-none"
+          src={anime.background_video}
         />
 
         <div className="absolute inset-0 z-10 pointer-events-none shadow-[inset_0_0_100px_30px_rgba(0,0,0,0.7)]" />
@@ -100,12 +109,11 @@ export default function Home({ children }: { children: ReactNode }) {
             <p className="text-sm sm:text-lg md:text-xl mb-6 font-light">
               {anime.description}
             </p>
-            <button className="flex items-center gap-2 text-white text-sm sm:text-base bg-gradient-to-r from-[#660000] to-[#e0be2e] hover:bg-white hover:text-[#660000] transition px-5 py-3 rounded-md">
-              <img
-                src="/img/player-play.svg"
-                alt="Play Icon"
-                className="w-5 h-5"
-              />
+            <button
+              onClick={() => router.push(`/animes/${anime.mal_id}`)}
+              className="flex items-center gap-2 text-white text-sm sm:text-base bg-gradient-to-r from-[#660000] to-[#e0be2e] hover:bg-white hover:text-[#660000] transition px-5 py-3 rounded-md"
+            >
+              <img src="/img/player-play.svg" alt="Play Icon" className="w-5 h-5" />
               See More
             </button>
           </div>

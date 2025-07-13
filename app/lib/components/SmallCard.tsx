@@ -1,13 +1,32 @@
 "use client";
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 export default function SmallCard({ data, index }: { data: any; index: number }) {
   const router = useRouter();
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const movedRef = useRef(false);
 
   const japaneseTitle =
     data.titles?.find((t: any) => t.type === "Japanese")?.title || "N/A";
+
+  const formatRating = (rating?: string) => {
+    if (!rating) return "14+";
+    return rating.replace(/(-.{3}).*/, "$1");
+  };
+
+  const isPopupLeft = index % 5 > 2;
+
+  useEffect(() => {
+    if (isPopupVisible) {
+      const hideTimer = setTimeout(() => {
+        setIsPopupVisible(false);
+      }, 5000);
+      return () => clearTimeout(hideTimer);
+    }
+  }, [isPopupVisible]);
 
   const handleRedirect = () => {
     if ("episodes" in data && typeof data.episodes !== "undefined") {
@@ -17,17 +36,45 @@ export default function SmallCard({ data, index }: { data: any; index: number })
     }
   };
 
-  const formatRating = (rating?: string) => {
-    if (!rating) return "14+";
-    return rating.replace(/(-.{3}).*/, "$1");
+  const handleTouchStart = () => {
+    movedRef.current = false;
+    timerRef.current = setTimeout(() => {
+      setIsPopupVisible(true);
+    }, 600);
   };
 
-  const isPopupLeft = index % 5 > 2;
+  const handleTouchMove = () => {
+    movedRef.current = true;
+    if (timerRef.current) clearTimeout(timerRef.current);
+  };
+
+  const handleTouchEnd = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (!movedRef.current && !isPopupVisible) {
+      handleRedirect();
+    }
+  };
+
+  const handleTouchCancel = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+  };
 
   return (
     <div
-      onClick={handleRedirect}
       className="relative cursor-pointer w-[180px] h-[300px] rounded-lg overflow-visible group"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchCancel}
+      onClick={(e) => {
+        if (typeof window !== "undefined") {
+          if (window.innerWidth <= 768) {
+            e.preventDefault(); // Mobile: handled via touch
+          } else {
+            handleRedirect(); // Desktop click
+          }
+        }
+      }}
     >
       <div className="w-full h-[80%] relative overflow-hidden rounded-lg">
         <Image
@@ -46,20 +93,19 @@ export default function SmallCard({ data, index }: { data: any; index: number })
       <div className="p-2 text-white text-xs">
         <h2 className="truncate font-medium">{data.title}</h2>
         <div className="flex justify-between text-gray-400 text-[11px] mt-1">
-          <span>
-            {data.duration?.replace(" per ep", "") ||
-              `${data.volumes} vol`}
-          </span>
+          <span>{data.duration?.replace(" per ep", "") || `${data.volumes} vol`}</span>
           <span>{data.type}</span>
         </div>
       </div>
 
       <div
-        className={`absolute top-0 ${
-          isPopupLeft ? "right-full mr-4" : "left-full ml-4"
-        } z-50 w-[360px] max-w-[90vw] h-[300px] p-4 bg-[#1b1b1b]/90 backdrop-blur-md rounded-xl text-white shadow-lg
-        opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 ease-in-out
-        pointer-events-none group-hover:pointer-events-auto hidden group-hover:flex flex-col`}
+        className={`absolute top-0 ${isPopupLeft ? "right-full mr-4" : "left-full ml-4"} z-50 
+        w-[360px] max-w-[90vw] h-[300px] p-4 bg-[#1b1b1b]/90 backdrop-blur-md rounded-xl text-white shadow-lg
+        ${isPopupVisible 
+          ? "opacity-100 scale-100 pointer-events-auto flex" 
+          : "opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto group-hover:flex"
+        }
+        transition-all duration-300 ease-in-out flex-col`}
       >
         <h2 className="text-md font-semibold mb-1 line-clamp-2">{data.title}</h2>
         <p className="text-gray-300 text-sm mb-2">
