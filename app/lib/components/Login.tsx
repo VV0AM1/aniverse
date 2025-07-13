@@ -52,7 +52,7 @@ export default function Login() {
 
     router.push("/");
   } catch (err: any) {
-    console.error("Login failed:", err); // <--- log full error
+    console.error("Login failed:", err); 
     setMessage(err.response?.data?.message || "Something went wrong");
   }
   };
