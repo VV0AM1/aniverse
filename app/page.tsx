@@ -1,103 +1,71 @@
-'use client'
+'use client';
 
+import { useEffect, useState } from "react";
 import NavBar from "./lib/components/NavBar";
-import Card from "./lib/components/Card";
-import "./globals.css";
 import Home from "./lib/components/Home";
 import Karusel from "./lib/components/Karusel";
 import KaruselSeasonal from "./lib/components/KaruselSeasonal";
 import TopSection from "./lib/components/TopSection";
 import Socials from "./lib/components/Socials";
-
-import { useEffect, useState } from "react";
+import WebReview from "./lib/components/WebReview";
+import Footer from "./lib/components/Footer";
 import { animeServices } from "./lib/services/animes";
+import "./globals.css";
 
 export default function HomePage() {
   const [animes, setAnimes] = useState<any[]>([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [upcomingAnimes, setUpcomingAnimes] = useState<any[]>([]);
-  const [airingAnimes, setAiringAnimes] = useState<any[]>([]);
-  const [topCharacters, setTopCharacters] = useState<any[]>([]);
-  const [topManga, setTopManga] = useState<any[]>([]);
-
+  const [nickname, setNickname] = useState<string | null>(null);
 
   useEffect(() => {
-    const getAllAnimes = async () => {
+    const storedNickname = localStorage.getItem("nickname");
+    if (storedNickname) {
+      setNickname(storedNickname);
+    }
+  }, []);
+
+  useEffect(() => {
+    const getTopAnime = async () => {
       try {
         setLoading(true);
-
         const response = await animeServices.top();
 
         if (response.status === 200) {
           const animeData = response.data.data;
-
           if (animeData.length === 0) {
             setHasMore(false);
           }
 
-          setAnimes((prevAnimes) => [...prevAnimes, ...animeData]);
+          setAnimes((prev) => [...prev, ...animeData]);
         }
-
-        setTimeout(async () => {
-          try {
-            const upcomingResponse = await animeServices.getAnimeUpcoming();
-            setUpcomingAnimes(upcomingResponse.data.data);
-          } catch (error) {
-            console.error('Error fetching upcoming anime data:', error);
-          }
-
-          setTimeout(async () => {
-            try {
-              const airingResponse = await animeServices.getAnimeAiring();
-              setAiringAnimes(airingResponse.data.data);
-            } catch (error) {
-              console.error('Error fetching airing anime data:', error);
-            }
-
-            setTimeout(async () => {
-              try {
-                const topCharResponse = await animeServices.getTopCharacters();
-                setTopCharacters(topCharResponse.data.data);
-              } catch (error) {
-                console.error('Error fetching top characters data:', error);
-              }
-              setTimeout(async () => {
-                try {
-                  const topMangaResponse = await animeServices.getTopManga();
-                  setTopManga(topMangaResponse.data.data);
-                } catch (error) {
-                  console.error('Error fetching top characters data:', error);
-                }
-              }, 1000);
-            }, 1000);
-          }, 1000);
-        }, 1000);
       } catch (error) {
-        console.error('Error fetching anime data:', error);
+        console.error("Error fetching top anime:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    getAllAnimes();
+    getTopAnime();
   }, [page]);
 
   return (
     <div className="flex flex-col">
-      <div>
-        <NavBar />
-        <Home children={undefined} />
-        <Karusel animes={animes} />
+      <NavBar />
+      <Home children={undefined} />
+      <div className="h-[80vh]" />
+
+      <Karusel animes={animes} />
+      <TopSection />
+      <div className="mt-[-11vh] w-full">
+        <Socials />
       </div>
-      <div>
-        <TopSection upcomingAnimes={upcomingAnimes} airingAnimes={airingAnimes} topCharacters={topCharacters} topManga={topManga}/>
+      <KaruselSeasonal animes={animes} />
+      <WebReview />
+      <div className="home-footer-container mt-2">
+        <Footer />
       </div>
-        <div className="social-compoent-container w-full">
-          <Socials />
-        </div>
-        <KaruselSeasonal animes={animes} />
     </div>
   );
 }

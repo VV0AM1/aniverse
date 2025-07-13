@@ -1,19 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/app/lib/mongodb';
 import Client from '@/app/models/Client';
+import { handleCors } from '@/app/lib/cors';
+import { verifyToken } from '@/app/lib/verifyToken';
 
 export async function POST(req: NextRequest) {
+  const corsRes = handleCors(req);
+  if (corsRes) return corsRes;
+
+  const auth = req.headers.get('authorization');
+  const decoded = verifyToken(auth);
+  if (!decoded) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  await dbConnect();
+
   try {
-    const { nickname } = await req.json();
-
-    if (!nickname) {
-      return NextResponse.json({ error: 'Missing nickname' }, { status: 400 });
-    }
-
-    await dbConnect();
-
-    const user = await Client.findOne({ nickname });
-
+    const user = await Client.findById(decoded.userId);
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }

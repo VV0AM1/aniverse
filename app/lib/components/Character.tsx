@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { animeServices } from "@/app/lib/services/animes";
 
@@ -25,40 +26,39 @@ export default function Character({ mal_id }: CharacterProps) {
   }, [mal_id]);
 
   if (!characterData || characterData.length === 0) {
-    return <div>Loading characters...</div>;
+    return <div className="text-white">Loading characters...</div>;
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-[2px] mt-2">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
       {characterData.slice(0, 20).map((character: any) => {
         const { character: charInfo, role } = character;
+
+        const roleColor =
+          role.toLowerCase() === "main"
+            ? "bg-green-600/70"
+            : role.toLowerCase() === "supporting"
+            ? "bg-yellow-600/70"
+            : "bg-gray-700";
+
         return (
           <div
             key={charInfo.mal_id}
-            className="character-card relative overflow-hidden mt-4"
-            style={{ width: "210px", height: "230px" }}
-
+            className="relative rounded-md overflow-hidden w-full aspect-[9/10] bg-gray-800 shadow-md"
           >
             <img
               src={charInfo.images?.jpg?.image_url || ""}
               alt={charInfo.name}
               className="w-full h-full object-cover"
             />
-  
-            <span className="character-role absolute top-1 left-1 text-white"
-            style={{
-              backgroundColor:
-                role.toLowerCase() === "main"
-                  ? "#56aa28a8"
-                  : role.toLowerCase() === "supporting"
-                  ? "#bb7606b0"
-                  : "#444", 
-            }}
+
+            <span
+              className={`absolute top-1 left-1 text-xs text-white px-2 py-0.5 rounded ${roleColor}`}
             >
               {role}
             </span>
-  
-            <span className="character-title-detailed absolute bottom-1 left-1 text-white">
+
+            <span className="absolute bottom-1 left-1 text-xs text-white bg-black/50 px-2 py-0.5 rounded">
               {charInfo.name}
             </span>
           </div>

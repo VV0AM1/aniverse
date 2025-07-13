@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import plugin from "tailwindcss/plugin";
 
 const config: Config = {
   content: [
@@ -13,8 +14,36 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      transformOrigin: {
+        center: "center center",
+      },
+      rotate: {
+        'y-180': "180deg", // for rotate-y-180 class
+      },
+      perspective: {
+        1000: "1000px",
+      },
     },
   },
-  plugins: [],
+  plugins: [
+  require('@tailwindcss/line-clamp'),
+  plugin(function ({ addUtilities }) {
+    addUtilities({
+      '.perspective': {
+        perspective: '1000px',
+      },
+      '.rotate-y-180': {
+        transform: 'rotateY(180deg)',
+      },
+      '.backface-hidden': {
+        backfaceVisibility: 'hidden',
+      },
+      '.transform-style': {
+        transformStyle: 'preserve-3d',
+      },
+    });
+  }),
+],
 };
+
 export default config;

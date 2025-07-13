@@ -1,268 +1,100 @@
 "use client";
-import React, { useState } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
-export default function SeasonalCard({
-    data,
-    index,
-}: {
-    data: {
-        mal_id: string;
-        title: string;
-        episodes: string;
-        images: {
-            jpg: { image_url: string; large_image_url: string; small_image_url: string };
-            webp: { image_url: string; large_image_url: string; small_image_url: string };
-        };
-        aired: {
-          string: string
-        }
-        published: {
-          string: string
-        }
-        genres: { name: string }[];
-        titles: { type: string; title: string }[];
-        status: string;
-        synopsis: string;
-        score: string;
-        year: string;
-        chapters: string;
-        duration: string;
-        volumes: string;
-        rating: string;
-        type: string;
-        rank: string;
-        popularity: string;
-        members: string;
-        producers: { name: string }[];
-        studios: { name: string }[];
-        trailer: {
-            url: string;
-            images: {image_url: string; large_image_url: string; small_image_url: string; medium_image_url: string }
-        };
-        scored_by: string;
-    };
-    index: any;
-}) {
-    const [isVisible, setIsVisible] = useState(false);
-    const router = useRouter();
+export default function SeasonalCard({ data, index }: any) {
+  const router = useRouter();
 
-    const japaneseTitle = data.titles.find(t => t.type === "Japanese")?.title || "N/A";
+  const handleRedirect = () => {
+    if (data.episodes !== undefined) router.push(`/animes/${data.mal_id}`);
+    else if (data.chapters !== undefined) router.push(`/mangas/${data.mal_id}`);
+  };
 
+  const japaneseTitle =
+    data.titles?.find((t: any) => t.type === "Japanese")?.title || "N/A";
 
-    const handleRedirect = () => {
-      if ("episodes" in data && typeof data.episodes !== "undefined") {
-        router.push(`/animes/${data.mal_id}`);
-      } else if ("chapters" in data && typeof data.chapters !== "undefined") {
-        router.push(`/mangas/${data.mal_id}`);
-      }
-    };
+  const formatRating = (rating?: string) => {
+    if (!rating) return "14+";
+    return rating.replace(/(-.{3}).*/, "$1");
+  };
 
-    const genreNames = data.genres ? data.genres.map((genre) => genre.name).join(', ') : 'No genres available';
+  const isPopupLeft = index >= 5;
 
-    const isLastInRow = (index + 1) % 5 === 0;
-
-    const formatRating = (rating?: string) => {
-      if (!rating) return "14+";
-      return rating.replace(/(-.{3}).*/, "$1");
-    };
-
-
-    return (
-      <div
-        className="small-card-container"
-        onMouseEnter={() => setIsVisible(true)}
-        onMouseLeave={() => setIsVisible(false)}
-        style={{position: "relative",
-                cursor: "pointer",
-                width: "210px",
-                height: "340px",
-                borderRadius: "5px"
-          }}
-      >
-      <img src="/img/player-big.svg" alt="play" className='play-big-btn'/>
-        <div
-          className='small-card-seasonal'
-          onClick={handleRedirect}
-          style={{
-            width: "200px",
-            height: "340px", 
-            borderRadius: "5px",
-            overflow: "hidden",
-            position: "relative",
-          }}
-        >
-        
-          <Image
-            src={data?.images?.jpg.image_url}
-            width={150}
-            height={270} 
-            alt={data.title}
-            style={{ borderRadius: "5px",
-              width: "100%", 
-              height: "80%"
-             }}
-          />
-          <div className="title-data-container-seasonal">
-          <h1 className="anime-small-tittle" 
-          style={{
-            fontSize: "12px",
-            color: "#ddd",
-            marginTop: "8px",
-            marginLeft: "10px",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            display: "-webkit-box",
-            WebkitLineClamp: 1,
-            WebkitBoxOrient: "vertical",
-          }}
-          >
-            {data.title}
-          </h1>
-          <div className="aditional-info-seasonal">
-            <p className="duration-small">
-            {data.duration
-            ? data.duration.replace(' per ep', '')
-            : `${data.volumes} per chapter`}
-            </p>
-            <p className="small-type">{data.type}</p>
-          </div>
-        </div>
-        </div>
-  
-        {isVisible && (
-          <div
-            className="info-card"
-            style={{
-              position: "absolute",
-              top: "0",
-              left: "100px",
-              width: "320px", 
-              height: "300px", 
-              padding: "10px",
-              background: "rgba(25, 25, 25, 0.6)",
-              backdropFilter: "blur(12px)",
-              borderRadius: "12px",
-              color: "111",
-              boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.4)",
-              zIndex: 100,
-              display: "block",
-              pointerEvents: "none", 
-              opacity: 1,
-            }}
-          >
-            <h2
-              style={{
-                fontSize: "18px",
-                fontWeight: 600,
-                margin: "0 0 8px",
-                color: "#fff",
-                display: "-webkit-box",
-                WebkitBoxOrient: "vertical",
-                WebkitLineClamp: 2,
-                overflow: "hidden",
-              }}
-            >
-              {data.title}
-            </h2>
-            <p style={{ fontSize: "13px", color: "#ddd", marginBottom: "6px" }}>
-              {data.episodes ? `${data.episodes} Episodes` : `${data.chapters} Chapters`} | {data.year}
-            </p>
-            <div className="caracteistics">
-            <p
-              style={{
-                fontSize: "10px",
-                background: "#79a3b1",
-                padding: "4px 8px",
-                borderRadius: "3px",
-                display: "flex",
-                height: "24px",
-                alignItems: "center"
-              }}
-            >
-              <img src="/img/star.svg" alt="star" className='star'/>{data.score}
-            </p>
-            <p
-              style={{
-                fontSize: "10px",
-                background: "#a3b179",
-                padding: "4px 8px",
-                borderRadius: "3px",
-                display: "flex",
-                height: "24px",
-                alignItems: "center"
-              }}
-            >
-              {formatRating(data.rating)}
-            </p>
-            <p
-              style={{
-                fontSize: "10px",
-                background: "#FFFFFF",
-                padding: "4px 8px",
-                borderRadius: "3px",
-                display: "flex",
-                height: "24px",
-                alignItems: "center"
-              }}
-            >
-              <img src="/img/medal.svg" alt="star" className='medal'/>{data.rank}
-            </p>
-            <p
-              style={{
-                fontSize: "10px",
-                background: "#B0E3AF",
-                padding: "4px 8px",
-                borderRadius: "3px",
-                display: "flex",
-                height: "24px",
-                alignItems: "center"
-              }}
-            >
-            <img src="/img/heart.svg" alt="star" className='heart'/>{data.popularity}
-            </p>
-            <p
-              style={{
-                fontSize: "10px",
-                background: "#FFDD95",
-                padding: "4px 8px",
-                borderRadius: "3px",
-                display: "flex",
-                height: "24px",
-                alignItems: "center"
-              }}
-            >
-              <img src="/img/eye.svg" alt="star" className='eye'/>{data.members}
-            </p>
-            </div>
-            <p
-              style={{
-                fontSize: "12px",
-                color: "#ddd",
-                marginTop: "8px",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                display: "-webkit-box",
-                WebkitLineClamp: 3,
-                WebkitBoxOrient: "vertical",
-              }}
-            >
-              {data.synopsis}
-            </p>
-              <div className="additional-info-container flex flex-col mt-2">
-                <p className='additional-info'><b style={{
-                  fontSize: "12px",
-                }}>Japanese: </b>{japaneseTitle}</p>
-                <p className='additional-info'><b style={{
-                  fontSize: "12px",
-                }}>Aired: </b> {data.aired?.string ? data.aired.string.split(" to ")[0] : data.published?.string}</p>
-                <p className='additional-info'><b style={{
-                  fontSize: "12px",
-                }}>Status: </b>{data.status}</p>
-              </div>
-          </div>
-        )}
+  return (
+    <div
+      onClick={handleRedirect}
+      className="relative cursor-pointer w-[210px] h-[340px] rounded-lg overflow-visible group"
+    >
+      <div className="w-full h-[80%] relative overflow-hidden rounded-t-lg">
+        <Image
+          src={data.images.jpg.image_url}
+          alt={data.title}
+          fill
+          className="object-cover rounded-t-lg transition-all duration-300 ease-in-out group-hover:blur-[2px] group-hover:brightness-75"
+        />
+        <img
+          src="/img/player-big.svg"
+          alt="Play"
+          className="absolute top-1/2 left-1/2 w-8 h-8 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        />
       </div>
-    );
-  }
+
+      <div className="p-2 text-white text-xs">
+        <h2 className="truncate font-medium">{data.title}</h2>
+        <div className="flex justify-between text-gray-400 text-[11px] mt-1">
+          <span>{data.duration?.replace(" per ep", "") || `${data.volumes} vol`}</span>
+          <span>{data.type}</span>
+        </div>
+      </div>
+
+      <div
+        className={`absolute top-0 ${
+          isPopupLeft ? "right-full mr-4" : "left-full ml-4"
+        } z-50 w-[380px] max-w-[90vw] h-[340px] p-4 bg-[#1b1b1b]/90 backdrop-blur-md rounded-xl text-white shadow-lg
+        opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 ease-in-out
+        pointer-events-none group-hover:pointer-events-auto hidden group-hover:flex flex-col`}
+      >
+        <h2 className="text-md font-semibold mb-1 line-clamp-2">{data.title}</h2>
+        <p className="text-gray-300 text-sm mb-2">
+          {data.episodes ? `${data.episodes} Episodes` : `${data.chapters} Chapters`} | {data.year}
+        </p>
+
+        <div className="flex flex-wrap gap-2 text-[14px] mb-3">
+          <span className="bg-sky-600 px-2 py-1 rounded flex items-center gap-1">
+            <img src="/img/star.svg" className="w-3 h-3" /> {data.score}
+          </span>
+          <span className="bg-lime-600 px-2 py-1 rounded">{formatRating(data.rating)}</span>
+          <span className="bg-white text-black px-2 py-1 rounded flex items-center gap-1">
+            <img src="/img/medal.svg" className="w-3 h-3" /> {data.rank}
+          </span>
+          <span className="bg-emerald-600 text-white px-2 py-1 rounded flex items-center gap-1">
+            <img src="/img/heart.svg" className="w-3 h-3" /> {data.popularity}
+          </span>
+          <span className="bg-yellow-600 text-white px-2 py-1 rounded flex items-center gap-1">
+            <img src="/img/eye.svg" className="w-3 h-3" /> {data.members}
+          </span>
+        </div>
+
+        <p className="line-clamp-3 text-gray-200">{data.synopsis}</p>
+
+        <div className="mt-2 text-sm space-y-1">
+          <p><b>Japanese:</b> {japaneseTitle}</p>
+          <p><b>Aired:</b> {data.aired?.string?.split(" to ")[0] || data.published?.string}</p>
+          <p><b>Status:</b> {data.status}</p>
+        </div>
+        {data.genres?.length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-3">
+          {data.genres.map((genre: any) => (
+            <span
+              key={genre.name}
+              className="px-2 py-1 text-[14px] bg-[#2e2e2e] text-white rounded-full border border-white/10"
+            >
+              {genre.name}
+            </span>
+          ))}
+        </div>
+      )}
+      </div>
+    </div>
+  );
+}

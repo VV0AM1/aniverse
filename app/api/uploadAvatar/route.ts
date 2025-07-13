@@ -1,19 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/app/lib/mongodb';
 import Client from '@/app/models/Client';
+import { handleCors } from '@/app/lib/cors';
+import { verifyToken } from '@/app/lib/verifyToken';
 
 export async function POST(req: NextRequest) {
-  try {
-    const { nickname, avatarBase64 } = await req.json();
+  const corsRes = handleCors(req);
+  if (corsRes) return corsRes;
 
-    if (!nickname || !avatarBase64) {
-      return NextResponse.json({ error: 'Missing nickname or avatar' }, { status: 400 });
+  const auth = req.headers.get('authorization');
+  const decoded = verifyToken(auth);
+  if (!decoded) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  try {
+    const { avatarBase64 } = await req.json();
+
+    if (!avatarBase64) {
+      return NextResponse.json({ error: 'Missing avatar data' }, { status: 400 });
     }
 
     await dbConnect();
 
-    const updated = await Client.findOneAndUpdate(
-      { nickname },
+    const updated = await Client.findByIdAndUpdate(
+      decoded.userId,
       { avatar: avatarBase64 },
       { new: true }
     );

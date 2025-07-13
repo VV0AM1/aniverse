@@ -1,22 +1,63 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import dbConnect from '@/app/lib/mongodb';
 import Client from '@/app/models/Client';
+import { handleCors } from '@/app/lib/cors';
 
-export async function POST(req: Request) {
-  const { email, password } = await req.json();
+export async function POST(req: NextRequest) {
+  const corsRes = handleCors(req);
+  if (corsRes) return corsRes;
 
+  const { email, password, token: captchaToken } = await req.json();
+
+  // Validate captcha presence
+  if (!captchaToken) {
+    return NextResponse.json({ message: 'Captcha token missing' }, { status: 400 });
+  }
+
+  // Verify reCAPTCHA with Google
+  const captchaRes = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `secret=${process.env.RECAPTCHA_SECRET}&response=${captchaToken}`,
+  });
+
+  const captchaData = await captchaRes.json();
+
+  if (!captchaData.success) {
+    return NextResponse.json({ message: 'Captcha verification failed' }, { status: 400 });
+  }
+
+  // DB connection
   await dbConnect();
 
+  // Check user
   const user = await Client.findOne({ email });
   if (!user) {
     return NextResponse.json({ message: 'Invalid credentials' }, { status: 400 });
   }
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
+  // Check password
+  const passwordMatch = await bcrypt.compare(password, user.password);
+  if (!passwordMatch) {
     return NextResponse.json({ message: 'Invalid credentials' }, { status: 400 });
   }
 
-  return NextResponse.json({ message: 'Login successful', user: { nickname: user.nickname, email: user.email } });
+  // Generate token
+  const token = jwt.sign(
+    { userId: user._id, email: user.email },
+    process.env.JWT_SECRET!,
+    { expiresIn: '1h' }
+  );
+
+  return NextResponse.json({
+    message: 'Login successful',
+    token,
+    user: {
+      _id: user._id,
+      nickname: user.nickname,
+      email: user.email,
+    },
+  });
 }

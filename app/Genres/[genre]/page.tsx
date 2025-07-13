@@ -4,6 +4,7 @@ import NavBar from "@/app/lib/components/NavBar";
 import Genre from "@/app/lib/components/Genre";
 import { animeServices } from "@/app/lib/services/animes";
 import { usePathname } from "next/navigation";
+import Footer from "@/app/lib/components/Footer";
 
 const GenrePage = () => {
   const pathname = usePathname();
@@ -63,6 +64,7 @@ const GenrePage = () => {
           setCurrentPages={setCurrentPages} 
           loading={loading}  
         />
+        <Footer></Footer>
     </div>
   );
 };

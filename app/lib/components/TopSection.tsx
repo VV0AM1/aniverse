@@ -1,63 +1,77 @@
-import { useState, useEffect } from "react";
-import TopSkeletonLoader  from "./TopSkeletonLoader";  
-import TopCard from "./TopCard"; 
+'use client';
 
-interface TopProps {
-  upcomingAnimes: any[]; 
-  airingAnimes: any[];
-  topCharacters: any[];
-  topManga: any[];
-}
+import { useEffect, useState } from "react";
+import { animeServices } from "@/app/lib/services/animes";
+import TopSkeletonLoader from "./TopSkeletonLoader";
+import TopCard from "./TopCard";
 
-const TopSection: React.FC<TopProps> = ({ upcomingAnimes, airingAnimes, topCharacters, topManga }) => {
-  const [loading, setLoading] = useState(true);
+const TopSection = () => {
+  const [upcomingAnimes, setUpcomingAnimes] = useState<any[]>([]);
+  const [airingAnimes, setAiringAnimes] = useState<any[]>([]);
+  const [topCharacters, setTopCharacters] = useState<any[]>([]);
+  const [topManga, setTopManga] = useState<any[]>([]);
+
+  const [loadingStates, setLoadingStates] = useState({
+    upcoming: true,
+    airing: true,
+    characters: true,
+    manga: true,
+  });
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false); 
-    }, 2000); 
+    const fetchSequentially = async () => {
+      try {
+        // 1. Fetch upcoming
+        const upcomingRes = await animeServices.getAnimeUpcoming();
+        await new Promise((res) => setTimeout(res, 2000));
+        setUpcomingAnimes(upcomingRes.data.data);
+        setLoadingStates(prev => ({ ...prev, upcoming: false }));
 
-    return () => clearTimeout(timer);
+        // 2. Fetch airing
+        const airingRes = await animeServices.getAnimeAiring();
+        await new Promise((res) => setTimeout(res, 2000));
+        setAiringAnimes(airingRes.data.data);
+        setLoadingStates(prev => ({ ...prev, airing: false }));
+
+        // 3. Fetch characters
+        const charactersRes = await animeServices.getTopCharacters();
+        await new Promise((res) => setTimeout(res, 2000));
+        setTopCharacters(charactersRes.data.data);
+        setLoadingStates(prev => ({ ...prev, characters: false }));
+
+        // 4. Fetch manga
+        const mangaRes = await animeServices.getTopManga();
+        await new Promise((res) => setTimeout(res, 2000));
+        setTopManga(mangaRes.data.data);
+        setLoadingStates(prev => ({ ...prev, manga: false }));
+      } catch (error) {
+        console.error("Sequential fetch error in TopSection:", error);
+      }
+    };
+
+    fetchSequentially();
   }, []);
 
-  return (
-    <div className="top-section-container flex">
-      <div id="top-col" className="top-upcoming-col flex flex-col">
-        <h1 className="top-title-home-col">Top Upcoming</h1>
-        {loading
-          ? [...Array(5)].map((_, index) => <TopSkeletonLoader key={index} />)
-          : upcomingAnimes.slice(0, 5).map((anime, index) => (
-              <TopCard key={index} data={anime} index={index} />
-            ))}
-      </div>
-
-      <div id="top-col" className="top-airing-col flex flex-col">
-        <h1 className="top-title-home-col">Top Airing</h1>
-        {loading
-          ? [...Array(5)].map((_, index) => <TopSkeletonLoader key={index} />)
-          : airingAnimes.slice(0, 5).map((anime, index) => (
-              <TopCard key={index} data={anime} index={index} />
-            ))}
-      </div>
-
-      <div id="top-col" className="fav-character-col flex flex-col">
-        <h1 className="top-title-home-col">Favorite Characters</h1>
-        {loading
-          ? [...Array(5)].map((_, index) => <TopSkeletonLoader key={index} />) 
-          : topCharacters.slice(0, 5).map((anime, index) => (
-              <TopCard key={index} data={anime} index={index} />
-            ))}
-      </div>
-
-      <div id="top-col" className="fav-manga-col flex flex-col">
-        <h1 className="top-title-home-col">Favorite Manga</h1>
-        {loading
-          ? [...Array(5)].map((_, index) => <TopSkeletonLoader key={index} />) 
-          : topManga.slice(0, 5).map((anime, index) => (
-              <TopCard key={index} data={anime} index={index} />
-            ))}
-      </div>
+  const renderColumn = (title: string, data: any[], loading: boolean) => (
+    <div className="flex flex-col w-full sm:w-1/2 lg:w-1/4 px-2 sm:px-4 pr-4 border-r border-[#2a2a2a]">
+      <h2 className="text-lg sm:text-xl font-semibold text-white mb-4">{title}</h2>
+      {loading
+        ? [...Array(5)].map((_, index) => <TopSkeletonLoader key={index} />)
+        : data.slice(0, 5).map((item, index) => (
+            <TopCard key={index} data={item} index={index} />
+          ))}
     </div>
+  );
+
+  return (
+    <section className="w-full bg-[#0d0e12]/90 backdrop-blur-md text-white relative z-10 py-16 px-4 sm:px-12">
+      <div className="w-full flex flex-wrap justify-start gap-y-14">
+        {renderColumn("Top Upcoming", upcomingAnimes, loadingStates.upcoming)}
+        {renderColumn("Top Airing", airingAnimes, loadingStates.airing)}
+        {renderColumn("Favorite Characters", topCharacters, loadingStates.characters)}
+        {renderColumn("Favorite Manga", topManga, loadingStates.manga)}
+      </div>
+    </section>
   );
 };
 

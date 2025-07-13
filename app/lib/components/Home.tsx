@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, ReactNode } from "react";
-import "@/app/globals.css";
 
 const trendingAnime = [
   {
@@ -72,31 +71,48 @@ export default function Home({ children }: { children: ReactNode }) {
   const anime = trendingAnime[currentIndex];
 
   return (
-    <div className="home-container h-screen w-full relative">
-      <div className="shadow"></div>
-      <video
-        className="absolute top-0 left-0 w-full h-full object-cover"
-        src={anime.background_video}
-        autoPlay
-        loop
-        muted
-      ></video>
-      <div
-        className={`anime-content relative z-10 transition-opacity duration-300 ${
-          fade ? "opacity-100" : "opacity-0"
-        }`}
-      >
-        <div className="anime-info p-6 text-white">
-          <img src={anime.logo} alt="" className="mb-3" />
-          <p className="trendingAnimeAge">{anime.age}</p>
-          <p className="trendingAnimeDescription">{anime.description}</p>
-          <button className="anime-button flex items-center gap-2 text-white px-4 py-2 rounded-lg">
-            <img src="/img/player-play.svg" alt="Play Icon" className="w-5 h-5" />
-            See More
-          </button>
+    <>
+      <div className="fixed inset-0 w-full h-[80vh] z-0 overflow-hidden p-8">
+        <video
+          className="absolute top-0 left-0 w-full h-full object-cover blur-[2px] brightness-[0.3]"
+          src={anime.background_video}
+          autoPlay
+          loop
+          muted
+        />
+
+        <div className="absolute inset-0 z-10 pointer-events-none shadow-[inset_0_0_100px_30px_rgba(0,0,0,0.7)]" />
+
+        <div
+          className={`absolute inset-0 z-20 flex ml-8 items-end justify-start px-6 sm:px-10 md:px-20 pb-20 md:pb-32 transition-opacity duration-500 ${
+            fade ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <div className="max-w-2xl text-white">
+            <img
+              src={anime.logo}
+              alt={`${anime.name} logo`}
+              className="mb-4 w-60 sm:w-72 md:w-96"
+            />
+            <p className="text-sm sm:text-base bg-[#38393a] inline-block px-2 py-1 rounded mb-3">
+              {anime.age}
+            </p>
+            <p className="text-sm sm:text-lg md:text-xl mb-6 font-light">
+              {anime.description}
+            </p>
+            <button className="flex items-center gap-2 text-white text-sm sm:text-base bg-gradient-to-r from-[#660000] to-[#e0be2e] hover:bg-white hover:text-[#660000] transition px-5 py-3 rounded-md">
+              <img
+                src="/img/player-play.svg"
+                alt="Play Icon"
+                className="w-5 h-5"
+              />
+              See More
+            </button>
+          </div>
         </div>
       </div>
-      {children}
-    </div>
+
+      <div className="relative z-10">{children}</div>
+    </>
   );
 }

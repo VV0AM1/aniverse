@@ -4,6 +4,7 @@ import NavBar from "@/app/lib/components/NavBar";
 import Airing from "@/app/lib/components/Airing";
 import { useEffect, useState } from "react";
 import { animeServices } from "@/app/lib/services/animes";
+import Footer from "../lib/components/Footer";
 
 export default function HomePage() {
   const [airingAnimes, setAiringAnimes] = useState<any[]>([]);
@@ -53,6 +54,7 @@ export default function HomePage() {
         />
       )}
       {loading && <p style={{ textAlign: "center", color: "#fff" }}>Loading...</p>}
+      <Footer></Footer>
     </div>
   );
 }

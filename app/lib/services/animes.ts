@@ -55,6 +55,8 @@ export const animeServices = {
     getanimeRecomendations: (mal_id: string) => {
         return api.get(`anime/${mal_id}/recommendations`)
     },
-
+    getRandom: () => {
+        return api.get(`random/anime`)
+    },
 
 }

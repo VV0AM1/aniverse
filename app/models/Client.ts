@@ -5,6 +5,7 @@ const ClientSchema = new mongoose.Schema({
   email: { type: String, unique: true },
   password: String,
   avatar: String,
+  friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Client' }],
   animeStatus: {
     watched: [{ type: String }], 
     liked: [{ type: String }],

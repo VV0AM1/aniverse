@@ -1,42 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/app/lib/mongodb';
 import Client from '@/app/models/Client';
+import { handleCors } from '@/app/lib/cors';
+import { verifyToken } from '@/app/lib/verifyToken';
 
 export async function POST(req: NextRequest) {
-  const { nickname, animeId, action } = await req.json();
+  const corsRes = handleCors(req);
+  if (corsRes) return corsRes;
 
-  // ✅ Checkpoint 1: log received data
-  console.log('Received nickname:', nickname);
-  console.log('Received animeId:', animeId);
-  console.log('Action to perform:', action);
+  const auth = req.headers.get('authorization');
+  const decoded = verifyToken(auth);
+  if (!decoded) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
 
-  if (!nickname || !animeId || !action) {
-    console.warn('Missing data in request body');
+  const { animeId, action } = await req.json();
+
+  if (!animeId || !action) {
     return NextResponse.json({ message: 'Missing data' }, { status: 400 });
   }
 
   await dbConnect();
 
   const updateField = `animeStatus.${action}`;
-  console.log('Updating field:', updateField);
-
   try {
-    const updatedClient = await Client.findOneAndUpdate(
-      { nickname },
+    const updatedClient = await Client.findByIdAndUpdate(
+      decoded.userId,
       { $addToSet: { [updateField]: animeId } },
       { new: true }
     );
 
     if (!updatedClient) {
-      console.warn('User not found:', nickname);
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
 
-    console.log('Update successful:', updatedClient);
-
     return NextResponse.json({ message: 'Anime updated successfully' });
   } catch (error: any) {
-    console.error('Error updating anime status:', error.message);
     return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }

@@ -4,6 +4,7 @@ import NavBar from "@/app/lib/components/NavBar";
 import Manga from "@/app/lib/components/Manga";
 import { useEffect, useState } from "react";
 import { animeServices } from "@/app/lib/services/animes";
+import Footer from "../lib/components/Footer";
 
 export default function HomePage() {
   const [manga, setMangas] = useState<any[]>([]);
@@ -53,6 +54,7 @@ export default function HomePage() {
         />
       )}
       {loading && <p style={{ textAlign: "center", color: "#fff" }}>Loading...</p>}
+      <Footer></Footer>
     </div>
   );
 }
