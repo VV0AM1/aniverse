@@ -1,11 +1,8 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import ReCAPTCHA from "react-google-recaptcha";
-
-const RECAPTCHA_SITE_KEY = "6Lf2czMrAAAAABoHM-ux8X1hd4WkYCwfnhv4xu3P";
 
 export default function Login() {
   const [mode, setMode] = useState<"login" | "register">("login");
@@ -14,13 +11,11 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
-  const recaptchaRef = useRef<ReCAPTCHA>(null);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-      console.log("Submitting form", mode); // Add this line
-      setMessage("");
+    e.preventDefault();
+    setMessage("");
 
     const passwordIsValid = /^(?=.*[A-Z])(?=.*\d).{8,}$/.test(password);
     if (!passwordIsValid) {
@@ -28,21 +23,11 @@ export default function Login() {
       return;
     }
 
-
-    //const captchaToken = await recaptchaRef.current?.executeAsync();
-    //recaptchaRef.current?.reset();
-
-    //if (!captchaToken) {
-     // setMessage("Please verify you're not a robot.");
-    //  return;
-    //}
-
     try {
       const res = await axios.post(`/api/${mode}`, {
         nickname,
         email,
         password,
-        //token: captchaToken,
       });
 
       const { token, user } = res.data;
@@ -53,8 +38,8 @@ export default function Login() {
 
       router.push("/");
     } catch (err: any) {
-      console.error("❌ Login/Register failed:", err); // Add this line
-      setMessage(err?.response?.data?.message || "Something went wrong");
+      console.error("❌ Login/Register failed:", err.response?.data || err);
+      setMessage(err.response?.data?.message || "Something went wrong");
     }
   };
 
@@ -84,12 +69,10 @@ export default function Login() {
             mode === "register" ? "rotate-y-180" : ""
           }`}
         >
+          {/* LOGIN FORM */}
           <div className="absolute w-full h-full bg-white/5 backdrop-blur-lg rounded-xl shadow-lg flex flex-col md:flex-row backface-hidden">
             <div className="w-full md:w-1/2 p-8">
-              <form
-                onSubmit={handleSubmit}
-                className="flex flex-col gap-4 h-full justify-center"
-              >
+              <form onSubmit={handleSubmit} className="flex flex-col gap-4 h-full justify-center">
                 <h1 className="text-2xl font-bold">Sign In</h1>
                 <p className="text-sm">Welcome back, shadow warrior.</p>
 
@@ -111,17 +94,8 @@ export default function Login() {
                   className="p-2 bg-white/10 rounded placeholder-white text-white focus:outline-none"
                 />
 
-                <a className="text-xs text-purple-300 hover:underline">
-                  Forgot password?
-                </a>
-
-          
-
-                <button
-                  type="submit"
-                  className="bg-purple-600 hover:bg-purple-700 py-2 rounded"
-                >
-                  Sign Up
+                <button type="submit" className="bg-purple-600 hover:bg-purple-700 py-2 rounded">
+                  Sign In
                 </button>
 
                 {message && (
@@ -144,12 +118,10 @@ export default function Login() {
             </div>
           </div>
 
+          {/* REGISTER FORM */}
           <div className="absolute w-full h-full bg-white/5 backdrop-blur-lg rounded-xl shadow-lg flex flex-col md:flex-row backface-hidden rotate-y-180">
             <div className="w-full md:w-1/2 p-8">
-              <form
-                onSubmit={handleSubmit}
-                className="flex flex-col gap-4 h-full justify-center"
-              >
+              <form onSubmit={handleSubmit} className="flex flex-col gap-4 h-full justify-center">
                 <h1 className="text-2xl font-bold">Create Account</h1>
                 <p className="text-sm">Join the army of shadows now.</p>
 
@@ -180,12 +152,7 @@ export default function Login() {
                   className="p-2 bg-white/10 rounded placeholder-white text-white focus:outline-none"
                 />
 
-          
-
-                <button
-                  type="submit"
-                  className="bg-purple-600 hover:bg-purple-700 py-2 rounded"
-                >
+                <button type="submit" className="bg-purple-600 hover:bg-purple-700 py-2 rounded">
                   Sign Up
                 </button>
 
@@ -205,13 +172,6 @@ export default function Login() {
                 className="bg-white text-purple-700 px-4 py-2 rounded hover:bg-gray-200"
               >
                 Sign In
-              </button>
-              <button
-                type="button"
-                onClick={handleSubmit}
-                className="bg-red-600"
-              >
-                🔥 Force Submit
               </button>
             </div>
           </div>

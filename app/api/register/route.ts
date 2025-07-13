@@ -11,26 +11,13 @@ export async function POST(req: NextRequest) {
     if (corsRes) return corsRes;
 
     const body = await req.json();
-    const { nickname, email, password, token: captchaToken } = body;
+    const { nickname, email, password } = body;
 
     console.log("🔐 Register attempt:", { nickname, email });
 
-    //if (!captchaToken) {
-     // console.warn("⚠️ Captcha token missing.");
-     // return NextResponse.json({ message: 'Captcha missing' }, { status: 400 });
-    //}
-
-    //const captchaRes = await fetch(`https://www.google.com/recaptcha/api/siteverify`, {
-     // method: 'POST',
-     // headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    //  body: `secret=${process.env.RECAPTCHA_SECRET}&response=${captchaToken}`,
-    //});
-
-    //const captchaData = await captchaRes.json();
-    //if (!captchaData.success) {
-    //  console.warn("⚠️ reCAPTCHA failed:", captchaData);
-    //  return NextResponse.json({ message: 'reCAPTCHA failed' }, { status: 400 });
-   // }
+    if (!nickname || !email || !password) {
+      return NextResponse.json({ message: "All fields are required" }, { status: 400 });
+    }
 
     if (password.length < 8 || !/[A-Z]/.test(password) || !/\d/.test(password)) {
       return NextResponse.json({
