@@ -36,24 +36,25 @@ export default function Login() {
       return;
     }
 
-    try {
-      const res = await axios.post(`/api/${mode}`, {
-        nickname,
-        email,
-        password,
-        token: captchaToken,
-      });
+  try {
+    const res = await axios.post(`/api/${mode}`, {
+      nickname,
+      email,
+      password,
+      token: captchaToken,
+    });
 
-      const { token, user } = res.data;
+    const { token, user } = res.data;
 
-      localStorage.setItem("userId", user._id);      
-      localStorage.setItem("nickname", user.nickname);
-      localStorage.setItem("token", token);
+    localStorage.setItem("userId", user._id);      
+    localStorage.setItem("nickname", user.nickname);
+    localStorage.setItem("token", token);
 
-      router.push(`/`);
-    } catch (err: any) {
-      setMessage(err.response?.data?.message || "Something went wrong");
-    }
+    router.push("/");
+  } catch (err: any) {
+    console.error("Login failed:", err); // <--- log full error
+    setMessage(err.response?.data?.message || "Something went wrong");
+  }
   };
 
   return (
