@@ -18,8 +18,9 @@ export default function Login() {
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setMessage("");
+      e.preventDefault();
+      console.log("Submitting form", mode); // Add this line
+      setMessage("");
 
     const passwordIsValid = /^(?=.*[A-Z])(?=.*\d).{8,}$/.test(password);
     if (!passwordIsValid) {
@@ -124,7 +125,7 @@ export default function Login() {
                   type="submit"
                   className="bg-purple-600 hover:bg-purple-700 py-2 rounded"
                 >
-                  Sign In
+                  Sign Up
                 </button>
 
                 {message && (
@@ -212,6 +213,13 @@ export default function Login() {
                 className="bg-white text-purple-700 px-4 py-2 rounded hover:bg-gray-200"
               >
                 Sign In
+              </button>
+              <button
+                type="button"
+                onClick={handleSubmit}
+                className="bg-red-600"
+              >
+                🔥 Force Submit
               </button>
             </div>
           </div>
