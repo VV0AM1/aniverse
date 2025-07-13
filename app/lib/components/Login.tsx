@@ -29,20 +29,20 @@ export default function Login() {
     }
 
 
-    const captchaToken = await recaptchaRef.current?.executeAsync();
-    recaptchaRef.current?.reset();
+    //const captchaToken = await recaptchaRef.current?.executeAsync();
+    //recaptchaRef.current?.reset();
 
-    if (!captchaToken) {
-      setMessage("Please verify you're not a robot.");
-      return;
-    }
+    //if (!captchaToken) {
+     // setMessage("Please verify you're not a robot.");
+    //  return;
+    //}
 
     try {
       const res = await axios.post(`/api/${mode}`, {
         nickname,
         email,
         password,
-        token: captchaToken,
+        //token: captchaToken,
       });
 
       const { token, user } = res.data;
