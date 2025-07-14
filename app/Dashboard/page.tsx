@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import NavBar from '@/app/lib/components/NavBar';
 import { animeServices } from "@/app/lib/services/animes";
+import DashboardSkeleton from '../lib/components/Dashboardskeleton';
 
 interface AnimeCounts {
   liked: number;
@@ -22,8 +23,10 @@ export default function UserProfile() {
   const [selectedCategory, setSelectedCategory] = useState<'liked' | 'watched' | 'bookmark' | 'later'>('liked');
   const [animeCounts, setAnimeCounts] = useState<AnimeCounts>({ liked: 0, watched: 0, bookmark: 0, later: 0 });
   const [animeList, setAnimeList] = useState<any[]>([]);
+ const [isLoadingAnimes, setIsLoadingAnimes] = useState(true);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
   useEffect(() => {
     const storedNickname = localStorage.getItem('nickname');
@@ -62,41 +65,44 @@ export default function UserProfile() {
   };
 
   useEffect(() => {
-    const fetchUserAnimeByCategory = async () => {
-      const token = localStorage.getItem("token");
-      if (!nickname || !token) return;
+      const fetchUserAnimeByCategory = async () => {
+        const token = localStorage.getItem("token");
+        if (!nickname || !token) return;
 
-      const res = await fetch("/api/getUserAnimeIds", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ nickname, category: selectedCategory }),
-      });
+        setIsLoadingAnimes(true); 
 
-      const data = await res.json();
-      if (!res.ok) return;
+        const res = await fetch("/api/getUserAnimeIds", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ nickname, category: selectedCategory }),
+        });
 
-      const ids = data.animeIds || [];
-      const animeDataList = [];
+        const data = await res.json();
+        if (!res.ok) return;
 
-      for (const id of ids) {
-        try {
-          const res = await animeServices.getByIdFull(String(id));
-          animeDataList.push({
-            id: res.data.data.mal_id,
-            title: res.data.data.title,
-            image: res.data.data.images.jpg.image_url,
-          });
-        } catch (err) {
-          console.error(`Anime ID ${id} failed`, err);
+        const ids = data.animeIds || [];
+        const animeDataList = [];
+
+        for (const id of ids) {
+          try {
+            const res = await animeServices.getByIdFull(String(id));
+            animeDataList.push({
+              id: res.data.data.mal_id,
+              title: res.data.data.title,
+              image: res.data.data.images.jpg.image_url,
+            });
+          } catch (err) {
+            console.error(`Anime ID ${id} failed`, err);
+          }
+          await new Promise((r) => setTimeout(r, 1200));
         }
-        await new Promise((r) => setTimeout(r, 1200));
-      }
 
-      setAnimeList(animeDataList);
-    };
+        setAnimeList(animeDataList);
+        setIsLoadingAnimes(false); 
+      };
 
-    fetchUserAnimeByCategory();
-  }, [selectedCategory, nickname]);
+      fetchUserAnimeByCategory();
+    }, [selectedCategory, nickname]);
 
   const handleUploadClick = () => fileInputRef.current?.click();
 
@@ -146,7 +152,6 @@ export default function UserProfile() {
       <NavBar />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 pt-[120px]">
-        {/* Profile Section */}
         <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
           <div
             className="relative group w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden border-4 border-purple-600 shadow-lg hover:scale-105 transition-transform cursor-pointer"
@@ -160,7 +165,6 @@ export default function UserProfile() {
           </div>
 
           <div className="flex-1 w-full space-y-4">
-            {/* Nickname */}
             <div className="flex items-center gap-3 flex-wrap">
               <input
                 type="text"
@@ -177,7 +181,6 @@ export default function UserProfile() {
               </button>
             </div>
 
-            {/* Info Fields */}
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-6">
               <input
                 type="date"
@@ -206,7 +209,6 @@ export default function UserProfile() {
           </div>
         </div>
 
-        {/* Stats */}
         <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
           {(['liked', 'watched', 'bookmark', 'later'] as const).map((key) => (
             <div
@@ -219,7 +221,6 @@ export default function UserProfile() {
           ))}
         </div>
 
-        {/* Category Buttons */}
         <div className="mt-8 flex flex-wrap gap-3 justify-center sm:justify-start">
           {(['liked', 'watched', 'bookmark', 'later'] as const).map((cat) => (
             <button
@@ -229,29 +230,30 @@ export default function UserProfile() {
                 selectedCategory === cat ? 'bg-purple-600' : 'bg-gray-700 hover:bg-gray-600'
               }`}
             >
-              {cat}
+              {capitalize(cat)}
             </button>
           ))}
         </div>
 
-        {/* Anime List */}
         <div className="mt-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 sm:gap-6">
-          {animeList.slice(0, 30).map((anime) => (
-            <div
-              key={anime.id}
-              className="relative cursor-pointer hover:scale-105 transition-transform"
-              onClick={() => window.location.href = `/animes/${anime.id}`}
-            >
-              <img
-                src={anime.image}
-                alt={anime.title}
-                className="w-full h-[240px] sm:h-[280px] object-cover rounded-lg shadow"
-              />
-              <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs sm:text-sm p-2 truncate">
-                {anime.title}
-              </div>
-            </div>
-          ))}
+          {isLoadingAnimes
+            ? Array.from({ length: 10 }).map((_, i) => <DashboardSkeleton key={i} />)
+            : animeList.slice(0, 30).map((anime) => (
+                <div
+                  key={anime.id}
+                  className="relative cursor-pointer hover:scale-105 transition-transform"
+                  onClick={() => window.location.href = `/animes/${anime.id}`}
+                >
+                  <img
+                    src={anime.image}
+                    alt={anime.title}
+                    className="w-full h-[240px] sm:h-[280px] object-cover rounded-lg shadow"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs sm:text-sm p-2 truncate">
+                    {anime.title}
+                  </div>
+                </div>
+              ))}
         </div>
       </div>
     </div>

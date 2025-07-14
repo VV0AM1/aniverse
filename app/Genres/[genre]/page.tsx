@@ -55,7 +55,6 @@ const GenrePage = () => {
 
   return (
     <div>
-      <NavBar />
         <Genre 
           genre={genre as string} 
           animes={animes} 
@@ -64,7 +63,6 @@ const GenrePage = () => {
           setCurrentPages={setCurrentPages} 
           loading={loading}  
         />
-        <Footer></Footer>
     </div>
   );
 };

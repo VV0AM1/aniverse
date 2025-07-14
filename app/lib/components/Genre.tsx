@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import SmallCard from "./SmallCard";
-import SkeletonLoader from "./Skeleton";
+import SkeletonLoader from "./SkeletonLoader";
 
 interface GenreProps {
   genre: string;
@@ -40,17 +40,26 @@ const Genre: React.FC<GenreProps> = ({
   return (
     <div className="flex flex-col px-4 sm:px-10 py-8 text-white mb-6">
       <div className="w-full flex flex-col items-center gap-4 mb-8 px-4 mt-[100px]">
-        <h1 className="text-3xl sm:text-4xl font-semibold text-white text-center">{genre} Animes</h1>
+        <h1 className="text-3xl sm:text-4xl font-semibold text-white text-center">
+          {genre} Animes
+        </h1>
 
         <div className="flex flex-wrap justify-center items-center gap-2 text-sm sm:text-base">
-          <button className="px-3 py-1 rounded bg-[#1f1f1f] text-white hover:bg-purple-600 transition" onClick={() => handlePageChange(1)} disabled={currentPages === 1}>
+          <button
+            className="px-3 py-1 rounded bg-[#1f1f1f] text-white hover:bg-purple-600 transition"
+            onClick={() => handlePageChange(1)}
+            disabled={currentPages === 1}
+          >
             1
           </button>
 
           {currentPages > 3 && <p className="text-gray-400">...</p>}
 
           {currentPages > 2 && (
-            <button className="px-3 py-1 rounded bg-[#1f1f1f] text-white hover:bg-purple-600 transition" onClick={() => handlePageChange(currentPages - 1)}>
+            <button
+              className="px-3 py-1 rounded bg-[#1f1f1f] text-white hover:bg-purple-600 transition"
+              onClick={() => handlePageChange(currentPages - 1)}
+            >
               {currentPages - 1}
             </button>
           )}
@@ -62,7 +71,10 @@ const Genre: React.FC<GenreProps> = ({
           )}
 
           {currentPages < lastPages - 1 && (
-            <button className="px-3 py-1 rounded bg-[#1f1f1f] text-white hover:bg-purple-600 transition" onClick={() => handlePageChange(currentPages + 1)}>
+            <button
+              className="px-3 py-1 rounded bg-[#1f1f1f] text-white hover:bg-purple-600 transition"
+              onClick={() => handlePageChange(currentPages + 1)}
+            >
               {currentPages + 1}
             </button>
           )}
@@ -70,7 +82,10 @@ const Genre: React.FC<GenreProps> = ({
           {currentPages < lastPages - 2 && <p className="text-gray-400">...</p>}
 
           {lastPages > 1 && (
-            <button className="px-3 py-1 rounded bg-[#1f1f1f] text-white hover:bg-purple-600 transition" onClick={() => handlePageChange(lastPages)}>
+            <button
+              className="px-3 py-1 rounded bg-[#1f1f1f] text-white hover:bg-purple-600 transition"
+              onClick={() => handlePageChange(lastPages)}
+            >
               {lastPages}
             </button>
           )}
@@ -82,13 +97,19 @@ const Genre: React.FC<GenreProps> = ({
             onChange={(e) => setInputPage(e.target.value)}
           />
 
-          <button className="px-3 py-1 rounded bg-yellow-400 text-black hover:bg-yellow-300 transition" onClick={handleGoToPage}>
+          <button
+            className="px-3 py-1 rounded bg-yellow-400 text-black hover:bg-yellow-300 transition"
+            onClick={handleGoToPage}
+          >
             Go
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 xl:grid-cols-7 gap-y-6 gap-x-4 justify-center mx-auto px-4 sm:px-8">
+      <div
+        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 xl:grid-cols-7 gap-y-10 gap-x-4 justify-center mx-auto px-4 sm:px-8"
+        style={{ minHeight: "800px" }}
+      >
         {loading
           ? Array.from({ length: 25 }).map((_, index) => (
               <SkeletonLoader key={index} />

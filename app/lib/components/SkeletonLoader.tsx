@@ -2,31 +2,12 @@ import React from "react";
 
 const SkeletonLoader: React.FC = () => {
   return (
-    <div
-      className="skeleton-loader animate-pulse"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        padding: "10px 0",
-      }}
-    >
-      <div
-        style={{
-          width: "50px",
-          height: "60px",
-          backgroundColor: "#444",
-          borderRadius: "4px",
-          marginRight: "10px",
-        }}
-      ></div>
-      <div
-        style={{
-          width: "70%",
-          height: "16px",
-          backgroundColor: "#444",
-          borderRadius: "4px",
-        }}
-      ></div>
+    <div className="animate-pulse bg-[#1c1c1e] rounded-lg w-[180px] h-[300px] mx-auto">
+      <div className="w-full h-[80%] bg-gray-700 rounded-t-lg"></div>
+      <div className="p-2 space-y-2">
+        <div className="h-4 bg-gray-600 rounded w-3/4"></div>
+        <div className="h-3 bg-gray-600 rounded w-1/2"></div>
+      </div>
     </div>
   );
 };

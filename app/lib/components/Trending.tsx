@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import SmallCard from "./SmallCard";
-import SkeletonLoader from "./Skeleton";
+import SkeletonLoader from "./SkeletonLoader";
 
 interface TrendingProps {
   animes: any[];
@@ -104,7 +104,10 @@ const Trending: React.FC<TrendingProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 xl:grid-cols-7 gap-y-6 gap-x-4 justify-center mx-auto px-4 sm:px-8">
+      <div
+        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 xl:grid-cols-7 gap-y-10 gap-x-4 justify-center mx-auto px-4 sm:px-8"
+        style={{ minHeight: "800px" }} 
+      >
         {loading
           ? Array.from({ length: 25 }).map((_, index) => (
               <SkeletonLoader key={index} />

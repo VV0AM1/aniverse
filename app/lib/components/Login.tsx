@@ -69,7 +69,6 @@ export default function Login() {
             mode === "register" ? "rotate-y-180" : ""
           }`}
         >
-          {/* LOGIN FORM */}
           <div className="absolute w-full h-full bg-white/5 backdrop-blur-lg rounded-xl shadow-lg flex flex-col md:flex-row backface-hidden">
             <div className="w-full md:w-1/2 p-8">
               <form onSubmit={handleSubmit} className="flex flex-col gap-4 h-full justify-center">
@@ -118,7 +117,6 @@ export default function Login() {
             </div>
           </div>
 
-          {/* REGISTER FORM */}
           <div className="absolute w-full h-full bg-white/5 backdrop-blur-lg rounded-xl shadow-lg flex flex-col md:flex-row backface-hidden rotate-y-180">
             <div className="w-full md:w-1/2 p-8">
               <form onSubmit={handleSubmit} className="flex flex-col gap-4 h-full justify-center">
@@ -152,12 +150,12 @@ export default function Login() {
                   className="p-2 bg-white/10 rounded placeholder-white text-white focus:outline-none"
                 />
 
-                <button type="submit" className="bg-purple-600 hover:bg-purple-700 py-2 rounded">
+                <button type="submit" className="bg-purple-600 hover:bg-purple-700 py-2 rounded mb-4">
                   Sign Up
                 </button>
 
                 {message && (
-                  <p className="text-sm text-red-400 text-center">{message}</p>
+                  <p className="text-sm mb-4 text-red-400 text-center">{message}</p>
                 )}
               </form>
             </div>

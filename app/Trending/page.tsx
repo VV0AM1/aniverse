@@ -1,10 +1,8 @@
 "use client";
 
-import NavBar from "@/app/lib/components/NavBar";
 import Trending from "@/app/lib/components/Trending";
 import { useEffect, useState } from "react";
 import { animeServices } from "@/app/lib/services/animes";
-import Footer from "../lib/components/Footer";
 
 export default function HomePage() {
   const [trendingAnimes, setTrendingAnimes] = useState<any[]>([]);
@@ -39,7 +37,6 @@ export default function HomePage() {
 
   return (
     <div>
-      <NavBar />
       {error ? (
         <p style={{ textAlign: "center", color: "red" }}>{error}</p>
       ) : (
@@ -51,8 +48,6 @@ export default function HomePage() {
           loading={loading} 
         />
       )}
-      {loading && <p style={{ textAlign: "center", color: "#fff" }}>Loading...</p>}
-      <Footer></Footer>
     </div>
   );
 }

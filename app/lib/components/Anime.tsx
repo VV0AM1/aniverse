@@ -16,6 +16,7 @@ export default function Anime() {
   const [animeData, setAnimeData] = useState<any>(null);
   const [nickname, setNickname] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [userActions, setUserActions] = useState<{ [key: string]: boolean }>({});
 
   if (!mal_id || Array.isArray(mal_id)) {
     return <div>Invalid anime ID</div>;
@@ -45,11 +46,30 @@ export default function Anime() {
     if (storedToken) setToken(storedToken);
   }, []);
 
+  const showToast = (message: string) => {
+    const toast = document.createElement("div");
+    toast.textContent = message;
+    toast.className =
+      "fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 rounded shadow-lg z-[9999] transition-all duration-500 opacity-0";
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => {
+      toast.classList.add("opacity-100");
+    });
+    setTimeout(() => {
+      toast.classList.remove("opacity-100");
+      setTimeout(() => document.body.removeChild(toast), 500);
+    }, 2500);
+  };
+
+
+
   const handleAnimeAction = async (actionType: string) => {
     if (!nickname || !token) {
       alert("You're not logged in!");
       return;
     }
+
+    const alreadyActive = userActions[actionType];
 
     try {
       const res = await fetch("/api/anime/status", {
@@ -62,13 +82,23 @@ export default function Anime() {
           nickname,
           animeId,
           action: actionType,
+          remove: alreadyActive, 
         }),
       });
 
       const result = await res.json();
       if (!res.ok) throw new Error(result.message || "Failed to update");
 
-      alert(`Successfully updated: ${actionType}`);
+      setUserActions((prev) => ({
+        ...prev,
+        [actionType]: !alreadyActive,
+      }));
+
+      if (alreadyActive) {
+        showToast(`❌ Removed from ${actionType}`);
+      } else {
+        showToast(`✅ Added to ${actionType}`);
+      }
     } catch (error: any) {
       console.error("Error updating anime status:", error.message);
       alert(`Error: ${error.message}`);
@@ -78,9 +108,9 @@ export default function Anime() {
   if (!animeData) return <div className="text-white text-center">Loading...</div>;
 
   return (
-    <div className="w-full text-white pt-[100px]">
+    <div className="w-full text-white">
       <div
-        className="relative w-full py-12 px-4 bg-cover bg-center"
+        className="relative w-full py-12 px-4 bg-cover bg-center pt-[120px]"
         style={{
           backgroundImage: "url('/img/back-amime.jpg')",
         }}
@@ -88,7 +118,6 @@ export default function Anime() {
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-0"></div>
 
         <div className="relative z-10 max-w-7xl mx-auto flex flex-col md:flex-row gap-6 px-4 md:px-8">
-          {/* Anime Cover Image */}
           <div className="flex-shrink-0 mx-auto md:mx-0">
             <Image
               src={animeData?.images?.jpg?.image_url}
@@ -99,12 +128,9 @@ export default function Anime() {
             />
           </div>
 
-          {/* Anime Info */}
           <div className="flex flex-col gap-3 text-white max-w-4xl">
-            {/* Title */}
             <h1 className="text-2xl sm:text-3xl font-bold text-purple-300">{animeData.title}</h1>
 
-            {/* Stats */}
             <div className="flex gap-2 flex-wrap text-xs sm:text-sm">
               <span className="bg-gray-800 px-2 py-1 rounded-md flex items-center gap-1">⭐ {animeData.score}</span>
               <span className="bg-gray-800 px-2 py-1 rounded-md">{animeData.duration || `${animeData.volumes} per chapter`}</span>
@@ -115,7 +141,6 @@ export default function Anime() {
               <span className="bg-gray-800 px-2 py-1 rounded-md flex items-center gap-1">❤️ {animeData.members}</span>
             </div>
 
-            {/* Buttons */}
             <div className="flex flex-wrap gap-2 mt-2">
               {animeData.trailer?.url && (
                 <a
@@ -128,23 +153,26 @@ export default function Anime() {
                 </a>
               )}
 
-              {["bookmark", "later", "liked", "watched"].map((action) => (
-                <button
-                  key={action}
-                  onClick={() => handleAnimeAction(action)}
-                  className="bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded-md text-sm"
-                >
-                  {action.charAt(0).toUpperCase() + action.slice(1)}
-                </button>
-              ))}
+              {["bookmark", "later", "liked", "watched"].map((action) => {
+                const isActive = userActions[action];
+                return (
+                  <button
+                    key={action}
+                    onClick={() => handleAnimeAction(action)}
+                    className={`px-3 py-1.5 rounded-md text-sm transition-all duration-200
+                      ${isActive ? "bg-green-600 text-white" : "bg-gray-700 hover:bg-gray-600"}
+                    `}
+                  >
+                    {isActive ? `${action.charAt(0).toUpperCase() + action.slice(1)} ✓` : action.charAt(0).toUpperCase() + action.slice(1)}
+                  </button>
+                );
+              })}
             </div>
 
-            {/* Description */}
             <p className="text-gray-200 text-sm mt-2 line-clamp-5 md:line-clamp-none">
               {animeData.synopsis}
             </p>
 
-            {/* Genres */}
             <div className="flex flex-wrap gap-2 mt-2">
               {animeData.genres?.map((genre: any) => (
                 <span key={genre.mal_id} className="bg-[#1D0D39] text-xs px-2 py-1 rounded-md">
@@ -180,25 +208,20 @@ export default function Anime() {
           </div>
         </div>
 
-        {/* ✅ Fix this wrapper */}
         <div className="overflow-hidden w-full">
           <Review ref={reviewRef} mal_id={animeId} />
         </div>
       </div>
 
-      {/* Recommendations */}
       <div className="max-w-7xl mx-auto px-4 mt-10">
         <h2 className="text-3xl font-semibold mb-4">People Also Liked</h2>
         <AnimeRecomendation mal_id={animeId} />
       </div>
 
-      {/* Socials */}
       <div className=" mt-10">
         <Socials />
       </div>
 
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }
