@@ -10,6 +10,7 @@ interface RecommendsProps {
 
 export default function AnimeRecomendation({ mal_id }: RecommendsProps) {
   const [recData, setRecData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -19,9 +20,11 @@ export default function AnimeRecomendation({ mal_id }: RecommendsProps) {
       const fetchData = async () => {
         try {
           const recRes = await animeServices.getanimeRecomendations(String(mal_id));
-          setRecData(recRes.data.data);
+          setRecData(recRes.data.data || []);
         } catch (error) {
           console.error("Error fetching recommendations:", error);
+        } finally {
+          setLoading(false);
         }
       };
 
@@ -31,32 +34,48 @@ export default function AnimeRecomendation({ mal_id }: RecommendsProps) {
     return () => clearTimeout(timer);
   }, [mal_id]);
 
+  if (loading) {
+    return (
+      <div className="text-white text-center py-10 text-lg font-medium">
+        Loading recommendations...
+      </div>
+    );
+  }
+
   if (!recData || recData.length === 0) {
-    return <div className="text-gray-300">Loading recommendations...</div>;
+    return (
+      <div className="flex flex-col items-center justify-center text-white min-h-[100px]">
+        <h2 className="text-2xl font-semibold mb-2">People Also Liked</h2>
+        <p className="text-gray-400">No Recommendations Available 😔</p>
+      </div>
+    );
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 mt-4">
-      {recData.slice(0, 20).map((rec: any) => {
-        const { entry: recInfo } = rec;
+    <>
+      <h2 className="text-2xl font-semibold mb-4">People Also Liked</h2>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 mt-4">
+        {recData.slice(0, 20).map((rec: any) => {
+          const { entry: recInfo } = rec;
 
-        return (
-          <div
-            key={recInfo.mal_id}
-            className="cursor-pointer transform hover:scale-[1.03] transition duration-200 ease-in-out rounded overflow-hidden shadow-lg bg-[#1c1c1c]"
-            onClick={() => router.push(`/animes/${recInfo.mal_id}`)}
-          >
-            <img
-              src={recInfo.images?.jpg?.image_url || ""}
-              alt={recInfo.title}
-              className="w-full h-[300px] object-cover"
-            />
-            <div className="p-2 text-sm text-white font-medium line-clamp-2">
-              {recInfo.title}
+          return (
+            <div
+              key={recInfo.mal_id}
+              className="cursor-pointer transform hover:scale-[1.03] transition duration-200 ease-in-out rounded overflow-hidden shadow-lg bg-[#1c1c1c]"
+              onClick={() => router.push(`/animes/${recInfo.mal_id}`)}
+            >
+              <img
+                src={recInfo.images?.jpg?.image_url || ""}
+                alt={recInfo.title}
+                className="w-full h-[300px] object-cover"
+              />
+              <div className="p-2 text-sm text-white font-medium line-clamp-2">
+                {recInfo.title}
+              </div>
             </div>
-          </div>
-        );
-      })}
-    </div>
+          );
+        })}
+      </div>
+    </>
   );
 }

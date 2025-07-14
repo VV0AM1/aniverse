@@ -6,10 +6,9 @@ import { animeServices } from "@/app/lib/services/animes";
 import Image from "next/image";
 import Character from "./Character";
 import Review, { ReviewHandle } from "./Review";
-
 import Socials from "./Socials";
 import AnimeRecomendation from "./AnimeRecomendations";
-import Footer from "./Footer";
+import FullPageLoader from "@/app/lib/components/FullPageLoader";
 
 export default function Anime() {
   const { mal_id } = useParams();
@@ -17,11 +16,7 @@ export default function Anime() {
   const [nickname, setNickname] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [userActions, setUserActions] = useState<{ [key: string]: boolean }>({});
-
-  if (!mal_id || Array.isArray(mal_id)) {
-    return <div>Invalid anime ID</div>;
-  }
-
+  const [loading, setLoading] = useState(true);
   const reviewRef = useRef<ReviewHandle>(null);
 
   const animeId = String(mal_id);
@@ -33,10 +28,12 @@ export default function Anime() {
         setAnimeData(animeRes.data.data);
       } catch (error) {
         console.error("Error fetching anime details:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchData();
+    if (mal_id && !Array.isArray(mal_id)) fetchData();
   }, [animeId]);
 
   useEffect(() => {
@@ -61,8 +58,6 @@ export default function Anime() {
     }, 2500);
   };
 
-
-
   const handleAnimeAction = async (actionType: string) => {
     if (!nickname || !token) {
       alert("You're not logged in!");
@@ -82,7 +77,7 @@ export default function Anime() {
           nickname,
           animeId,
           action: actionType,
-          remove: alreadyActive, 
+          remove: alreadyActive,
         }),
       });
 
@@ -94,26 +89,24 @@ export default function Anime() {
         [actionType]: !alreadyActive,
       }));
 
-      if (alreadyActive) {
-        showToast(`❌ Removed from ${actionType}`);
-      } else {
-        showToast(`✅ Added to ${actionType}`);
-      }
+      showToast(
+        `${alreadyActive ? "❌ Removed from" : "✅ Added to"} ${
+          actionType.charAt(0).toUpperCase() + actionType.slice(1)
+        }`
+      );
     } catch (error: any) {
       console.error("Error updating anime status:", error.message);
       alert(`Error: ${error.message}`);
     }
   };
 
-  if (!animeData) return <div className="text-white text-center">Loading...</div>;
+  if (loading || !animeData) return <FullPageLoader />;
 
   return (
     <div className="w-full text-white">
       <div
         className="relative w-full py-12 px-4 bg-cover bg-center pt-[120px]"
-        style={{
-          backgroundImage: "url('/img/back-amime.jpg')",
-        }}
+        style={{ backgroundImage: "url('/img/back-amime.jpg')" }}
       >
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-0"></div>
 
@@ -129,16 +122,28 @@ export default function Anime() {
           </div>
 
           <div className="flex flex-col gap-3 text-white max-w-4xl">
-            <h1 className="text-2xl sm:text-3xl font-bold text-purple-300">{animeData.title}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-purple-300">
+              {animeData.title}
+            </h1>
 
             <div className="flex gap-2 flex-wrap text-xs sm:text-sm">
-              <span className="bg-gray-800 px-2 py-1 rounded-md flex items-center gap-1">⭐ {animeData.score}</span>
-              <span className="bg-gray-800 px-2 py-1 rounded-md">{animeData.duration || `${animeData.volumes} per chapter`}</span>
-              <span className="bg-gray-800 px-2 py-1 rounded-md">
-                {animeData.episodes ? `${animeData.episodes} Episodes` : `${animeData.chapters} Chapters`}
+              <span className="bg-gray-800 px-2 py-1 rounded-md flex items-center gap-1">
+                ⭐ {animeData.score}
               </span>
-              <span className="bg-gray-800 px-2 py-1 rounded-md">{animeData.type}</span>
-              <span className="bg-gray-800 px-2 py-1 rounded-md flex items-center gap-1">❤️ {animeData.members}</span>
+              <span className="bg-gray-800 px-2 py-1 rounded-md">
+                {animeData.duration || `${animeData.volumes} per chapter`}
+              </span>
+              <span className="bg-gray-800 px-2 py-1 rounded-md">
+                {animeData.episodes
+                  ? `${animeData.episodes} Episodes`
+                  : `${animeData.chapters} Chapters`}
+              </span>
+              <span className="bg-gray-800 px-2 py-1 rounded-md">
+                {animeData.type}
+              </span>
+              <span className="bg-gray-800 px-2 py-1 rounded-md flex items-center gap-1">
+                ❤️ {animeData.members}
+              </span>
             </div>
 
             <div className="flex flex-wrap gap-2 mt-2">
@@ -159,11 +164,15 @@ export default function Anime() {
                   <button
                     key={action}
                     onClick={() => handleAnimeAction(action)}
-                    className={`px-3 py-1.5 rounded-md text-sm transition-all duration-200
-                      ${isActive ? "bg-green-600 text-white" : "bg-gray-700 hover:bg-gray-600"}
-                    `}
+                    className={`px-3 py-1.5 rounded-md text-sm transition-all duration-200 ${
+                      isActive
+                        ? "bg-green-600 text-white"
+                        : "bg-gray-700 hover:bg-gray-600"
+                    }`}
                   >
-                    {isActive ? `${action.charAt(0).toUpperCase() + action.slice(1)} ✓` : action.charAt(0).toUpperCase() + action.slice(1)}
+                    {isActive
+                      ? `${action.charAt(0).toUpperCase() + action.slice(1)} ✓`
+                      : action.charAt(0).toUpperCase() + action.slice(1)}
                   </button>
                 );
               })}
@@ -175,7 +184,10 @@ export default function Anime() {
 
             <div className="flex flex-wrap gap-2 mt-2">
               {animeData.genres?.map((genre: any) => (
-                <span key={genre.mal_id} className="bg-[#1D0D39] text-xs px-2 py-1 rounded-md">
+                <span
+                  key={genre.mal_id}
+                  className="bg-[#1D0D39] text-xs px-2 py-1 rounded-md"
+                >
                   {genre.name}
                 </span>
               ))}
@@ -185,43 +197,20 @@ export default function Anime() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 mt-8">
-        <h2 className="text-3xl font-semibold mb-4">Characters</h2>
         <Character mal_id={animeId} />
       </div>
 
       <div className="w-[90vw] mx-auto px-4 mt-10">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-2xl md:text-3xl font-semibold">Reviews</h2>
-          <div className="flex gap-2">
-            <button
-              onClick={() => reviewRef.current?.scrollLeft()}
-              className="text-lg px-3 py-1 rounded-md bg-gray-700 hover:bg-gray-600"
-            >
-              {"<"}
-            </button>
-            <button
-              onClick={() => reviewRef.current?.scrollRight()}
-              className="text-lg px-3 py-1 rounded-md bg-gray-700 hover:bg-gray-600"
-            >
-              {">"}
-            </button>
-          </div>
-        </div>
-
-        <div className="overflow-hidden w-full">
-          <Review ref={reviewRef} mal_id={animeId} />
-        </div>
+        <Review ref={reviewRef} mal_id={animeId} />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 mt-10">
-        <h2 className="text-3xl font-semibold mb-4">People Also Liked</h2>
         <AnimeRecomendation mal_id={animeId} />
       </div>
 
-      <div className=" mt-10">
+      <div className="mt-10">
         <Socials />
       </div>
-
     </div>
   );
 }

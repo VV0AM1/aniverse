@@ -7,23 +7,27 @@ import { useRouter } from "next/navigation";
 export default function SmallCard({ data, index }: { data: any; index: number }) {
   const router = useRouter();
   const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const movedRef = useRef(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  const japaneseTitle =
-    data.titles?.find((t: any) => t.type === "Japanese")?.title || "N/A";
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const movedRef = useRef(false);
+
+  const japaneseTitle = data.titles?.find((t: any) => t.type === "Japanese")?.title || "N/A";
+  const isPopupLeft = index % 5 > 2;
 
   const formatRating = (rating?: string) => {
     if (!rating) return "14+";
     return rating.replace(/(-.{3}).*/, "$1");
   };
 
-  const isPopupLeft = index % 5 > 2;
-
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    handleResize();
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      console.log("Window resized. Is mobile?", mobile);
+    };
+
+    handleResize(); 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -31,6 +35,7 @@ export default function SmallCard({ data, index }: { data: any; index: number })
   useEffect(() => {
     if (isPopupVisible && !isMobile) {
       const hideTimer = setTimeout(() => {
+        console.log("Auto-hiding desktop popup");
         setIsPopupVisible(false);
       }, 5000);
       return () => clearTimeout(hideTimer);
@@ -46,8 +51,10 @@ export default function SmallCard({ data, index }: { data: any; index: number })
   };
 
   const handleTouchStart = () => {
+    console.log("Touch start");
     movedRef.current = false;
     timerRef.current = setTimeout(() => {
+      console.log("Long press detected: showing popup");
       setIsPopupVisible(true);
     }, 600);
   };
@@ -60,6 +67,7 @@ export default function SmallCard({ data, index }: { data: any; index: number })
   const handleTouchEnd = () => {
     if (timerRef.current) clearTimeout(timerRef.current);
     if (!movedRef.current && !isPopupVisible) {
+      console.log("Quick tap: navigating");
       handleRedirect();
     }
   };
@@ -71,13 +79,16 @@ export default function SmallCard({ data, index }: { data: any; index: number })
   return (
     <>
       <div
-        className="relative cursor-pointer w-[180px] h-[300px] rounded-lg overflow-visible group"
+        className="relative cursor-pointer w-[180px] h-[300px] rounded-lg overflow-visible group touch-manipulation"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onTouchCancel={handleTouchCancel}
         onClick={(e) => {
-          if (window.innerWidth > 768) handleRedirect();
+          if (window.innerWidth > 768) {
+            console.log("Desktop click: redirecting");
+            handleRedirect();
+          }
         }}
       >
         <div className="w-full h-[80%] relative overflow-hidden rounded-lg">
@@ -104,19 +115,17 @@ export default function SmallCard({ data, index }: { data: any; index: number })
 
         {!isMobile && (
           <div
-            className={`absolute top-0 ${
-              isPopupLeft ? "right-full mr-4" : "left-full ml-4"
-            } z-50 w-[360px] max-w-[90vw] h-[300px] p-4 bg-[#1b1b1b]/90 backdrop-blur-md rounded-xl text-white shadow-lg
-            transition-all duration-300 ease-in-out flex-col ${
-              isPopupVisible
-                ? "opacity-100 scale-100 pointer-events-auto flex"
-                : "opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto group-hover:flex"
-            }`}
+            className={`absolute top-0 ${isPopupLeft ? "right-full mr-4" : "left-full ml-4"} z-50 
+              w-[360px] max-w-[90vw] h-[300px] p-4 bg-[#1b1b1b]/90 backdrop-blur-md rounded-xl text-white shadow-lg
+              transition-all duration-300 ease-in-out flex-col ${
+                isPopupVisible
+                  ? "opacity-100 scale-100 pointer-events-auto flex"
+                  : "opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto group-hover:flex"
+              }`}
           >
             <h2 className="text-md font-semibold mb-1 line-clamp-2">{data.title}</h2>
             <p className="text-gray-300 text-sm mb-2">
-              {data.episodes ? `${data.episodes} Episodes` : `${data.chapters} Chapters`} |{" "}
-              {data.year}
+              {data.episodes ? `${data.episodes} Episodes` : `${data.chapters} Chapters`} | {data.year}
             </p>
 
             <div className="flex flex-wrap gap-2 text-[13px] mb-3">
@@ -138,15 +147,9 @@ export default function SmallCard({ data, index }: { data: any; index: number })
             <p className="line-clamp-3 text-gray-200">{data.synopsis}</p>
 
             <div className="mt-2 text-sm space-y-1">
-              <p>
-                <b>Japanese:</b> {japaneseTitle}
-              </p>
-              <p>
-                <b>Aired:</b> {data.aired?.string?.split(" to ")[0] || data.published?.string}
-              </p>
-              <p>
-                <b>Status:</b> {data.status}
-              </p>
+              <p><b>Japanese:</b> {japaneseTitle}</p>
+              <p><b>Aired:</b> {data.aired?.string?.split(" to ")[0] || data.published?.string}</p>
+              <p><b>Status:</b> {data.status}</p>
             </div>
 
             {data.genres?.length > 0 && (
@@ -166,7 +169,7 @@ export default function SmallCard({ data, index }: { data: any; index: number })
       </div>
 
       {isPopupVisible && isMobile && (
-        <div className="fixed inset-0 z-[999] bg-black/80 backdrop-blur-sm p-4 flex justify-center items-center">
+        <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm p-4 flex justify-center items-center">
           <div className="bg-[#1b1b1b] max-w-md w-full rounded-lg p-4 text-white shadow-xl overflow-y-auto max-h-[80vh]">
             <h2 className="text-lg font-semibold mb-2">{data.title}</h2>
             <p className="text-sm text-gray-400 mb-2">
