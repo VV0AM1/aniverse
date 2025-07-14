@@ -201,7 +201,29 @@ export default function Anime() {
       </div>
 
       <div className="w-[90vw] mx-auto px-4 mt-10">
-        <Review ref={reviewRef} mal_id={animeId} />
+        {reviewRef.current && (
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-2xl md:text-3xl font-semibold">Reviews</h2>
+            <div className="flex gap-2">
+              <button
+                onClick={() => reviewRef.current?.scrollLeft()}
+                className="text-lg px-3 py-1 rounded-md bg-gray-700 hover:bg-gray-600"
+              >
+                {"<"}
+              </button>
+              <button
+                onClick={() => reviewRef.current?.scrollRight()}
+                className="text-lg px-3 py-1 rounded-md bg-gray-700 hover:bg-gray-600"
+              >
+                {">"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div className="overflow-hidden w-full">
+          <Review ref={reviewRef} mal_id={animeId} />
+        </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 mt-10">
