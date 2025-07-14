@@ -9,12 +9,12 @@ import Review, { ReviewHandle } from "./Review";
 import Socials from "./Socials";
 import AnimeRecomendation from "./AnimeRecomendations";
 import FullPageLoader from "@/app/lib/components/FullPageLoader";
+import { useAuth } from "@/app/context/AuthContext"; 
 
 export default function Anime() {
   const { mal_id } = useParams();
+  const { nickname, token } = useAuth(); 
   const [animeData, setAnimeData] = useState<any>(null);
-  const [nickname, setNickname] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [userActions, setUserActions] = useState<{ [key: string]: boolean }>({});
   const [loading, setLoading] = useState(true);
   const reviewRef = useRef<ReviewHandle>(null);
@@ -26,6 +26,16 @@ export default function Anime() {
       try {
         const animeRes = await animeServices.getByIdFull(animeId);
         setAnimeData(animeRes.data.data);
+
+        if (nickname && token) {
+          const statusRes = await fetch(`/api/anime/status/${animeId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          const status = await statusRes.json();
+          if (status?.actions) setUserActions(status.actions);
+        }
       } catch (error) {
         console.error("Error fetching anime details:", error);
       } finally {
@@ -34,14 +44,7 @@ export default function Anime() {
     };
 
     if (mal_id && !Array.isArray(mal_id)) fetchData();
-  }, [animeId]);
-
-  useEffect(() => {
-    const storedNickname = localStorage.getItem("nickname");
-    const storedToken = localStorage.getItem("token");
-    if (storedNickname) setNickname(storedNickname);
-    if (storedToken) setToken(storedToken);
-  }, []);
+  }, [animeId, nickname, token]);
 
   const showToast = (message: string) => {
     const toast = document.createElement("div");
@@ -108,8 +111,7 @@ export default function Anime() {
         className="relative w-full py-12 px-4 bg-cover bg-center pt-[120px]"
         style={{ backgroundImage: "url('/img/back-amime.jpg')" }}
       >
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-0"></div>
-
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-0" />
         <div className="relative z-10 max-w-7xl mx-auto flex flex-col md:flex-row gap-6 px-4 md:px-8">
           <div className="flex-shrink-0 mx-auto md:mx-0">
             <Image
@@ -201,26 +203,23 @@ export default function Anime() {
       </div>
 
       <div className="w-[90vw] mx-auto px-4 mt-10">
-        {reviewRef.current && (
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-2xl md:text-3xl font-semibold">Reviews</h2>
-            <div className="flex gap-2">
-              <button
-                onClick={() => reviewRef.current?.scrollLeft()}
-                className="text-lg px-3 py-1 rounded-md bg-gray-700 hover:bg-gray-600"
-              >
-                {"<"}
-              </button>
-              <button
-                onClick={() => reviewRef.current?.scrollRight()}
-                className="text-lg px-3 py-1 rounded-md bg-gray-700 hover:bg-gray-600"
-              >
-                {">"}
-              </button>
-            </div>
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-2xl md:text-3xl font-semibold">Reviews</h2>
+          <div className="flex gap-2">
+            <button
+              onClick={() => reviewRef.current?.scrollLeft()}
+              className="text-lg px-3 py-1 rounded-md bg-gray-700 hover:bg-gray-600"
+            >
+              {"<"}
+            </button>
+            <button
+              onClick={() => reviewRef.current?.scrollRight()}
+              className="text-lg px-3 py-1 rounded-md bg-gray-700 hover:bg-gray-600"
+            >
+              {">"}
+            </button>
           </div>
-        )}
-
+        </div>
         <div className="overflow-hidden w-full">
           <Review ref={reviewRef} mal_id={animeId} />
         </div>

@@ -4,6 +4,7 @@ import "./globals.css";
 
 import NavBar from "@/app/lib/components/NavBar";
 import Footer from "@/app/lib/components/Footer";
+import { AuthProvider } from "@/app/context/AuthContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,9 +21,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} bg-[#0d0d1a] text-white`}>
-        <NavBar />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
+        <AuthProvider>
+          <NavBar />
+          <main className="min-h-screen">
+            {children}
+          </main>
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );

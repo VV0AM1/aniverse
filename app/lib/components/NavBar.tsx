@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
 import React, { useState, useEffect, useRef } from "react";
 import { animeServices } from "@/app/lib/services/animes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import SkeletonLoader from "./SkeletonLoader";
+import { useAuth } from "@/app/context/AuthContext"; 
 
 const NavBar: React.FC = () => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
@@ -13,23 +14,16 @@ const NavBar: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [isFadingOut, setIsFadingOut] = useState(false);
-  const [nickname, setNickname] = useState<string | null>(null);
 
+  const { nickname, setNickname, setToken } = useAuth();
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
-  const catalogButtonRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    const storedNickname = localStorage.getItem("nickname");
-    if (storedNickname) setNickname(storedNickname);
-  }, []);
 
   const toggleMenu = () => setIsMenuVisible(!isMenuVisible);
   const toggleMobileMenu = () => setIsMobileMenuVisible(!isMobileMenuVisible);
   const toggleSearch = () => {
-    setIsSearchVisible(prev => !prev);
+    setIsSearchVisible((prev) => !prev);
     if (isSearchVisible) {
       setSearchQuery("");
       setSearchResults([]);
@@ -49,9 +43,8 @@ const NavBar: React.FC = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("nickname");
-    localStorage.removeItem("token");
     setNickname(null);
+    setToken(null);
     router.push("/");
     toggleMobileMenu();
   };
@@ -75,10 +68,10 @@ const NavBar: React.FC = () => {
   };
 
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
+    const delayDebounce = setTimeout(() => {
       if (searchQuery) fetchAnime(searchQuery);
     }, 1500);
-    return () => clearTimeout(delayDebounceFn);
+    return () => clearTimeout(delayDebounce);
   }, [searchQuery]);
 
   return (
@@ -87,12 +80,12 @@ const NavBar: React.FC = () => {
         <nav className="h-[80px] bg-[#23252b5e] backdrop-blur-xl rounded-full px-4 sm:px-6 flex justify-between items-center">
           <div className="hidden sm:flex gap-2 items-center">
             <button
-              ref={catalogButtonRef}
               onClick={toggleMenu}
               className="text-white text-sm px-4 py-3 rounded-full hover:bg-[#121316] hover:text-purple-400 transition"
             >
               Catalog
             </button>
+
             {nickname ? (
               <Link href="/Dashboard" className="text-white text-sm px-4 py-3 rounded-full hover:bg-[#121316] hover:text-purple-400 transition flex items-center gap-2">
                 <img src="/img/user.svg" className="w-4 h-4" alt="User" />
@@ -103,6 +96,7 @@ const NavBar: React.FC = () => {
                 Log-In
               </Link>
             )}
+
             <button onClick={handleRedirect} className="text-white text-sm px-4 py-3 rounded-full hover:bg-[#121316] hover:text-purple-400 transition">
               Random
             </button>
@@ -116,13 +110,10 @@ const NavBar: React.FC = () => {
           </Link>
 
           <div className="hidden sm:flex items-center gap-4">
-            <button
-              id="nav-btn-search"
-              onClick={toggleSearch}
-              className="text-white p-3 rounded-full hover:bg-[#121316] hover:text-purple-400 transition"
-            >
-              <img id="nav-icon-search" src="/img/search.svg" className="w-4 h-4" alt="Search" />
+            <button onClick={toggleSearch} className="text-white p-3 rounded-full hover:bg-[#121316] hover:text-purple-400 transition">
+              <img src="/img/search.svg" className="w-4 h-4" alt="Search" />
             </button>
+
             {nickname ? (
               <button onClick={handleLogout} className="text-white text-sm px-4 py-3 rounded-full hover:bg-[#121316] hover:text-purple-400 transition">
                 Log Out
@@ -132,6 +123,7 @@ const NavBar: React.FC = () => {
                 Home
               </Link>
             )}
+
             <Link href="/chat" className="text-white p-3 rounded-full hover:bg-[#121316] hover:text-purple-400 transition">
               <img src="/img/brand-line.svg" className="w-4 h-4" alt="Chat" />
             </Link>
@@ -142,6 +134,7 @@ const NavBar: React.FC = () => {
           </button>
         </nav>
 
+        {/* Catalog Dropdown */}
         <div
           ref={menuRef}
           className={`absolute left-12 top-full mt-2 w-[90%] max-w-[900px] rounded-3xl bg-[#121316c9] backdrop-blur-xl z-50 transition-all duration-500 ease-in-out overflow-hidden ${
@@ -174,7 +167,10 @@ const NavBar: React.FC = () => {
           </div>
         </div>
 
-        <div className={`sm:hidden overflow-y-auto fixed inset-0 h-[80vh] scrollbar-hide bg-[#121316] top-[100px] rounded-2xl  z-[9998] p-8  transform transition-all duration-300 ease-in-out ${isMobileMenuVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"}`}>
+        {/* Mobile Menu */}
+        <div className={`sm:hidden overflow-y-auto fixed inset-0 h-[80vh] scrollbar-hide bg-[#121316] top-[100px] rounded-2xl z-[9998] p-8 transform transition-all duration-300 ease-in-out ${
+          isMobileMenuVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"
+        }`}>
           <button onClick={toggleMobileMenu} className="self-end p-2 mb-4">
             <img src="/img/x.svg" className="w-6 h-6" alt="Close" />
           </button>
@@ -191,23 +187,21 @@ const NavBar: React.FC = () => {
               <SkeletonLoader />
               <SkeletonLoader />
             </>
-          ) : (
-            searchQuery && (
-              <ul className="mb-6 space-y-2 max-h-[200px] overflow-y-auto text-white text-sm custom-scroll">
-                {searchResults.length > 0 ? (
-                  searchResults.map((anime) => (
-                    <li key={anime.mal_id}>
-                      <Link href={`/animes/${anime.mal_id}`} className="flex items-center gap-3 p-2 hover:bg-[#23252b] rounded-lg" onClick={toggleMobileMenu}>
-                        <img src={anime.images.jpg.small_image_url} alt={anime.title} className="w-[50px] h-[60px] object-cover rounded" />
-                        {anime.title}
-                      </Link>
-                    </li>
-                  ))
-                ) : (
-                  <p className="text-white text-sm mt-2">No results found.</p>
-                )}
-              </ul>
-            )
+          ) : searchQuery && (
+            <ul className="mb-6 space-y-2 max-h-[200px] overflow-y-auto text-white text-sm custom-scroll">
+              {searchResults.length > 0 ? (
+                searchResults.map((anime) => (
+                  <li key={anime.mal_id}>
+                    <Link href={`/animes/${anime.mal_id}`} onClick={toggleMobileMenu} className="flex items-center gap-3 p-2 hover:bg-[#23252b] rounded-lg">
+                      <img src={anime.images.jpg.small_image_url} alt={anime.title} className="w-[50px] h-[60px] object-cover rounded" />
+                      {anime.title}
+                    </Link>
+                  </li>
+                ))
+              ) : (
+                <p className="text-white text-sm mt-2">No results found.</p>
+              )}
+            </ul>
           )}
 
           <div className="flex flex-col gap-4 text-white">

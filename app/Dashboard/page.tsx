@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import NavBar from '@/app/lib/components/NavBar';
 import { animeServices } from "@/app/lib/services/animes";
 import DashboardSkeleton from '../lib/components/Dashboardskeleton';
-
+import { useAuth } from '@/app/context/AuthContext'; // ✅ import Auth
+import { useRouter } from 'next/navigation';
 interface AnimeCounts {
   liked: number;
   watched: number;
@@ -13,7 +14,7 @@ interface AnimeCounts {
 }
 
 export default function UserProfile() {
-  const [nickname, setNickname] = useState('');
+  const { nickname, token } = useAuth();
   const [avatar, setAvatar] = useState('/img/defaultuser.png');
   const [bio, setBio] = useState('');
   const [dob, setDob] = useState('');
@@ -23,21 +24,70 @@ export default function UserProfile() {
   const [selectedCategory, setSelectedCategory] = useState<'liked' | 'watched' | 'bookmark' | 'later'>('liked');
   const [animeCounts, setAnimeCounts] = useState<AnimeCounts>({ liked: 0, watched: 0, bookmark: 0, later: 0 });
   const [animeList, setAnimeList] = useState<any[]>([]);
- const [isLoadingAnimes, setIsLoadingAnimes] = useState(true);
+  const [isLoadingAnimes, setIsLoadingAnimes] = useState(true);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+  const router = useRouter();
 
   useEffect(() => {
-    const storedNickname = localStorage.getItem('nickname');
-    const token = localStorage.getItem('token');
-    if (storedNickname && token) {
-      setNickname(storedNickname);
-      setNewNickname(storedNickname);
-      fetchCounts(storedNickname, token);
-      fetchUserProfile(storedNickname, token);
+    if (!nickname || !token) {
+      router.replace("/");
     }
-  }, []);
+  }, [nickname, token, router]);
+
+  // Optional: show nothing while redirecting
+  if (!nickname || !token) return null;
+
+  useEffect(() => {
+    if (!nickname || !token) return;
+
+    setNewNickname(nickname);
+    fetchCounts(nickname, token);
+    fetchUserProfile(nickname, token);
+  }, [nickname, token]);
+
+  useEffect(() => {
+    if (!nickname || !token) return;
+
+    const fetchUserAnimeByCategory = async () => {
+      setIsLoadingAnimes(true);
+
+      const res = await fetch("/api/getUserAnimeIds", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ nickname, category: selectedCategory }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) return;
+
+      const ids = data.animeIds || [];
+      const animeDataList = [];
+
+      for (const id of ids) {
+        try {
+          const res = await animeServices.getByIdFull(String(id));
+          animeDataList.push({
+            id: res.data.data.mal_id,
+            title: res.data.data.title,
+            image: res.data.data.images.jpg.image_url,
+          });
+        } catch (err) {
+          console.error(`Anime ID ${id} failed`, err);
+        }
+        await new Promise((r) => setTimeout(r, 1200)); // delay
+      }
+
+      setAnimeList(animeDataList);
+      setIsLoadingAnimes(false);
+    };
+
+    fetchUserAnimeByCategory();
+  }, [selectedCategory, nickname, token]);
 
   const fetchCounts = async (nickname: string, token: string) => {
     const res = await fetch('/api/getUserAnimeCounts', {
@@ -57,68 +107,30 @@ export default function UserProfile() {
     });
     const data = await res.json();
     if (res.ok) {
-      setAvatar(data.avatar || avatar);
+      setAvatar(data.avatar || '/img/defaultuser.png');
       setBio(data.bio || '');
       setDob(data.dob || '');
       setGender(data.gender || '');
     }
   };
 
-  useEffect(() => {
-      const fetchUserAnimeByCategory = async () => {
-        const token = localStorage.getItem("token");
-        if (!nickname || !token) return;
-
-        setIsLoadingAnimes(true); 
-
-        const res = await fetch("/api/getUserAnimeIds", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ nickname, category: selectedCategory }),
-        });
-
-        const data = await res.json();
-        if (!res.ok) return;
-
-        const ids = data.animeIds || [];
-        const animeDataList = [];
-
-        for (const id of ids) {
-          try {
-            const res = await animeServices.getByIdFull(String(id));
-            animeDataList.push({
-              id: res.data.data.mal_id,
-              title: res.data.data.title,
-              image: res.data.data.images.jpg.image_url,
-            });
-          } catch (err) {
-            console.error(`Anime ID ${id} failed`, err);
-          }
-          await new Promise((r) => setTimeout(r, 1200));
-        }
-
-        setAnimeList(animeDataList);
-        setIsLoadingAnimes(false); 
-      };
-
-      fetchUserAnimeByCategory();
-    }, [selectedCategory, nickname]);
-
   const handleUploadClick = () => fileInputRef.current?.click();
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file || !token) return;
 
     const reader = new FileReader();
     reader.onload = async () => {
       const base64 = reader.result as string;
       setAvatar(base64);
 
-      const token = localStorage.getItem('token');
       await fetch('/api/uploadAvatar', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({ nickname, avatarBase64: base64 }),
       });
     };
@@ -127,21 +139,21 @@ export default function UserProfile() {
   };
 
   const updateNickname = async () => {
-    const token = localStorage.getItem('token');
+    if (!token) return;
+
     const res = await fetch('/api/updateNickname', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ oldNickname: nickname, newNickname })
+      body: JSON.stringify({ oldNickname: nickname, newNickname }),
     });
 
     const data = await res.json();
     if (res.ok) {
-      setNickname(newNickname);
-      localStorage.setItem('nickname', newNickname);
-      setIsEditingNickname(false);
+      setNewNickname(newNickname);
+      window.location.reload(); 
     } else {
       alert(`Nickname update failed: ${data.message}`);
     }
@@ -168,7 +180,7 @@ export default function UserProfile() {
             <div className="flex items-center gap-3 flex-wrap">
               <input
                 type="text"
-                value={isEditingNickname ? newNickname : nickname}
+                value={(isEditingNickname ? newNickname : nickname) || ""}
                 onChange={(e) => setNewNickname(e.target.value)}
                 disabled={!isEditingNickname}
                 className="bg-transparent text-2xl sm:text-3xl font-bold border-b border-purple-500 focus:outline-none"
