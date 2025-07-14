@@ -3,6 +3,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function Login() {
   const [mode, setMode] = useState<"login" | "register">("login");
@@ -12,6 +13,7 @@ export default function Login() {
   const [message, setMessage] = useState("");
 
   const router = useRouter();
+  const { setNickname: setAuthNickname, setToken: setAuthToken } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +37,8 @@ export default function Login() {
       localStorage.setItem("userId", user._id);
       localStorage.setItem("nickname", user.nickname);
       localStorage.setItem("token", token);
-
+      setAuthNickname(user.nickname);
+      setAuthToken(token);
       router.push("/");
     } catch (err: any) {
       console.error("❌ Login/Register failed:", err.response?.data || err);
