@@ -79,7 +79,7 @@ export default function SmallCard({ data, index }: { data: any; index: number })
   return (
     <>
       <div
-        className="relative cursor-pointer w-[180px] h-[300px] rounded-lg overflow-visible group touch-manipulation"
+        className="relative cursor-pointer w-[140px] h-[230px] sm:w-[180px] sm:h-[300px] rounded-lg overflow-visible group touch-manipulation"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
