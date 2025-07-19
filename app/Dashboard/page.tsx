@@ -25,6 +25,7 @@ export default function UserProfile() {
   const [animeCounts, setAnimeCounts] = useState<AnimeCounts>({ liked: 0, watched: 0, bookmark: 0, later: 0 });
   const [animeList, setAnimeList] = useState<any[]>([]);
   const [isLoadingAnimes, setIsLoadingAnimes] = useState(true);
+  const [authReady, setAuthReady] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
@@ -33,8 +34,12 @@ export default function UserProfile() {
   useEffect(() => {
     if (!nickname || !token) {
       router.replace("/");
+    } else {
+      setAuthReady(true);
     }
   }, [nickname, token, router]);
+
+  if (!authReady) return null;
 
   if (!nickname || !token) return null;
 
