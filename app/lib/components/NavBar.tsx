@@ -45,8 +45,14 @@ const NavBar: React.FC = () => {
   const handleLogout = () => {
     setNickname(null);
     setToken(null);
-    router.push("/");
-    toggleMobileMenu();
+    localStorage.removeItem("nickname");
+    localStorage.removeItem("token");
+    
+    setTimeout(() => {
+      router.push("/");
+    }, 50);
+
+    toggleMobileMenu(); 
   };
 
   const fetchAnime = async (query: string) => {

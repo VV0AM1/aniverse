@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import NavBar from '@/app/lib/components/NavBar';
 import { animeServices } from "@/app/lib/services/animes";
 import DashboardSkeleton from '../lib/components/Dashboardskeleton';
-import { useAuth } from '@/app/context/AuthContext'; // ✅ import Auth
+import { useAuth } from '@/app/context/AuthContext'; 
 import { useRouter } from 'next/navigation';
 interface AnimeCounts {
   liked: number;
@@ -14,7 +14,7 @@ interface AnimeCounts {
 }
 
 export default function UserProfile() {
-  const { nickname, token } = useAuth();
+  const { nickname, token, setNickname } = useAuth();
   const [avatar, setAvatar] = useState('/img/defaultuser.png');
   const [bio, setBio] = useState('');
   const [dob, setDob] = useState('');
@@ -36,7 +36,6 @@ export default function UserProfile() {
     }
   }, [nickname, token, router]);
 
-  // Optional: show nothing while redirecting
   if (!nickname || !token) return null;
 
   useEffect(() => {
@@ -79,7 +78,7 @@ export default function UserProfile() {
         } catch (err) {
           console.error(`Anime ID ${id} failed`, err);
         }
-        await new Promise((r) => setTimeout(r, 1200)); // delay
+        await new Promise((r) => setTimeout(r, 1200)); 
       }
 
       setAnimeList(animeDataList);
@@ -139,25 +138,25 @@ export default function UserProfile() {
   };
 
   const updateNickname = async () => {
-    if (!token) return;
+  if (!token) return;
 
-    const res = await fetch('/api/updateNickname', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ oldNickname: nickname, newNickname }),
-    });
+  const res = await fetch('/api/updateNickname', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ oldNickname: nickname, newNickname }),
+  });
 
-    const data = await res.json();
-    if (res.ok) {
-      setNewNickname(newNickname);
-      window.location.reload(); 
-    } else {
-      alert(`Nickname update failed: ${data.message}`);
-    }
-  };
+  const data = await res.json();
+  if (res.ok) {
+    setNickname(newNickname); // ✅ update context
+    setIsEditingNickname(false);
+  } else {
+    alert(`Nickname update failed: ${data.message}`);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0d0d1a] to-[#1a1a2e] text-white">
