@@ -58,7 +58,7 @@ export default function HomePage() {
 
       <Karusel animes={animes} />
       <TopSection />
-      <div className="mt-[-11vh] w-full">
+      <div className="mt-[-8vh] w-full">
         <Socials />
       </div>
       <KaruselSeasonal animes={animes} />
