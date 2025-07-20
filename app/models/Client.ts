@@ -12,6 +12,7 @@ const ClientSchema = new mongoose.Schema({
     later: [{ type: String }],
     bookmark: [{ type: String }]
   }
+  
 });
 
 export default mongoose.models.Client || mongoose.model('Client', ClientSchema);

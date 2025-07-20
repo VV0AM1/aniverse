@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-
+import AnimeAssistant from "./lib/components/AnimeAssistant";
 import NavBar from "@/app/lib/components/NavBar";
 import Footer from "@/app/lib/components/Footer";
 import { AuthProvider } from "@/app/context/AuthContext";
@@ -25,6 +25,7 @@ export default function RootLayout({
           <NavBar />
           <main className="min-h-screen">
             {children}
+            <AnimeAssistant />
           </main>
           <Footer />
         </AuthProvider>

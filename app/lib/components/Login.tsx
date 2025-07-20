@@ -68,7 +68,7 @@ export default function Login() {
 
       <div className="relative z-20 flex items-center justify-center h-full perspective">
         <div
-          className={`relative w-[90%] max-w-5xl h-[550px] transform-style preserve-3d duration-700 transition-transform ${
+          className={`relative w-[90%] max-w-5xl h-[600px] transform-style preserve-3d duration-700 transition-transform ${
             mode === "register" ? "rotate-y-180" : ""
           }`}
         >

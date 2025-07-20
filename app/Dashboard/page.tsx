@@ -15,52 +15,46 @@ interface AnimeCounts {
 
 export default function UserProfile() {
   const { nickname, token, setNickname } = useAuth();
+  const [authReady, setAuthReady] = useState(false);
   const [avatar, setAvatar] = useState('/img/defaultuser.png');
   const [bio, setBio] = useState('');
   const [dob, setDob] = useState('');
+  const [gender, setGender] = useState('');
   const [isEditingNickname, setIsEditingNickname] = useState(false);
   const [newNickname, setNewNickname] = useState('');
-  const [gender, setGender] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'liked' | 'watched' | 'bookmark' | 'later'>('liked');
   const [animeCounts, setAnimeCounts] = useState<AnimeCounts>({ liked: 0, watched: 0, bookmark: 0, later: 0 });
   const [animeList, setAnimeList] = useState<any[]>([]);
   const [isLoadingAnimes, setIsLoadingAnimes] = useState(true);
-  const [authReady, setAuthReady] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
   const router = useRouter();
 
   useEffect(() => {
     if (!nickname || !token) {
-      router.replace("/");
+      router.replace('/');
     } else {
       setAuthReady(true);
     }
   }, [nickname, token, router]);
 
-  if (!authReady) return null;
-
-  if (!nickname || !token) return null;
-
   useEffect(() => {
-    if (!nickname || !token) return;
-
+    if (!authReady || !nickname || !token) return;
     setNewNickname(nickname);
     fetchCounts(nickname, token);
     fetchUserProfile(nickname, token);
-  }, [nickname, token]);
+  }, [authReady, nickname, token]);
 
   useEffect(() => {
-    if (!nickname || !token) return;
+    if (!authReady || !nickname || !token) return;
 
     const fetchUserAnimeByCategory = async () => {
       setIsLoadingAnimes(true);
 
-      const res = await fetch("/api/getUserAnimeIds", {
-        method: "POST",
+      const res = await fetch('/api/getUserAnimeIds', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ nickname, category: selectedCategory }),
@@ -81,9 +75,9 @@ export default function UserProfile() {
             image: res.data.data.images.jpg.image_url,
           });
         } catch (err) {
-          console.error(`Anime ID ${id} failed`, err);
+          console.error(`Failed to fetch anime ${id}`, err);
         }
-        await new Promise((r) => setTimeout(r, 1200)); 
+        await new Promise((r) => setTimeout(r, 1200));
       }
 
       setAnimeList(animeDataList);
@@ -91,7 +85,7 @@ export default function UserProfile() {
     };
 
     fetchUserAnimeByCategory();
-  }, [selectedCategory, nickname, token]);
+  }, [selectedCategory, authReady, nickname, token]);
 
   const fetchCounts = async (nickname: string, token: string) => {
     const res = await fetch('/api/getUserAnimeCounts', {
@@ -143,25 +137,29 @@ export default function UserProfile() {
   };
 
   const updateNickname = async () => {
-  if (!token) return;
+    if (!token) return;
 
-  const res = await fetch('/api/updateNickname', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ oldNickname: nickname, newNickname }),
-  });
+    const res = await fetch('/api/updateNickname', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ oldNickname: nickname, newNickname }),
+    });
 
-  const data = await res.json();
-  if (res.ok) {
-    setNickname(newNickname); // ✅ update context
-    setIsEditingNickname(false);
-  } else {
-    alert(`Nickname update failed: ${data.message}`);
-  }
-};
+    const data = await res.json();
+    if (res.ok) {
+      setNickname(newNickname);
+      setIsEditingNickname(false);
+    } else {
+      alert(`Nickname update failed: ${data.message}`);
+    }
+  };
+
+  const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+  if (!authReady) return null;
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0d0d1a] to-[#1a1a2e] text-white">
