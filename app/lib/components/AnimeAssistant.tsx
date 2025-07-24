@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { SendHorizonal } from 'lucide-react';
-import "./globals.css";
+import "@/app/globals.css";
 
 type Message = {
   role: 'user' | 'assistant';
