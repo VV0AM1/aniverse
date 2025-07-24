@@ -47,7 +47,11 @@ body {
   }
 }
 
-
+@supports not (height: 100dvh) {
+  .fix-mobile-chat {
+    max-height: 80vh;
+  }
+}
 
 html {
   scroll-behavior: smooth;

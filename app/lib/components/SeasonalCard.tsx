@@ -47,13 +47,13 @@ export default function SeasonalCard({ data, index }: any) {
         </div>
       </div>
 
-      <div
-        className={`absolute top-0 ${
-          isPopupLeft ? "right-full mr-4" : "left-full ml-4"
-        } z-50 w-[380px] max-w-[90vw] h-[340px] p-4 bg-[#1b1b1b]/90 backdrop-blur-md rounded-xl text-white shadow-lg
-        opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 ease-in-out
-        pointer-events-none group-hover:pointer-events-auto hidden group-hover:flex flex-col`}
-      >
+        <div
+          className={`absolute top-0 ${
+            isPopupLeft ? "right-full mr-4" : "left-full ml-4"
+          } z-50 w-[380px] max-w-[90vw] h-[340px] p-4 bg-[#1b1b1b]/90 backdrop-blur-md rounded-xl text-white shadow-lg
+          opacity-0 scale-95 transition-all duration-300 ease-in-out
+          pointer-events-none sm:group-hover:pointer-events-auto hidden sm:group-hover:flex flex-col`}
+        >
         <h2 className="text-md font-semibold mb-1 line-clamp-2">{data.title}</h2>
         <p className="text-gray-300 text-sm mb-2">
           {data.episodes ? `${data.episodes} Episodes` : `${data.chapters} Chapters`} | {data.year}

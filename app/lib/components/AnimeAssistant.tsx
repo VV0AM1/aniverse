@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { SendHorizonal } from 'lucide-react';
+import "./globals.css";
 
 type Message = {
   role: 'user' | 'assistant';
@@ -99,14 +100,17 @@ export default function AnimeAssistant() {
       </div>
 
       {isOpen && (
-        <div className="fixed bottom-24 right-4  w-[90vw] max-w-md z-50 bg-[#1a1a2e] text-white rounded-xl shadow-2xl overflow-hidden flex flex-col">
+        <div
+          className="fixed inset-x-4 bottom-[env(safe-area-inset-bottom)] sm:bottom-24 z-50 w-auto max-w-md mx-auto bg-[#1a1a2e] text-white rounded-xl shadow-2xl flex flex-col"
+          style={{ maxHeight: '80dvh' }}
+        >
           <div className="bg-purple-700 px-4 py-3 font-bold text-lg">
             Aiko 👧 Anime Assistant
           </div>
 
           <div
             ref={chatRef}
-            className="p-3 text-sm space-y-3 max-h-[500px] overflow-y-auto bg-[#121222]"
+            className="p-3 text-sm space-y-3 flex-1 overflow-y-auto bg-[#121222] min-h-[200px]"
           >
             {messages.map((msg, i) => (
               <div
