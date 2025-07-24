@@ -63,9 +63,6 @@ export default function HomePage() {
       </div>
       <KaruselSeasonal animes={animes} />
       <WebReview />
-      <div className="home-footer-container mt-2">
-        <Footer />
-      </div>
     </div>
   );
 }
