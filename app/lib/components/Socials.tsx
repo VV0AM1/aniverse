@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { FaGithub, FaLinkedin, FaInstagram } from "react-icons/fa";
+import { FaGithub, FaLinkedin, FaGlobe  } from "react-icons/fa";
 
 export default function Socials() {
   return (
@@ -25,14 +25,14 @@ export default function Socials() {
         </p>
 
         <div className="flex justify-center gap-6">
-          <a href="#" aria-label="GitHub" className="hover:text-purple-400 transition text-2xl">
+          <a href="#https://github.com/VV0AM1" aria-label="GitHub" className="hover:text-purple-400 transition text-2xl">
             <FaGithub />
           </a>
-          <a href="#" aria-label="LinkedIn" className="hover:text-purple-400 transition text-2xl">
+          <a href="https://www.linkedin.com/in/ilia-akimov-74889133b?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" aria-label="LinkedIn" className="hover:text-purple-400 transition text-2xl">
             <FaLinkedin />
           </a>
-          <a href="#" aria-label="Instagram" className="hover:text-purple-400 transition text-2xl">
-            <FaInstagram />
+          <a href="https://iliaakimov.netlify.app" aria-label="Instagram" className="hover:text-purple-400 transition text-2xl">
+            <FaGlobe />
           </a>
         </div>
       </div>
