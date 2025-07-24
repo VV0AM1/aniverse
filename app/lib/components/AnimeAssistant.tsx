@@ -24,9 +24,33 @@ export default function AnimeAssistant() {
   const chatRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowWelcome(true), 4000);
-    return () => clearTimeout(timer);
-  }, []);
+    let showTimeout: NodeJS.Timeout;
+    let loopInterval: NodeJS.Timeout;
+
+    const startLoop = () => {
+      setShowWelcome(true);
+      showTimeout = setTimeout(() => {
+        setShowWelcome(false);
+      }, 10000);
+    };
+
+    const startInterval = () => {
+      loopInterval = setInterval(() => {
+        startLoop();
+      }, 60000); 
+    };
+
+    const initial = setTimeout(() => {
+      startLoop();
+      startInterval();
+    }, 4000); 
+
+  return () => {
+    clearTimeout(initial);
+    clearTimeout(showTimeout);
+    clearInterval(loopInterval);
+  };
+}, []);
 
   useEffect(() => {
     if (chatRef.current) {
