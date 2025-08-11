@@ -83,7 +83,7 @@ const NavBar: React.FC = () => {
   return (
     <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[95%] z-[9999]">
       <div className="relative w-full">
-        <nav className="h-[80px] bg-[#23252b5e] backdrop-blur-xl rounded-full px-4 sm:px-6 flex justify-between items-center">
+        <nav className="h-[70px] bg-[#23252b5e] backdrop-blur-xl rounded-full px-4 sm:px-6 flex justify-between items-center">
           <div className="hidden sm:flex gap-2 items-center">
             <button
               onClick={toggleMenu}

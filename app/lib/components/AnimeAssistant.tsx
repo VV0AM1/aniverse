@@ -100,34 +100,34 @@ export default function AnimeAssistant() {
 
   return (
     <>
-      <div className="fixed bottom-6 right-6 z-50">
-        <div className="relative">
-          <button
-            onClick={() => setIsOpen((prev) => !prev)}
-            className="w-16 h-16 rounded-full border-2 border-purple-500 overflow-hidden shadow-xl hover:scale-105 transition-transform bg-white"
-          >
-            <Image
-              src="/img/aiko.webp"
-              alt="Aiko"
-              width={64}
-              height={64}
-              className="object-cover"
-            />
-          </button>
+    <div className="fixed bottom-6 right-6 z-40">
+      <div className="relative">
+        <button
+          onClick={() => setIsOpen((prev) => !prev)}
+          className="w-16 h-16 rounded-full border-2 border-purple-500 overflow-hidden shadow-xl hover:scale-105 transition-transform bg-white"
+        >
+          <Image
+            src="/img/aiko.webp"
+            alt="Aiko"
+            width={64}
+            height={64}
+            className="object-cover"
+          />
+        </button>
 
-          {showWelcome && !isOpen && (
-            <div className="absolute w-[200px] bottom-20 right-0 bg-purple-600 text-white px-4 py-2 rounded-lg shadow-md animate-pulse max-w-[200px]">
-              Hi! I’m <b>Aiko</b>, need anime help?
-            </div>
-          )}
-        </div>
+        {showWelcome && !isOpen && (
+          <div className="absolute w-[200px] bottom-[80px] right-0 bg-purple-600 text-white px-4 py-2 rounded-lg shadow-md animate-pulse max-w-[200px]">
+            Hi! I’m <b>Aiko</b>, need anime help?
+          </div>
+        )}
       </div>
+    </div>
 
       {isOpen && (
-        <div
-          className="fixed inset-x-4 bottom-[env(safe-area-inset-bottom)] sm:bottom-24 z-50 w-auto max-w-md mx-auto bg-[#1a1a2e] text-white rounded-xl shadow-2xl flex flex-col"
-          style={{ maxHeight: '80dvh' }}
-        >
+          <div
+            className="fixed bottom-[100px] right-6 z-50 w-[90%] sm:w-[380px] bg-[#1a1a2e] text-white rounded-xl shadow-2xl flex flex-col"
+            style={{ maxHeight: '80dvh' }}
+          >
           <div className="bg-purple-700 px-4 py-3 font-bold text-lg">
             Aiko 👧 Anime Assistant
           </div>
