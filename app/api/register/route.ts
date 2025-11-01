@@ -1,3 +1,4 @@
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -50,7 +51,11 @@ export async function POST(req: NextRequest) {
       { expiresIn: '1h' }
     );
 
-    const origin = req.headers.get('origin') || process.env.NEXTAUTH_URL || 'https://aniverses.netlify.app';
+    const origin =
+      process.env.PUBLIC_BASE_URL ||
+      req.headers.get('origin') ||
+      process.env.NEXTAUTH_URL ||
+      'http://localhost:3000';
 
     const verifyUrl = `${origin}/api/verifyEmailConfirm?token=${token}`;
 
