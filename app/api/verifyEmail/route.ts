@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     expiresIn: '1h',
   });
 
-  const verificationUrl = `${process.env.BASE_URL}/verify-email?token=${token}`;
+  const verificationUrl = `${process.env.PUBLIC_BASE_UR}/verify-email?token=${token}`;
 
   const transporter = nodemailer.createTransport({
     service: 'gmail',

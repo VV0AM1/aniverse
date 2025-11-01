@@ -38,7 +38,6 @@ export default function Login() {
         await axios.post("/api/register", { nickname, email, password });
         setIsVerifyingEmail(true);
         setMessage("✅ Registration successful! Check your email to verify your account.");
-        // start polling for cross-device verification ONLY after successful register
         setPollEmail(email);
         return;
       }
@@ -82,7 +81,6 @@ export default function Login() {
     }
   };
 
-  // 🔁 Poll to detect cross-device email verification
   useEffect(() => {
     if (!pollEmail) return;
     let stopped = false;
@@ -100,7 +98,6 @@ export default function Login() {
           return;
         }
       } catch (e) {
-        // ignore transient errors
       }
       if (!stopped) timer = setTimeout(tick, 3000);
     };
@@ -112,7 +109,6 @@ export default function Login() {
     };
   }, [pollEmail, router]);
 
-  // if user switches back to login or changes email, stop previous poll
   useEffect(() => {
     if (mode !== "register") setPollEmail(null);
   }, [mode]);
@@ -134,7 +130,6 @@ export default function Login() {
             mode === "register" ? "rotate-y-180" : ""
           }`}
         >
-          {/* Sign In side */}
           <div className="absolute w-full h-full bg-white/5 backdrop-blur-lg rounded-xl shadow-lg flex flex-col md:flex-row backface-hidden">
             <div className="w-full md:w-1/2 p-8">
               <form onSubmit={handleSubmit} className="flex flex-col gap-4 h-full justify-center">
@@ -174,7 +169,6 @@ export default function Login() {
                 {message && <p className="text-sm text-red-400 text-center">{message}</p>}
               </form>
 
-              {/* 👇 OTP form OUTSIDE the main form to avoid nested forms */}
               {isVerifyingOtp && (
                 <form onSubmit={handleVerifyOtp} className="flex flex-col gap-3 mt-4">
                   <input
@@ -208,7 +202,6 @@ export default function Login() {
             </div>
           </div>
 
-          {/* Register side */}
           <div className="absolute w-full h-full bg-white/5 backdrop-blur-lg rounded-xl shadow-lg flex flex-col md:flex-row backface-hidden rotate-y-180">
             <div className="w-full md:w-1/2 p-8">
               <form onSubmit={handleSubmit} className="flex flex-col gap-4 h-full justify-center">
