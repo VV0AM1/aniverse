@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
 import dbConnect from '@/app/lib/mongodb';
 import Client from '@/app/models/Client';
 import { handleCors } from '@/app/lib/cors';
@@ -10,15 +11,12 @@ export async function POST(req: NextRequest) {
     const corsRes = handleCors(req);
     if (corsRes) return corsRes;
 
-    const body = await req.json();
-    const { nickname, email, password } = body;
-
+    const { nickname, email, password } = await req.json();
     console.log("🔐 Register attempt:", { nickname, email });
 
     if (!nickname || !email || !password) {
       return NextResponse.json({ message: "All fields are required" }, { status: 400 });
     }
-
     if (password.length < 8 || !/[A-Z]/.test(password) || !/\d/.test(password)) {
       return NextResponse.json({
         message: 'Password must be at least 8 characters long and include an uppercase letter and a number',
@@ -36,31 +34,75 @@ export async function POST(req: NextRequest) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newClient = new Client({ nickname, email, password: hashedPassword });
+    const newClient = new Client({
+      nickname,
+      email,
+      password: hashedPassword,
+      isVerified: false, // make sure your schema has this boolean
+    });
 
     await newClient.save();
     console.log("✅ User saved to DB.");
 
+    // Create a short-lived verification token
     const token = jwt.sign(
-      { userId: newClient._id, email: newClient.email },
+      { userId: newClient._id },
       process.env.JWT_SECRET!,
       { expiresIn: '1h' }
     );
 
+    // Compute absolute origin (prefer request origin; fallback to NEXTAUTH_URL)
+    const origin = req.headers.get('origin') || process.env.NEXTAUTH_URL || 'http://localhost:3000';
+
+    // ✅ Correct confirm path is /api/verifyEmailConfirm
+    const verifyUrl = `${origin}/api/verifyEmailConfirm?token=${token}`;
+
+    // Send the email
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER!,
+        pass: process.env.EMAIL_PASS!,
+      },
+    });
+
+    try {
+      console.log("📧 Sending verification email to", email);
+      const info = await transporter.sendMail({
+        from: `"Aniverse" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: 'Verify your Aniverse account',
+        html: `
+          <div style="font-family:Arial,sans-serif">
+            <h2>Welcome, ${nickname}!</h2>
+            <p>Please confirm your email to activate your account:</p>
+            <p><a href="${verifyUrl}" target="_blank">${verifyUrl}</a></p>
+            <p><small>This link expires in 1 hour.</small></p>
+          </div>
+        `,
+      });
+      console.log("✅ Verification email sent:", info.response);
+    } catch (emailErr) {
+      console.error("❌ Failed to send verification email:", emailErr);
+      // You can still return 201 and let the user retry sending later
+      return NextResponse.json(
+        {
+          message: 'Registration successful, but failed to send verification email. Please try again later.',
+          user: { _id: newClient._id, nickname: newClient.nickname, email: newClient.email },
+        },
+        { status: 201 }
+      );
+    }
+
     return NextResponse.json(
       {
-        message: 'Registration successful',
-        token,
-        user: {
-          _id: newClient._id,
-          nickname: newClient.nickname,
-          email: newClient.email,
-        },
+        message: 'Registration successful. Verification email sent.',
+        user: { _id: newClient._id, nickname: newClient.nickname, email: newClient.email },
       },
       { status: 201 }
     );
   } catch (error) {
     console.error("❌ Register API Error:", error);
-    return NextResponse.json({ message: 'Server error', error }, { status: 500 });
+    return NextResponse.json({ message: 'Server error' }, { status: 500 });
   }
 }

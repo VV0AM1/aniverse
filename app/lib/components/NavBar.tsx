@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import SkeletonLoader from "./SkeletonLoader";
 import { useAuth } from "@/app/context/AuthContext"; 
+import { useSession, signOut as nextAuthSignOut } from "next-auth/react";
+
 
 const NavBar: React.FC = () => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
@@ -19,6 +21,14 @@ const NavBar: React.FC = () => {
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
+  const { data: session, status } = useSession();
+  const loadingSession = status === "loading";
+
+  const googleName = session?.user?.name || session?.user?.email || null;
+const isLoggedIn = !!nickname || !!session;
+const displayName = nickname || googleName || "User";
+
+
 
   const toggleMenu = () => setIsMenuVisible(!isMenuVisible);
   const toggleMobileMenu = () => setIsMobileMenuVisible(!isMobileMenuVisible);
@@ -42,17 +52,12 @@ const NavBar: React.FC = () => {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    if (session) await nextAuthSignOut({ callbackUrl: "/" }); 
     setNickname(null);
     setToken(null);
     localStorage.removeItem("nickname");
     localStorage.removeItem("token");
-    
-    setTimeout(() => {
-      router.push("/");
-    }, 50);
-
-    toggleMobileMenu(); 
   };
 
   const fetchAnime = async (query: string) => {
@@ -140,7 +145,6 @@ const NavBar: React.FC = () => {
           </button>
         </nav>
 
-        {/* Catalog Dropdown */}
         <div
           ref={menuRef}
           className={`absolute left-12 top-full mt-2 w-[90%] max-w-[900px] rounded-3xl bg-[#121316c9] backdrop-blur-xl z-50 transition-all duration-500 ease-in-out overflow-hidden ${
@@ -173,7 +177,6 @@ const NavBar: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile Menu */}
         <div className={`sm:hidden overflow-y-auto fixed inset-0 h-[80vh] scrollbar-hide bg-[#121316] top-[100px] rounded-2xl z-[9998] p-8 transform transition-all duration-300 ease-in-out ${
           isMobileMenuVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"
         }`}>

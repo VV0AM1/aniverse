@@ -5,6 +5,7 @@ import AnimeAssistant from "./lib/components/AnimeAssistant";
 import NavBar from "@/app/lib/components/NavBar";
 import Footer from "@/app/lib/components/Footer";
 import { AuthProvider } from "@/app/context/AuthContext";
+import { Providers } from "./providers"; // 👈
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,22 +14,20 @@ export const metadata: Metadata = {
   description: "Discover the best anime airing now",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className={`${inter.className} bg-[#0d0d1a] text-white`}>
-        <AuthProvider>
-          <NavBar />
-          <main className="min-h-screen">
-            {children}
-            <AnimeAssistant />
-          </main>
-          <Footer />
-        </AuthProvider>
+        <Providers>           
+          <AuthProvider>     
+            <NavBar />
+            <main className="min-h-screen">
+              {children}
+              <AnimeAssistant />
+            </main>
+            <Footer />
+          </AuthProvider>
+        </Providers>
       </body>
     </html>
   );

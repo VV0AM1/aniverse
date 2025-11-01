@@ -4,8 +4,11 @@ import { useState, useEffect, useRef } from 'react';
 import NavBar from '@/app/lib/components/NavBar';
 import { animeServices } from "@/app/lib/services/animes";
 import DashboardSkeleton from '../lib/components/Dashboardskeleton';
-import { useAuth } from '@/app/context/AuthContext'; 
+import { useAuth } from '@/app/context/AuthContext';
+import { useSession } from 'next-auth/react';        
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+
 interface AnimeCounts {
   liked: number;
   watched: number;
@@ -15,6 +18,9 @@ interface AnimeCounts {
 
 export default function UserProfile() {
   const { nickname, token, setNickname } = useAuth();
+  const { data: session, status } = useSession();      
+  const sessionLoading = status === 'loading';
+
   const [authReady, setAuthReady] = useState(false);
   const [avatar, setAvatar] = useState('/img/defaultuser.png');
   const [bio, setBio] = useState('');
@@ -22,7 +28,8 @@ export default function UserProfile() {
   const [gender, setGender] = useState('');
   const [isEditingNickname, setIsEditingNickname] = useState(false);
   const [newNickname, setNewNickname] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<'liked' | 'watched' | 'bookmark' | 'later'>('liked');
+  const [selectedCategory, setSelectedCategory] =
+    useState<'liked' | 'watched' | 'bookmark' | 'later'>('liked');
   const [animeCounts, setAnimeCounts] = useState<AnimeCounts>({ liked: 0, watched: 0, bookmark: 0, later: 0 });
   const [animeList, setAnimeList] = useState<any[]>([]);
   const [isLoadingAnimes, setIsLoadingAnimes] = useState(true);
@@ -30,13 +37,18 @@ export default function UserProfile() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
 
+  
   useEffect(() => {
-    if (!nickname || !token) {
-      router.replace('/');
-    } else {
-      setAuthReady(true);
+    if (sessionLoading) return; 
+    const hasLocal = !!nickname && !!token;
+    const hasNextAuth = !!session;
+
+    if (!hasLocal && !hasNextAuth) {
+      router.replace('/Login'); 
+      return;
     }
-  }, [nickname, token, router]);
+    setAuthReady(true);
+  }, [nickname, token, session, sessionLoading, router]);
 
   useEffect(() => {
     if (!authReady || !nickname || !token) return;
@@ -55,16 +67,27 @@ export default function UserProfile() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          ...(token ? { Authorization: `Bearer ${token}` } : {}), // 👈 safer
         },
         body: JSON.stringify({ nickname, category: selectedCategory }),
       });
 
       const data = await res.json();
-      if (!res.ok) return;
+      if (!res.ok) {
+        setIsLoadingAnimes(false);
+        return;
+      }
 
       const ids = data.animeIds || [];
-      const animeDataList = [];
+
+      if (ids.length === 0) {
+        setAnimeList([]);
+        setIsLoadingAnimes(false);
+        return;
+      }
+
+
+      const animeDataList:any[] = [];
 
       for (const id of ids) {
         try {
@@ -158,8 +181,8 @@ export default function UserProfile() {
   };
 
   const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
-  if (!authReady) return null;
 
+  if (!authReady) return null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0d0d1a] to-[#1a1a2e] text-white">
@@ -249,14 +272,37 @@ export default function UserProfile() {
           ))}
         </div>
 
-        <div className="mt-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 sm:gap-6">
-          {isLoadingAnimes
-            ? Array.from({ length: 10 }).map((_, i) => <DashboardSkeleton key={i} />)
-            : animeList.slice(0, 30).map((anime) => (
+        <div className="mt-10">
+          {isLoadingAnimes ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 sm:gap-6">
+              {Array.from({ length: 10 }).map((_, i) => <DashboardSkeleton key={i} />)}
+            </div>
+          ) : animeList.length === 0 ? (
+            <div className="flex flex-col items-center justify-center text-center bg-[#151527] border border-[#23252b] rounded-2xl p-8">
+              <img src="/img/empty-box.svg" alt="" className="w-16 h-16 opacity-80 mb-3" />
+              <h3 className="text-lg font-semibold mb-1">No anime here yet</h3>
+              <p className="text-sm text-gray-300">
+                You don’t have any anime in the <span className="font-semibold">{capitalize(selectedCategory)}</span> list.
+              </p>
+              <div className="mt-4 flex gap-2">
+                <Link href="/Trending" className="px-4 py-2 rounded-full bg-purple-600 hover:bg-purple-700 text-sm">
+                  Explore Trending
+                </Link>
+                <button
+                  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                  className="px-4 py-2 rounded-full bg-gray-700 hover:bg-gray-600 text-sm"
+                >
+                  Search Anime
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 sm:gap-6">
+              {animeList.slice(0, 30).map((anime) => (
                 <div
                   key={anime.id}
                   className="relative cursor-pointer hover:scale-105 transition-transform"
-                  onClick={() => window.location.href = `/animes/${anime.id}`}
+                  onClick={() => (window.location.href = `/animes/${anime.id}`)}
                 >
                   <img
                     src={anime.image}
@@ -268,6 +314,8 @@ export default function UserProfile() {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
