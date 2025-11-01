@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
       { expiresIn: '1h' }
     );
 
-    const origin = req.headers.get('origin') || process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    const origin = req.headers.get('origin') || process.env.NEXTAUTH_URL || 'https://aniverses.netlify.app';
 
     const verifyUrl = `${origin}/api/verifyEmailConfirm?token=${token}`;
 
