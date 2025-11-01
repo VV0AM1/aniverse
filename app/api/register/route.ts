@@ -38,26 +38,22 @@ export async function POST(req: NextRequest) {
       nickname,
       email,
       password: hashedPassword,
-      isVerified: false, // make sure your schema has this boolean
+      isVerified: false, 
     });
 
     await newClient.save();
     console.log("✅ User saved to DB.");
 
-    // Create a short-lived verification token
     const token = jwt.sign(
       { userId: newClient._id },
       process.env.JWT_SECRET!,
       { expiresIn: '1h' }
     );
 
-    // Compute absolute origin (prefer request origin; fallback to NEXTAUTH_URL)
     const origin = req.headers.get('origin') || process.env.NEXTAUTH_URL || 'http://localhost:3000';
 
-    // ✅ Correct confirm path is /api/verifyEmailConfirm
     const verifyUrl = `${origin}/api/verifyEmailConfirm?token=${token}`;
 
-    // Send the email
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -84,7 +80,6 @@ export async function POST(req: NextRequest) {
       console.log("✅ Verification email sent:", info.response);
     } catch (emailErr) {
       console.error("❌ Failed to send verification email:", emailErr);
-      // You can still return 201 and let the user retry sending later
       return NextResponse.json(
         {
           message: 'Registration successful, but failed to send verification email. Please try again later.',
