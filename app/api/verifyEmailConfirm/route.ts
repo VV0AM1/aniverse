@@ -1,33 +1,62 @@
-import jwt, { JwtPayload } from "jsonwebtoken";
+export const runtime = "nodejs";
+
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import dbConnect from "@/app/lib/mongodb";
 import Client from "@/app/models/Client";
+import PendingVerification from "@/app/models/PendingVerification";
+import { pusher } from "@/app/lib/pusher";
 
 export async function GET(req: NextRequest) {
+  const email = req.nextUrl.searchParams.get("email");
   const token = req.nextUrl.searchParams.get("token");
-  if (!token) {
+  if (!email || !token) {
     return NextResponse.redirect(new URL("/verify-email?ok=0&reason=missing", req.url));
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
-    const userId = (decoded as { userId?: string }).userId;
-    if (!userId) {
-      return NextResponse.redirect(new URL("/verify-email?ok=0&reason=payload", req.url));
-    }
-
     await dbConnect();
-    const user = await Client.findById(userId);
-    if (!user) {
+
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+    const pending = await PendingVerification.findOne({ email }).lean();
+
+    if (!pending || pending.tokenHash !== tokenHash) {
       return NextResponse.redirect(new URL("/verify-email?ok=0&reason=invalid", req.url));
     }
 
-    user.isVerified = true;
-    await user.save();
+    if (pending.expiresAt.getTime() < Date.now()) {
+      await PendingVerification.deleteOne({ email });
+      // ❌ Do NOT trigger 'verified' on expired
+      return NextResponse.redirect(new URL("/verify-email?ok=0&reason=expired", req.url));
+    }
+
+    // Create or mark verified
+    const existing = await Client.findOne({ email });
+    if (existing) {
+      existing.isVerified = true;
+      await existing.save();
+    } else {
+      await Client.create({
+        email,
+        nickname: pending.nickname,
+        password: pending.passwordHash,
+        isVerified: true,
+      });
+    }
+
+    await PendingVerification.deleteOne({ email });
+
+    // ✅ Trigger realtime event on success
+    await pusher.trigger(channelForEmail(email), "verified", { email, at: Date.now() });
 
     return NextResponse.redirect(new URL("/verify-email?ok=1", req.url));
   } catch (err) {
-    console.error("❌ Verification error:", err);
-    return NextResponse.redirect(new URL("/verify-email?ok=0&reason=expired", req.url));
+    console.error("❌ Verify error:", err);
+    return NextResponse.redirect(new URL("/verify-email?ok=0&reason=error", req.url));
   }
+}
+
+// shared channel helper
+function channelForEmail(email: string) {
+  return `verify-${email.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
 }

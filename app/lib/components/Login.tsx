@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
 import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
+import Pusher from "pusher-js";
 
 export default function Login() {
   const [mode, setMode] = useState<"login" | "register">("login");
@@ -81,7 +82,7 @@ export default function Login() {
     }
   };
 
-  useEffect(() => {
+ useEffect(() => {
     if (!pollEmail) return;
     let stopped = false;
     let timer: any;
@@ -97,8 +98,7 @@ export default function Login() {
           router.replace("/");
           return;
         }
-      } catch (e) {
-      }
+      } catch {}
       if (!stopped) timer = setTimeout(tick, 3000);
     };
 
@@ -110,8 +110,30 @@ export default function Login() {
   }, [pollEmail, router]);
 
   useEffect(() => {
-    if (mode !== "register") setPollEmail(null);
-  }, [mode]);
+    if (!pollEmail) return;
+
+    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
+      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
+      forceTLS: true,
+    });
+
+    const channelName = channelForEmail(pollEmail);
+    const ch = pusher.subscribe(channelName);
+
+    const onVerified = () => router.replace("/");
+
+    ch.bind("verified", onVerified);
+
+    return () => {
+      ch.unbind("verified", onVerified);
+      pusher.unsubscribe(channelName);
+      pusher.disconnect();
+    };
+  }, [pollEmail, router]);
+
+  function channelForEmail(email: string) {
+    return `verify-${email.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
+  }
 
   return (
     <div className="relative w-full h-screen overflow-hidden text-white">
