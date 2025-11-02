@@ -1,40 +1,46 @@
-import { NextRequest, NextResponse } from 'next/server';
-import dbConnect from '@/app/lib/mongodb';
-import Client from '@/app/models/Client';
-import { handleCors } from '@/app/lib/cors';
-import { verifyToken } from '@/app/lib/verifyToken';
+export const runtime = "nodejs";
+
+import { NextRequest, NextResponse } from "next/server";
+import dbConnect from "@/app/lib/mongodb";
+import Client, { type IClient } from "@/app/models/Client";
+
+const CATEGORIES = ["liked", "watched", "bookmark", "later"] as const;
+type Category = (typeof CATEGORIES)[number];
+const isCategory = (v: unknown): v is Category =>
+  typeof v === "string" && (CATEGORIES as readonly string[]).includes(v);
 
 export async function POST(req: NextRequest) {
-  const corsRes = handleCors(req);
-  if (corsRes) return corsRes;
-
-  const auth = req.headers.get('authorization');
-  const decoded = verifyToken(auth);
-  if (!decoded) {
-    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-  }
-
-  await dbConnect();
-
   try {
-    const body = await req.json();
-    const { category } = body;
+    const { nickname, category } = await req.json();
 
-    if (!category || !['liked', 'watched', 'bookmark', 'later'].includes(category)) {
-      return NextResponse.json({ message: 'Invalid category' }, { status: 400 });
+    if (!nickname || !category) {
+      return NextResponse.json(
+        { message: "nickname and category are required" },
+        { status: 400 }
+      );
+    }
+    if (!isCategory(category)) {
+      return NextResponse.json(
+        { message: "invalid category", allowed: CATEGORIES },
+        { status: 400 }
+      );
     }
 
-    const client = await Client.findById(decoded.userId);
+    await dbConnect();
+
+    const client = await Client.findOne({ nickname })
+      .select("animeStatus")
+      .lean<IClient | null>();
+
     if (!client) {
-      return NextResponse.json({ message: 'User not found' }, { status: 404 });
+      return NextResponse.json({ animeIds: [] }, { status: 200 });
     }
 
-    const animeIds = client.animeStatus?.[category] || [];
-    console.log(`Anime IDs for category "${category}":`, animeIds);
+    const animeIds = client.animeStatus?.[category] ?? [];
 
     return NextResponse.json({ animeIds }, { status: 200 });
-  } catch (error: any) {
-    console.error("Error in /api/getUserAnimeIds:", error);
-    return NextResponse.json({ message: error.message }, { status: 500 });
+  } catch (err) {
+    console.error("getUserAnimeIds error:", err);
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }
