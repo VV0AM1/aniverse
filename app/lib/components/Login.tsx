@@ -148,9 +148,12 @@ export default function Login() {
 
       <div className="relative z-20 flex items-center justify-center h-full perspective">
         <div
-          className={`relative w-[90%] max-w-5xl h-[600px] transform-style preserve-3d duration-700 transition-transform ${
-            mode === "register" ? "rotate-y-180" : ""
-          }`}
+          className={`
+            relative w-[90%] max-w-5xl
+            h-auto md:h-[600px]             // <= auto height on mobile
+            transform-style preserve-3d duration-700 transition-transform
+            ${mode === "register" ? "rotate-y-180" : ""}
+          `}
         >
           <div className="absolute w-full h-full bg-white/5 backdrop-blur-lg rounded-xl shadow-lg flex flex-col md:flex-row backface-hidden">
             <div className="w-full md:w-1/2 p-8">
