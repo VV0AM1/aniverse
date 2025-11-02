@@ -12,15 +12,18 @@ export interface IAnimeStatus {
 export interface IClient extends Document {
   nickname: string;
   email: string;
-  password: string;     // hashed
+  password: string;        // hashed
   avatar?: string;
   isVerified: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  bio?: string;            // 👈 add
+  dob?: string;            // 👈 add (or Date if you prefer)
+  gender?: string;         // 👈 add
   otp?: string | null;
   otpExpiry?: number | null;
   friends: Types.ObjectId[];
   animeStatus: IAnimeStatus;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const ClientSchema = new Schema<IClient>(
@@ -30,6 +33,9 @@ const ClientSchema = new Schema<IClient>(
     password: { type: String, required: true },
     avatar: { type: String, default: "" },
     isVerified: { type: Boolean, default: false },
+    bio: { type: String, default: "" },        // 👈 add
+    dob: { type: String, default: "" },        // 👈 add (or Date)
+    gender: { type: String, default: "" },     // 👈 add
     otp: { type: String, default: null },
     otpExpiry: { type: Number, default: null },
     friends: [{ type: Schema.Types.ObjectId, ref: "Client", default: [] }],
