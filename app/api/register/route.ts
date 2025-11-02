@@ -5,8 +5,9 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import dbConnect from "@/app/lib/mongodb";
 import Client, { type IClient } from "@/app/models/Client";
-import PendingVerification, { IPendingVerification } from "@/app/models/PendingVerification";
-import { sendVerificationEmailResend } from "@/app/lib/mailer";
+import PendingVerification from "@/app/models/PendingVerification";
+import { sendVerificationEmail } from "@/app/lib/mailer";
+import { renderVerificationEmail } from "@/app/lib/emailTemplates";
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,7 +18,8 @@ export async function POST(req: NextRequest) {
     }
     if (password.length < 8 || !/[A-Z]/.test(password) || !/\d/.test(password)) {
       return NextResponse.json({
-        message: "Password must be at least 8 characters long and include an uppercase letter and a number",
+        message:
+          "Password must be at least 8 characters long and include an uppercase letter and a number",
       }, { status: 400 });
     }
 
@@ -51,7 +53,11 @@ export async function POST(req: NextRequest) {
 
     const verifyUrl = `${origin}/api/verifyEmailConfirm?token=${rawToken}&email=${encodeURIComponent(email)}`;
 
-    await sendVerificationEmailResend({ to: email, nickname, verifyUrl });
+    await sendVerificationEmail({
+      to: email,
+      subject: "Verify your Aniverse account",
+      html: renderVerificationEmail({ nickname, verifyUrl }), 
+    });
 
     return NextResponse.json({ message: "Check your email to verify your account." }, { status: 200 });
   } catch (err: any) {
