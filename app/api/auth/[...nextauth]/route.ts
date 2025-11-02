@@ -41,6 +41,5 @@ export const authOptions: AuthOptions = {
   secret: process.env.JWT_SECRET,
 };
 
-// 👇 Add these lines (critical!)
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };

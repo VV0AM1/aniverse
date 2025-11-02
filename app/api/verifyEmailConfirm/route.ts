@@ -26,11 +26,9 @@ export async function GET(req: NextRequest) {
 
     if (pending.expiresAt.getTime() < Date.now()) {
       await PendingVerification.deleteOne({ email });
-      // ❌ Do NOT trigger 'verified' on expired
       return NextResponse.redirect(new URL("/verify-email?ok=0&reason=expired", req.url));
     }
 
-    // Create or mark verified
     const existing = await Client.findOne({ email });
     if (existing) {
       existing.isVerified = true;
@@ -46,7 +44,6 @@ export async function GET(req: NextRequest) {
 
     await PendingVerification.deleteOne({ email });
 
-    // ✅ Trigger realtime event on success
     await pusher.trigger(channelForEmail(email), "verified", { email, at: Date.now() });
 
     return NextResponse.redirect(new URL("/verify-email?ok=1", req.url));
@@ -56,7 +53,6 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// shared channel helper
 function channelForEmail(email: string) {
   return `verify-${email.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
 }
