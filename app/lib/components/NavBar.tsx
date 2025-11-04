@@ -3,8 +3,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { animeServices } from "@/app/lib/services/animes";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import SkeletonLoader from "./SkeletonLoader";
+import { useRouter, usePathname } from "next/navigation"; 
+import SearchSkeletonLoader from "./SearchSkeletonLoader";
 import { useAuth } from "@/app/context/AuthContext"; 
 import { useSession, signOut as nextAuthSignOut } from "next-auth/react";
 
@@ -19,19 +19,58 @@ const NavBar: React.FC = () => {
 
   const { nickname, setNickname, setToken } = useAuth();
   const router = useRouter();
+  const pathname = usePathname(); 
   const menuRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
   const { data: session, status } = useSession();
   const loadingSession = status === "loading";
 
   const googleName = session?.user?.name || session?.user?.email || null;
-const isLoggedIn = !!nickname || !!session;
-const displayName = nickname || googleName || "User";
+  const isLoggedIn = !!nickname || !!session;
+  const displayName = nickname || googleName || "User";
 
 
 
-  const toggleMenu = () => setIsMenuVisible(!isMenuVisible);
-  const toggleMobileMenu = () => setIsMobileMenuVisible(!isMobileMenuVisible);
+   useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node) &&
+        !(event.target as HTMLElement).closest("button") 
+      ) {
+        setIsMenuVisible(false);
+      }
+
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node) &&
+        !(event.target as HTMLElement).closest("button") 
+      ) {
+        setIsSearchVisible(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    setIsMenuVisible(false);
+    setIsSearchVisible(false);
+    setIsMobileMenuVisible(false);
+  }, [pathname]); 
+
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      if (searchQuery.trim()) {
+        fetchAnime(searchQuery);
+      }
+    }, 1500);
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery]);
+
+  const toggleMenu = () => setIsMenuVisible((prev) => !prev);
+  const toggleMobileMenu = () => setIsMobileMenuVisible((prev) => !prev);
   const toggleSearch = () => {
     setIsSearchVisible((prev) => !prev);
     if (isSearchVisible) {
@@ -53,7 +92,7 @@ const displayName = nickname || googleName || "User";
   };
 
   const handleLogout = async () => {
-    if (session) await nextAuthSignOut({ callbackUrl: "/" }); 
+    if (session) await nextAuthSignOut({ callbackUrl: "/" });
     setNickname(null);
     setToken(null);
     localStorage.removeItem("nickname");
@@ -68,9 +107,7 @@ const displayName = nickname || googleName || "User";
     setLoading(true);
     try {
       const response = await animeServices.getAnimeByName(query);
-      if (response.status === 200) {
-        setSearchResults(response.data.data);
-      }
+      if (response.status === 200) setSearchResults(response.data.data);
     } catch (error) {
       console.error("Error fetching search results:", error);
     } finally {
@@ -192,9 +229,9 @@ const displayName = nickname || googleName || "User";
           />
           {loading ? (
             <>
-              <SkeletonLoader />
-              <SkeletonLoader />
-              <SkeletonLoader />
+            <SearchSkeletonLoader />
+            <SearchSkeletonLoader />
+            <SearchSkeletonLoader />
             </>
           ) : searchQuery && (
             <ul className="mb-6 space-y-2 max-h-[200px] overflow-y-auto text-white text-sm custom-scroll">
@@ -262,9 +299,9 @@ const displayName = nickname || googleName || "User";
             />
             {loading ? (
               <>
-                <SkeletonLoader />
-                <SkeletonLoader />
-                <SkeletonLoader />
+                <SearchSkeletonLoader />
+                <SearchSkeletonLoader />
+                <SearchSkeletonLoader />
               </>
             ) : (
               <ul className="mt-3 space-y-2 max-h-[200px] overflow-y-auto text-white text-sm custom-scroll">

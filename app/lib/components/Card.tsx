@@ -1,28 +1,16 @@
 "use client";
 
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
 
-export default function Card({
-  data,
-}: {
+export default function Card({ data }: {
   data: {
-    mal_id: string
+    mal_id: string;
     title: string;
     episodes: string;
     images: {
-      jpg: {
-        image_url: string;
-        large_image_url: string;
-        small_image_url: string;
-      };
-      webp: {
-        image_url: string;
-        large_image_url: string;
-        small_image_url: string;
-      };
+      jpg: { image_url: string };
     };
     genres: { name: string }[];
     synopsis: string;
@@ -30,31 +18,26 @@ export default function Card({
     year: string;
   };
 }) {
-
-    const [isMobileOverlayVisible, setIsMobileOverlayVisible] = useState(false);
+  const [isMobileOverlayVisible, setIsMobileOverlayVisible] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const movedRef = useRef(false);
   const router = useRouter();
 
   useEffect(() => {
     if (isMobileOverlayVisible) {
-      const hideTimer = setTimeout(() => {
-        setIsMobileOverlayVisible(false);
-      }, 5000);
+      const hideTimer = setTimeout(() => setIsMobileOverlayVisible(false), 5000);
       return () => clearTimeout(hideTimer);
     }
   }, [isMobileOverlayVisible]);
 
   const handleTouchStart = () => {
     movedRef.current = false;
-    timerRef.current = setTimeout(() => {
-      setIsMobileOverlayVisible(true);
-    }, 600);
+    timerRef.current = setTimeout(() => setIsMobileOverlayVisible(true), 600);
   };
 
   const handleTouchMove = () => {
-    movedRef.current = true; 
-    if (timerRef.current) clearTimeout(timerRef.current); 
+    movedRef.current = true;
+    if (timerRef.current) clearTimeout(timerRef.current);
   };
 
   const handleTouchEnd = () => {
@@ -68,13 +51,16 @@ export default function Card({
     if (timerRef.current) clearTimeout(timerRef.current);
   };
 
-  const genreNames = data.genres
-    ? data.genres.map((genre) => genre.name).join(", ")
-    : "No genres available";
+  const handleClick = () => {
+    router.push(`/animes/${data.mal_id}`);
+  };
 
-    return (
+  const genreNames = data.genres?.map((g) => g.name).join(", ") || "No genres available";
+
+  return (
     <div
-      className="relative group flex flex-col items-start justify-start"
+      className="relative group flex flex-col items-start justify-start cursor-pointer"
+      onClick={handleClick} 
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -94,9 +80,10 @@ export default function Card({
       </div>
 
       <div
-        className={`absolute top-0 left-0 w-[195px] h-full p-3 bg-black/80 rounded-lg 
-          ${isMobileOverlayVisible ? "opacity-100" : "opacity-0 group-hover:opacity-100"} 
-          transition-opacity duration-300 z-9 overflow-hidden`}
+        className={`absolute top-0 left-0 w-[195px] h-full p-3 bg-black/80 rounded-lg
+        ${isMobileOverlayVisible ? "opacity-100 pointer-events-auto" : "opacity-0 group-hover:opacity-100"}
+        transition-opacity duration-300 z-10 overflow-hidden
+        group-hover:pointer-events-none`} 
       >
         <h2 className="text-white font-semibold text-sm mb-1">{data.title}</h2>
         <p className="text-gray-400 text-xs">{data.episodes} EP</p>

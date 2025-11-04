@@ -7,6 +7,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
 import Pusher from "pusher-js";
+import "@/app/globals.css";
 
 export default function Login() {
   const [mode, setMode] = useState<"login" | "register">("login");
@@ -146,16 +147,17 @@ export default function Login() {
 
       <div className="absolute inset-0 bg-black bg-opacity-70 backdrop-blur-md z-10" />
 
-      <div className="relative z-20 flex items-center justify-center h-full perspective">
+      <div className="relative z-20 flex items-center justify-center h-full">
         <div
-          className={`
-            relative w-[90%] max-w-5xl
-            h-auto md:h-[600px]             // <= auto height on mobile
-            transform-style preserve-3d duration-700 transition-transform
-            ${mode === "register" ? "rotate-y-180" : ""}
-          `}
+          className={`relative w-[90%] max-w-5xl h-auto md:h-[600px] transform-style-preserve-3d duration-700 transition-transform ${
+            mode === "register" ? "rotate-y-180" : ""
+          }`}
+          style={{
+            transformStyle: "preserve-3d",
+            perspective: "1000px",
+          }}
         >
-          <div className="absolute w-full h-full bg-white/5 backdrop-blur-lg rounded-xl shadow-lg flex flex-col md:flex-row backface-hidden">
+          <div className="absolute inset-0 w-full h-full bg-white/5 backdrop-blur-lg rounded-xl shadow-lg flex flex-col md:flex-row backface-hidden">
             <div className="w-full md:w-1/2 p-8">
               <form onSubmit={handleSubmit} className="flex flex-col gap-4 h-full justify-center">
                 <h1 className="text-2xl font-bold">Sign In</h1>
@@ -185,7 +187,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={handleGoogleSignIn}
-                  className="bg-red-600 hover:bg-red-700 py-2 rounded flex items-center justify-center gap-2"
+                  className="bg-purple-800 hover:bg-purple-900 py-2 rounded flex items-center justify-center gap-2"
                 >
                   <FcGoogle className="w-5 h-5" />
                   Sign in with Google
@@ -195,7 +197,7 @@ export default function Login() {
               </form>
 
               {isVerifyingOtp && (
-                <form onSubmit={handleVerifyOtp} className="flex flex-col gap-3 mt-4">
+                <form onSubmit={handleVerifyOtp} className="flex flex-col gap-3">
                   <input
                     type="text"
                     placeholder="Enter OTP code"
@@ -227,7 +229,7 @@ export default function Login() {
             </div>
           </div>
 
-          <div className="absolute w-full h-full bg-white/5 backdrop-blur-lg rounded-xl shadow-lg flex flex-col md:flex-row backface-hidden rotate-y-180">
+          <div className="absolute inset-0 w-full h-full bg-white/5 backdrop-blur-lg rounded-xl shadow-lg flex flex-col md:flex-row backface-hidden [transform:rotateY(180deg)]">
             <div className="w-full md:w-1/2 p-8">
               <form onSubmit={handleSubmit} className="flex flex-col gap-4 h-full justify-center">
                 <h1 className="text-2xl font-bold">Create Account</h1>

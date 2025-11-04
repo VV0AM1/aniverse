@@ -65,5 +65,7 @@ html {
 .hide-scrollbar::-webkit-scrollbar {
   display: none; 
 }
-
+.backface-hidden {
+  backface-visibility: hidden;
+}
 

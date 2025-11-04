@@ -21,6 +21,7 @@
     "dompurify": "^3.2.5",
     "dotenv": "^16.6.1",
     "express": "^5.1.0",
+    "framer-motion": "^12.23.24",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.525.0",
     "mongodb": "^6.17.0",
