@@ -46,7 +46,7 @@ export default function AnimeRecomendation({ mal_id }: RecommendsProps) {
     return (
       <div className="flex flex-col items-center justify-center text-white min-h-[100px]">
         <h2 className="text-2xl font-semibold mb-2">People Also Liked</h2>
-        <p className="text-gray-400">No Recommendations Available 😔</p>
+        <p className="text-gray-400">No Recommendations Available (╥﹏╥)</p>
       </div>
     );
   }

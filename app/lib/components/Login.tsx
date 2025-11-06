@@ -157,7 +157,7 @@ export default function Login() {
             perspective: "1000px",
           }}
         >
-          <div className="absolute inset-0 w-full h-full bg-white/5 backdrop-blur-lg rounded-xl shadow-lg flex flex-col md:flex-row backface-hidden">
+          <div className="absolute inset-0 w-full min-h-[600px] bg-white/5 backdrop-blur-lg rounded-xl shadow-lg flex flex-col md:flex-row backface-hidden">
             <div className="w-full md:w-1/2 p-8">
               <form onSubmit={handleSubmit} className="flex flex-col gap-4 h-full justify-center">
                 <h1 className="text-2xl font-bold">Sign In</h1>
@@ -197,7 +197,10 @@ export default function Login() {
               </form>
 
               {isVerifyingOtp && (
-                <form onSubmit={handleVerifyOtp} className="flex flex-col gap-3">
+                <form
+                  onSubmit={handleVerifyOtp}
+                  className="flex flex-col gap-3 mt-3 bg-black/30 p-3 rounded-md animate-fadeIn"
+                >
                   <input
                     type="text"
                     placeholder="Enter OTP code"
@@ -205,7 +208,10 @@ export default function Login() {
                     onChange={(e) => setOtp(e.target.value)}
                     className="p-2 bg-white/10 rounded placeholder-white text-white focus:outline-none"
                   />
-                  <button type="submit" className="bg-green-600 hover:bg-green-700 py-2 rounded">
+                  <button
+                    type="submit"
+                    className="bg-green-600 hover:bg-green-700 py-2 rounded transition"
+                  >
                     Verify OTP
                   </button>
                 </form>

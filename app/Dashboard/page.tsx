@@ -67,7 +67,7 @@ export default function UserProfile() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}), // 👈 safer
+          ...(token ? { Authorization: `Bearer ${token}` } : {}), 
         },
         body: JSON.stringify({ nickname, category: selectedCategory }),
       });
@@ -279,7 +279,7 @@ export default function UserProfile() {
             </div>
           ) : animeList.length === 0 ? (
             <div className="flex flex-col items-center justify-center text-center bg-[#151527] border border-[#23252b] rounded-2xl p-8">
-              <img src="/img/empty-box.svg" alt="" className="w-16 h-16 opacity-80 mb-3" />
+              <img src="/img/face.png" alt="" className="w-16 h-16 opacity-80 mb-3" />
               <h3 className="text-lg font-semibold mb-1">No anime here yet</h3>
               <p className="text-sm text-gray-300">
                 You don’t have any anime in the <span className="font-semibold">{capitalize(selectedCategory)}</span> list.
@@ -288,12 +288,6 @@ export default function UserProfile() {
                 <Link href="/Trending" className="px-4 py-2 rounded-full bg-purple-600 hover:bg-purple-700 text-sm">
                   Explore Trending
                 </Link>
-                <button
-                  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                  className="px-4 py-2 rounded-full bg-gray-700 hover:bg-gray-600 text-sm"
-                >
-                  Search Anime
-                </button>
               </div>
             </div>
           ) : (

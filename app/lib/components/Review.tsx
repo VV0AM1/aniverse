@@ -59,7 +59,7 @@ const Review = forwardRef<ReviewHandle, ReviewProps>(({ mal_id }, ref) => {
     return (
       <div className="flex flex-col items-center justify-center w-full py-10">
         <h2 className="text-2xl font-semibold mb-2 text-white">Reviews</h2>
-        <p className="text-gray-400">No Reviews Available 😢</p>
+        <p className="text-gray-400">No Reviews Available (╥﹏╥)</p>
       </div>
     );
   }
