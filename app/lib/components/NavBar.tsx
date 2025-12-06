@@ -3,9 +3,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { animeServices } from "@/app/lib/services/animes";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation"; 
+import { useRouter, usePathname } from "next/navigation";
 import SearchSkeletonLoader from "./SearchSkeletonLoader";
-import { useAuth } from "@/app/context/AuthContext"; 
+import { useAuth } from "@/app/context/AuthContext";
 import { useSession, signOut as nextAuthSignOut } from "next-auth/react";
 
 
@@ -19,7 +19,7 @@ const NavBar: React.FC = () => {
 
   const { nickname, setNickname, setToken } = useAuth();
   const router = useRouter();
-  const pathname = usePathname(); 
+  const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
   const { data: session, status } = useSession();
@@ -31,12 +31,12 @@ const NavBar: React.FC = () => {
 
 
 
-   useEffect(() => {
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         menuRef.current &&
         !menuRef.current.contains(event.target as Node) &&
-        !(event.target as HTMLElement).closest("button") 
+        !(event.target as HTMLElement).closest("button")
       ) {
         setIsMenuVisible(false);
       }
@@ -44,7 +44,7 @@ const NavBar: React.FC = () => {
       if (
         searchRef.current &&
         !searchRef.current.contains(event.target as Node) &&
-        !(event.target as HTMLElement).closest("button") 
+        !(event.target as HTMLElement).closest("button")
       ) {
         setIsSearchVisible(false);
       }
@@ -58,7 +58,7 @@ const NavBar: React.FC = () => {
     setIsMenuVisible(false);
     setIsSearchVisible(false);
     setIsMobileMenuVisible(false);
-  }, [pathname]); 
+  }, [pathname]);
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -134,10 +134,10 @@ const NavBar: React.FC = () => {
               Catalog
             </button>
 
-            {nickname ? (
+            {isLoggedIn ? (
               <Link href="/Dashboard" className="text-white text-sm px-4 py-3 rounded-full hover:bg-[#121316] hover:text-purple-400 transition flex items-center gap-2">
                 <img src="/img/user.svg" className="w-4 h-4" alt="User" />
-                {nickname}
+                {displayName}
               </Link>
             ) : (
               <Link href="/Login" className="text-white text-sm px-4 py-3 rounded-full hover:bg-[#121316] hover:text-purple-400 transition">
@@ -162,7 +162,7 @@ const NavBar: React.FC = () => {
               <img src="/img/search.svg" className="w-4 h-4" alt="Search" />
             </button>
 
-            {nickname ? (
+            {isLoggedIn ? (
               <button onClick={handleLogout} className="text-white text-sm px-4 py-3 rounded-full hover:bg-[#121316] hover:text-purple-400 transition">
                 Log Out
               </button>
@@ -184,9 +184,8 @@ const NavBar: React.FC = () => {
 
         <div
           ref={menuRef}
-          className={`absolute left-12 top-full mt-2 w-[90%] max-w-[900px] rounded-3xl bg-[#121316c9] backdrop-blur-xl z-50 transition-all duration-500 ease-in-out overflow-hidden ${
-            isMenuVisible ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
-          }`}
+          className={`absolute left-12 top-full mt-2 w-[90%] max-w-[900px] rounded-3xl bg-[#121316c9] backdrop-blur-xl z-50 transition-all duration-500 ease-in-out overflow-hidden ${isMenuVisible ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+            }`}
         >
           <div className="flex p-6 gap-6">
             <div className="flex flex-col w-[150px] gap-2">
@@ -214,9 +213,8 @@ const NavBar: React.FC = () => {
           </div>
         </div>
 
-        <div className={`sm:hidden overflow-y-auto fixed inset-0 h-[80vh] scrollbar-hide bg-[#121316] top-[100px] rounded-2xl z-[9998] p-8 transform transition-all duration-300 ease-in-out ${
-          isMobileMenuVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"
-        }`}>
+        <div className={`sm:hidden overflow-y-auto fixed inset-0 h-[80vh] scrollbar-hide bg-[#121316] top-[100px] rounded-2xl z-[9998] p-8 transform transition-all duration-300 ease-in-out ${isMobileMenuVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"
+          }`}>
           <button onClick={toggleMobileMenu} className="self-end p-2 mb-4">
             <img src="/img/x.svg" className="w-6 h-6" alt="Close" />
           </button>
@@ -229,9 +227,9 @@ const NavBar: React.FC = () => {
           />
           {loading ? (
             <>
-            <SearchSkeletonLoader />
-            <SearchSkeletonLoader />
-            <SearchSkeletonLoader />
+              <SearchSkeletonLoader />
+              <SearchSkeletonLoader />
+              <SearchSkeletonLoader />
             </>
           ) : searchQuery && (
             <ul className="mb-6 space-y-2 max-h-[200px] overflow-y-auto text-white text-sm custom-scroll">
@@ -277,9 +275,9 @@ const NavBar: React.FC = () => {
 
             <h3 className="text-lg font-semibold">Menu</h3>
             <button onClick={() => { handleRedirect(); toggleMobileMenu(); }} className="text-base text-left px-2 py-2 rounded hover:bg-[#23252b] transition">🎲 Random</button>
-            {nickname ? (
+            {isLoggedIn ? (
               <>
-                <Link href="/Dashboard" onClick={toggleMobileMenu} className="text-base px-2 py-2 rounded hover:bg-[#23252b] transition">👤 {nickname}</Link>
+                <Link href="/Dashboard" onClick={toggleMobileMenu} className="text-base px-2 py-2 rounded hover:bg-[#23252b] transition">👤 {displayName}</Link>
                 <button onClick={handleLogout} className="text-base text-left px-2 py-2 rounded hover:bg-[#23252b] transition">🚪 Log Out</button>
               </>
             ) : (

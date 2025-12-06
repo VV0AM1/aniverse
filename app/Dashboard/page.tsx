@@ -5,7 +5,7 @@ import NavBar from '@/app/lib/components/NavBar';
 import { animeServices } from "@/app/lib/services/animes";
 import DashboardSkeleton from '../lib/components/Dashboardskeleton';
 import { useAuth } from '@/app/context/AuthContext';
-import { useSession } from 'next-auth/react';        
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -17,11 +17,10 @@ interface AnimeCounts {
 }
 
 export default function UserProfile() {
-  const { nickname, token, setNickname } = useAuth();
-  const { data: session, status } = useSession();      
+  const { nickname, token, setNickname, isLoading: isAuthLoading } = useAuth();
+  const { data: session, status } = useSession();
   const sessionLoading = status === 'loading';
 
-  const [authReady, setAuthReady] = useState(false);
   const [avatar, setAvatar] = useState('/img/defaultuser.png');
   const [bio, setBio] = useState('');
   const [dob, setDob] = useState('');
@@ -37,28 +36,23 @@ export default function UserProfile() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
 
-  
+  // Redirect if not logged in (after loading)
   useEffect(() => {
-    if (sessionLoading) return; 
-    const hasLocal = !!nickname && !!token;
-    const hasNextAuth = !!session;
-
-    if (!hasLocal && !hasNextAuth) {
-      router.replace('/Login'); 
-      return;
+    if (isAuthLoading || sessionLoading) return;
+    if (!nickname && !session) {
+      router.replace('/Login');
     }
-    setAuthReady(true);
-  }, [nickname, token, session, sessionLoading, router]);
+  }, [isAuthLoading, sessionLoading, nickname, session, router]);
 
   useEffect(() => {
-    if (!authReady || !nickname || !token) return;
+    if (isAuthLoading || !nickname || !token) return;
     setNewNickname(nickname);
     fetchCounts(nickname, token);
     fetchUserProfile(nickname, token);
-  }, [authReady, nickname, token]);
+  }, [isAuthLoading, nickname, token]);
 
   useEffect(() => {
-    if (!authReady || !nickname || !token) return;
+    if (isAuthLoading || !nickname || !token) return;
 
     const fetchUserAnimeByCategory = async () => {
       setIsLoadingAnimes(true);
@@ -67,7 +61,7 @@ export default function UserProfile() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}), 
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({ nickname, category: selectedCategory }),
       });
@@ -86,8 +80,7 @@ export default function UserProfile() {
         return;
       }
 
-
-      const animeDataList:any[] = [];
+      const animeDataList: any[] = [];
 
       for (const id of ids) {
         try {
@@ -108,7 +101,7 @@ export default function UserProfile() {
     };
 
     fetchUserAnimeByCategory();
-  }, [selectedCategory, authReady, nickname, token]);
+  }, [selectedCategory, isAuthLoading, nickname, token]);
 
   const fetchCounts = async (nickname: string, token: string) => {
     const res = await fetch('/api/getUserAnimeCounts', {
@@ -182,7 +175,22 @@ export default function UserProfile() {
 
   const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
-  if (!authReady) return null;
+  if (isAuthLoading || sessionLoading || (!nickname && !session)) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#0d0d1a] to-[#1a1a2e] text-white">
+        <NavBar />
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 pt-[120px]">
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-8 animate-pulse">
+            <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-gray-700"></div>
+            <div className="flex-1 w-full space-y-4">
+              <div className="h-8 bg-gray-700 w-1/3 rounded"></div>
+              <div className="h-28 bg-gray-700 w-full rounded-lg"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0d0d1a] to-[#1a1a2e] text-white">
@@ -263,9 +271,8 @@ export default function UserProfile() {
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-5 py-2 rounded-full text-sm font-semibold transition ${
-                selectedCategory === cat ? 'bg-purple-600' : 'bg-gray-700 hover:bg-gray-600'
-              }`}
+              className={`px-5 py-2 rounded-full text-sm font-semibold transition ${selectedCategory === cat ? 'bg-purple-600' : 'bg-gray-700 hover:bg-gray-600'
+                }`}
             >
               {capitalize(cat)}
             </button>

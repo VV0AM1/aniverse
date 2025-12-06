@@ -22,7 +22,13 @@ export default function Login() {
   const [pollEmail, setPollEmail] = useState<string | null>(null);
 
   const router = useRouter();
-  const { setNickname: setAuthNickname, setToken: setAuthToken } = useAuth();
+  const { setNickname: setAuthNickname, setToken: setAuthToken, nickname: authNickname, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && authNickname) {
+      router.replace("/");
+    }
+  }, [isLoading, authNickname, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,7 +88,6 @@ export default function Login() {
     }
   };
 
-  // Poll for verification (for cross-device confirm)
   useEffect(() => {
     if (!pollEmail) return;
     let stopped = false;
@@ -96,7 +101,7 @@ export default function Login() {
           router.replace("/");
           return;
         }
-      } catch {}
+      } catch { }
       if (!stopped) timer = setTimeout(tick, 3000);
     };
 
@@ -107,7 +112,6 @@ export default function Login() {
     };
   }, [pollEmail, router]);
 
-  // Pusher instant redirect (optional, if configured)
   useEffect(() => {
     if (!pollEmail) return;
 
@@ -145,7 +149,6 @@ export default function Login() {
 
       <div className="absolute inset-0 bg-black bg-opacity-70 backdrop-blur-md z-10" />
 
-      {/* MOBILE: smooth animated swap */}
       <div className="relative z-20 flex items-center justify-center h-full md:hidden">
         <div className="w-[90%] max-w-lg">
           <AnimatePresence mode="wait">
@@ -158,46 +161,47 @@ export default function Login() {
                 transition={{ duration: 0.28, ease: "easeInOut" }}
                 className="bg-white/5 backdrop-blur-lg rounded-xl shadow-lg p-6"
               >
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                  <h1 className="text-2xl font-bold">Sign In</h1>
-                  <p className="text-sm">Welcome back, shadow warrior.</p>
+                {!isVerifyingOtp ? (
+                  <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                    <h1 className="text-2xl font-bold">Sign In</h1>
+                    <p className="text-sm">Welcome back, shadow warrior.</p>
 
-                  <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="p-2 bg-white/10 rounded placeholder-white text-white focus:outline-none"
-                  />
-                  <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="p-2 bg-white/10 rounded placeholder-white text-white focus:outline-none"
-                  />
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="p-2 bg-white/10 rounded placeholder-white text-white focus:outline-none"
+                    />
+                    <input
+                      type="password"
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      className="p-2 bg-white/10 rounded placeholder-white text-white focus:outline-none"
+                    />
 
-                  <button type="submit" className="bg-purple-600 hover:bg-purple-700 py-2 rounded">
-                    Sign In
-                  </button>
+                    <button type="submit" className="bg-purple-600 hover:bg-purple-700 py-2 rounded">
+                      Sign In
+                    </button>
 
-                  <button
-                    type="button"
-                    onClick={handleGoogleSignIn}
-                    className="bg-purple-800 hover:bg-purple-900 py-2 rounded flex items-center justify-center gap-2"
-                  >
-                    <FcGoogle className="w-5 h-5" />
-                    Sign in with Google
-                  </button>
+                    <button
+                      type="button"
+                      onClick={handleGoogleSignIn}
+                      className="bg-purple-800 hover:bg-purple-900 py-2 rounded flex items-center justify-center gap-2"
+                    >
+                      <FcGoogle className="w-5 h-5" />
+                      Sign in with Google
+                    </button>
 
-                  {message && <p className="text-sm text-red-400 text-center">{message}</p>}
-                </form>
-
-                {/* OTP panel (doesn't reflow the main card) */}
-                {isVerifyingOtp && (
-                  <div className="mt-3 bg-black/30 p-3 rounded-md">
+                    {message && <p className="text-sm text-red-400 text-center">{message}</p>}
+                  </form>
+                ) : (
+                  <div className="flex flex-col gap-4">
+                    <h1 className="text-2xl font-bold">Verify OTP</h1>
+                    <p className="text-sm">Enter the code sent to your email.</p>
                     <form onSubmit={handleVerifyOtp} className="flex flex-col gap-3">
                       <input
                         type="text"
@@ -212,7 +216,15 @@ export default function Login() {
                       >
                         Verify OTP
                       </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsVerifyingOtp(false)}
+                        className="text-sm text-gray-400 hover:text-white mt-2 text-center"
+                      >
+                        Back to Login
+                      </button>
                     </form>
+                    {message && <p className="text-sm text-red-400 text-center">{message}</p>}
                   </div>
                 )}
 
@@ -294,70 +306,97 @@ export default function Login() {
         </div>
       </div>
 
-      {/* DESKTOP: keep your 3D flip */}
       <div className="relative z-20 hidden md:flex items-center justify-center h-full">
         <div
-          className={`relative w-[90%] max-w-5xl h-[600px] duration-700 transition-transform ${
-            mode === "register" ? "rotate-y-180" : ""
-          }`}
+          className={`relative w-[90%] max-w-5xl h-[600px] duration-700 transition-transform ${mode === "register" ? "rotate-y-180" : ""
+            }`}
           style={{ transformStyle: "preserve-3d", perspective: "1000px" }}
         >
-          {/* Front side: Login */}
           <div className="absolute inset-0 bg-white/5 backdrop-blur-lg rounded-xl shadow-lg flex flex-col md:flex-row backface-hidden">
-            <div className="w-full md:w-1/2 p-8">
-              <form onSubmit={handleSubmit} className="flex flex-col gap-4 h-full justify-center">
-                <h1 className="text-2xl font-bold">Sign In</h1>
-                <p className="text-sm">Welcome back, shadow warrior.</p>
+            <div className="w-full md:w-1/2 p-8 relative">
+              <AnimatePresence mode="wait">
+                {!isVerifyingOtp ? (
+                  <motion.form
+                    key="desktop-login-form"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
+                    onSubmit={handleSubmit}
+                    className="flex flex-col gap-4 h-full justify-center"
+                  >
+                    <h1 className="text-2xl font-bold">Sign In</h1>
+                    <p className="text-sm">Welcome back, shadow warrior.</p>
 
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="p-2 bg-white/10 rounded placeholder-white text-white focus:outline-none"
-                />
-                <input
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="p-2 bg-white/10 rounded placeholder-white text-white focus:outline-none"
-                />
-
-                <button type="submit" className="bg-purple-600 hover:bg-purple-700 py-2 rounded">
-                  Sign In
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleGoogleSignIn}
-                  className="bg-purple-800 hover:bg-purple-900 py-2 rounded flex items-center justify-center gap-2"
-                >
-                  <FcGoogle className="w-5 h-5" />
-                  Sign in with Google
-                </button>
-
-                {message && <p className="text-sm text-red-400 text-center">{message}</p>}
-              </form>
-
-              {isVerifyingOtp && (
-                <div className="mt-3 bg-black/30 p-3 rounded-md">
-                  <form onSubmit={handleVerifyOtp} className="flex flex-col gap-3">
                     <input
-                      type="text"
-                      placeholder="Enter OTP code"
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value)}
+                      type="email"
+                      placeholder="Email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
                       className="p-2 bg-white/10 rounded placeholder-white text-white focus:outline-none"
                     />
-                    <button type="submit" className="bg-green-600 hover:bg-green-700 py-2 rounded transition">
-                      Verify OTP
+                    <input
+                      type="password"
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      className="p-2 bg-white/10 rounded placeholder-white text-white focus:outline-none"
+                    />
+
+                    <button type="submit" className="bg-purple-600 hover:bg-purple-700 py-2 rounded">
+                      Sign In
                     </button>
-                  </form>
-                </div>
-              )}
+
+                    <button
+                      type="button"
+                      onClick={handleGoogleSignIn}
+                      className="bg-purple-800 hover:bg-purple-900 py-2 rounded flex items-center justify-center gap-2"
+                    >
+                      <FcGoogle className="w-5 h-5" />
+                      Sign in with Google
+                    </button>
+
+                    {message && <p className="text-sm text-red-400 text-center">{message}</p>}
+                  </motion.form>
+                ) : (
+                  <motion.div
+                    key="desktop-otp-form"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex flex-col h-full justify-center gap-4"
+                  >
+                    <h1 className="text-2xl font-bold">Verify OTP</h1>
+                    <p className="text-sm">Enter the code sent to your email.</p>
+                    <form onSubmit={handleVerifyOtp} className="flex flex-col gap-3 w-full">
+                      <input
+                        type="text"
+                        placeholder="Enter OTP code"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        className="p-2 bg-white/10 rounded placeholder-white text-white focus:outline-none w-full"
+                      />
+                      <button
+                        type="submit"
+                        className="bg-green-600 hover:bg-green-700 py-2 rounded transition w-full"
+                      >
+                        Verify OTP
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsVerifyingOtp(false)}
+                        className="text-sm text-gray-400 hover:text-white mt-2"
+                      >
+                        Back to Login
+                      </button>
+                    </form>
+                    {message && <p className="text-sm text-red-400 text-center">{message}</p>}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <div className="w-full md:w-1/2 bg-purple-900/80 p-8 flex flex-col items-center justify-center gap-4">
@@ -377,7 +416,6 @@ export default function Login() {
             </div>
           </div>
 
-          {/* Back side: Register */}
           <div className="absolute inset-0 bg-white/5 backdrop-blur-lg rounded-xl shadow-lg flex flex-col md:flex-row backface-hidden [transform:rotateY(180deg)]">
             <div className="w-full md:w-1/2 p-8">
               <form onSubmit={handleSubmit} className="flex flex-col gap-4 h-full justify-center">

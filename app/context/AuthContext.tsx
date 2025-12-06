@@ -11,6 +11,7 @@ import { useSession } from "next-auth/react";
 interface AuthContextType {
   nickname: string | null;
   token: string | null;
+  isLoading: boolean;
   setNickname: (name: string | null) => void;
   setToken: (token: string | null) => void;
 }
@@ -20,14 +21,16 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [nickname, setNickname] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     const storedNickname = localStorage.getItem("nickname");
     const storedToken = localStorage.getItem("token");
     if (storedNickname) setNickname(storedNickname);
     if (storedToken) setToken(storedToken);
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {
@@ -46,39 +49,44 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const bootstrapFromGoogle = async () => {
-      if (!session?.user?.email) return;
-      if (token) return; 
+      if (status === "authenticated" && session?.user?.email) {
+        if (token) return; // Already have token
 
-      try {
-        const res = await fetch("/api/auth/googleToken", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: session.user.email,
-            nickname: session.user.name ?? session.user.email,
-          }),
-        });
+        console.log("Bootstrapping Google Token...");
+        try {
+          const res = await fetch("/api/auth/googleToken", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: session.user.email,
+              nickname: session.user.name ?? session.user.email.split("@")[0],
+            }),
+          });
 
-        if (!res.ok) {
-          console.error("Failed to bootstrap Google JWT", await res.text());
-          return;
+          if (!res.ok) {
+            console.error("Failed to bootstrap Google JWT", await res.text());
+            return;
+          }
+
+          const data = await res.json();
+          if (data.token) {
+            setToken(data.token);
+            if (data.nickname) setNickname(data.nickname);
+            console.log("Google Token bootstrapped successfully");
+          }
+        } catch (err) {
+          console.error("googleToken bootstrap error:", err);
         }
+      } else if (status === "unauthenticated") {
 
-        const data = await res.json();
-        if (data.token) {
-          setToken(data.token);
-          if (data.nickname) setNickname(data.nickname);
-        }
-      } catch (err) {
-        console.error("googleToken bootstrap error:", err);
       }
     };
 
     bootstrapFromGoogle();
-  }, [session, token]);
+  }, [session, status, token]);
 
   return (
-    <AuthContext.Provider value={{ nickname, token, setNickname, setToken }}>
+    <AuthContext.Provider value={{ nickname, token, isLoading, setNickname, setToken }}>
       {children}
     </AuthContext.Provider>
   );
