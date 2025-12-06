@@ -9,11 +9,11 @@ import Review, { ReviewHandle } from "./Review";
 import Socials from "./Socials";
 import AnimeRecomendation from "./AnimeRecomendations";
 import FullPageLoader from "@/app/lib/components/FullPageLoader";
-import { useAuth } from "@/app/context/AuthContext"; 
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function Anime() {
   const { mal_id } = useParams();
-  const { nickname, token } = useAuth(); 
+  const { nickname, token, isLoading: authLoading } = useAuth();
   const [animeData, setAnimeData] = useState<any>(null);
   const [userActions, setUserActions] = useState<{ [key: string]: boolean }>({});
   const [loading, setLoading] = useState(true);
@@ -27,6 +27,7 @@ export default function Anime() {
         const animeRes = await animeServices.getByIdFull(animeId);
         setAnimeData(animeRes.data.data);
 
+        // Wait for auth loading to finish? No, we check if we *have* crdentials
         if (nickname && token) {
           const statusRes = await fetch(`/api/anime/status/${animeId}`, {
             headers: {
@@ -44,7 +45,7 @@ export default function Anime() {
     };
 
     if (mal_id && !Array.isArray(mal_id)) fetchData();
-  }, [animeId, nickname, token]);
+  }, [animeId, nickname, token]); // If token arrives late, this effect re-runs and fetches status!
 
   const showToast = (message: string) => {
     const toast = document.createElement("div");
@@ -62,6 +63,10 @@ export default function Anime() {
   };
 
   const handleAnimeAction = async (actionType: string) => {
+    if (authLoading) {
+      showToast("⏳ Checking authentication...");
+      return;
+    }
     if (!nickname || !token) {
       alert("You're not logged in!");
       return;
@@ -93,8 +98,7 @@ export default function Anime() {
       }));
 
       showToast(
-        `${alreadyActive ? "❌ Removed from" : "✅ Added to"} ${
-          actionType.charAt(0).toUpperCase() + actionType.slice(1)
+        `${alreadyActive ? "❌ Removed from" : "✅ Added to"} ${actionType.charAt(0).toUpperCase() + actionType.slice(1)
         }`
       );
     } catch (error: any) {
@@ -166,11 +170,10 @@ export default function Anime() {
                   <button
                     key={action}
                     onClick={() => handleAnimeAction(action)}
-                    className={`px-3 py-1.5 rounded-md text-sm transition-all duration-200 ${
-                      isActive
+                    className={`px-3 py-1.5 rounded-md text-sm transition-all duration-200 ${isActive
                         ? "bg-green-600 text-white"
                         : "bg-gray-700 hover:bg-gray-600"
-                    }`}
+                      }`}
                   >
                     {isActive
                       ? `${action.charAt(0).toUpperCase() + action.slice(1)} ✓`

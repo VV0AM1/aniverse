@@ -85,8 +85,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     bootstrapFromGoogle();
   }, [session, status, token]);
 
+  // Calculate effective loading state
+  // We are loading if:
+  // 1. Local storage check is pending (isLoading state)
+  // 2. NextAuth session is loading (status === "loading")
+  // 3. NextAuth is authenticated but we haven't bootstrapped our token yet (status === "authenticated" && !token)
+  const isBootstrapping = status === "authenticated" && !token;
+  const effectiveLoading = isLoading || status === "loading" || isBootstrapping;
+
   return (
-    <AuthContext.Provider value={{ nickname, token, isLoading, setNickname, setToken }}>
+    <AuthContext.Provider value={{ nickname, token, isLoading: effectiveLoading, setNickname, setToken }}>
       {children}
     </AuthContext.Provider>
   );
