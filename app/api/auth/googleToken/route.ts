@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/app/lib/mongodb";
 import Client from "@/app/models/Client";
 import jwt from "jsonwebtoken";
+import crypto from 'crypto';
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,19 +17,6 @@ export async function POST(req: NextRequest) {
 
     await dbConnect();
 
-    let user = await Client.findOne({ email });
-
-    if (!user) {
-      user = await Client.create({
-        email,
-        nickname: nickname || email.split("@")[0],
-        password: "",
-        isVerified: true,
-        createdAt: new Date(),
-      });
-    }
-
-    const userId = String(user._id);
 
     if (!process.env.JWT_SECRET) {
       throw new Error("JWT_SECRET is not defined in environment variables");
