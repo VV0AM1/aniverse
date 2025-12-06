@@ -17,6 +17,20 @@ export async function POST(req: NextRequest) {
 
     await dbConnect();
 
+    let user = await Client.findOne({ email });
+
+    if (!user) {
+      user = await Client.create({
+        email,
+        nickname: nickname || email.split("@")[0],
+        password: crypto.randomBytes(32).toString('hex'), // Secure random password
+        isVerified: true,
+        createdAt: new Date(),
+      });
+    }
+
+    const userId = String(user._id);
+
 
     if (!process.env.JWT_SECRET) {
       throw new Error("JWT_SECRET is not defined in environment variables");
