@@ -7,6 +7,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
 import Pusher from "pusher-js";
+import { AnimatePresence, motion } from "framer-motion";
 import "@/app/globals.css";
 
 export default function Login() {
@@ -29,9 +30,7 @@ export default function Login() {
 
     const passwordIsValid = /^(?=.*[A-Z])(?=.*\d).{8,}$/.test(password);
     if (!passwordIsValid) {
-      setMessage(
-        "Password must be at least 8 characters long and include an uppercase letter and a number."
-      );
+      setMessage("Password must be at least 8 characters long and include an uppercase letter and a number.");
       return;
     }
 
@@ -83,17 +82,15 @@ export default function Login() {
     }
   };
 
- useEffect(() => {
+  // Poll for verification (for cross-device confirm)
+  useEffect(() => {
     if (!pollEmail) return;
     let stopped = false;
     let timer: any;
 
     const tick = async () => {
       try {
-        const res = await fetch(
-          `/api/user/isVerified?email=${encodeURIComponent(pollEmail)}`,
-          { cache: "no-store" }
-        );
+        const res = await fetch(`/api/user/isVerified?email=${encodeURIComponent(pollEmail)}`, { cache: "no-store" });
         const j = await res.json();
         if (!stopped && j.verified) {
           router.replace("/");
@@ -110,6 +107,7 @@ export default function Login() {
     };
   }, [pollEmail, router]);
 
+  // Pusher instant redirect (optional, if configured)
   useEffect(() => {
     if (!pollEmail) return;
 
@@ -120,7 +118,6 @@ export default function Login() {
 
     const channelName = channelForEmail(pollEmail);
     const ch = pusher.subscribe(channelName);
-
     const onVerified = () => router.replace("/");
 
     ch.bind("verified", onVerified);
@@ -138,6 +135,7 @@ export default function Login() {
 
   return (
     <div className="relative w-full h-screen overflow-hidden text-white">
+      {/* Background video */}
       <video autoPlay muted loop className="absolute inset-0 w-full h-full object-cover z-0">
         <source
           src={mode === "register" ? "/img/anime-register.mp4" : "/img/anime-login.mp4"}
@@ -147,17 +145,165 @@ export default function Login() {
 
       <div className="absolute inset-0 bg-black bg-opacity-70 backdrop-blur-md z-10" />
 
-      <div className="relative z-20 flex items-center justify-center h-full">
+      {/* MOBILE: smooth animated swap */}
+      <div className="relative z-20 flex items-center justify-center h-full md:hidden">
+        <div className="w-[90%] max-w-lg">
+          <AnimatePresence mode="wait">
+            {mode === "login" ? (
+              <motion.div
+                key="login-mobile"
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -14 }}
+                transition={{ duration: 0.28, ease: "easeInOut" }}
+                className="bg-white/5 backdrop-blur-lg rounded-xl shadow-lg p-6"
+              >
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                  <h1 className="text-2xl font-bold">Sign In</h1>
+                  <p className="text-sm">Welcome back, shadow warrior.</p>
+
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="p-2 bg-white/10 rounded placeholder-white text-white focus:outline-none"
+                  />
+                  <input
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="p-2 bg-white/10 rounded placeholder-white text-white focus:outline-none"
+                  />
+
+                  <button type="submit" className="bg-purple-600 hover:bg-purple-700 py-2 rounded">
+                    Sign In
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleGoogleSignIn}
+                    className="bg-purple-800 hover:bg-purple-900 py-2 rounded flex items-center justify-center gap-2"
+                  >
+                    <FcGoogle className="w-5 h-5" />
+                    Sign in with Google
+                  </button>
+
+                  {message && <p className="text-sm text-red-400 text-center">{message}</p>}
+                </form>
+
+                {/* OTP panel (doesn't reflow the main card) */}
+                {isVerifyingOtp && (
+                  <div className="mt-3 bg-black/30 p-3 rounded-md">
+                    <form onSubmit={handleVerifyOtp} className="flex flex-col gap-3">
+                      <input
+                        type="text"
+                        placeholder="Enter OTP code"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        className="p-2 bg-white/10 rounded placeholder-white text-white focus:outline-none"
+                      />
+                      <button
+                        type="submit"
+                        className="bg-green-600 hover:bg-green-700 py-2 rounded transition"
+                      >
+                        Verify OTP
+                      </button>
+                    </form>
+                  </div>
+                )}
+
+                <div className="mt-6 bg-purple-900/80 rounded-lg p-4 text-center">
+                  <h2 className="text-lg font-semibold mb-1">Join Us</h2>
+                  <p className="text-sm mb-3">Enter the shadows and become part of our world.</p>
+                  <button
+                    onClick={() => setMode("register")}
+                    className="bg-white text-purple-700 px-4 py-2 rounded hover:bg-gray-200"
+                  >
+                    Sign Up
+                  </button>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="register-mobile"
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -14 }}
+                transition={{ duration: 0.28, ease: "easeInOut" }}
+                className="bg-white/5 backdrop-blur-lg rounded-xl shadow-lg p-6"
+              >
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                  <h1 className="text-2xl font-bold">Create Account</h1>
+                  <p className="text-sm">Join the army of shadows now.</p>
+
+                  <input
+                    type="text"
+                    placeholder="Nickname"
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                    required
+                    className="p-2 bg-white/10 rounded placeholder-white text-white focus:outline-none"
+                  />
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="p-2 bg-white/10 rounded placeholder-white text-white focus:outline-none"
+                  />
+                  <input
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="p-2 bg-white/10 rounded placeholder-white text-white focus:outline-none"
+                  />
+
+                  <button type="submit" className="bg-purple-600 hover:bg-purple-700 py-2 rounded">
+                    Sign Up
+                  </button>
+
+                  {message && <p className="text-sm text-red-400 text-center">{message}</p>}
+                </form>
+
+                <div className="mt-6 bg-purple-900/80 rounded-lg p-4 text-center">
+                  <h2 className="text-lg font-semibold mb-1">Welcome Back</h2>
+                  <p className="text-sm mb-3">You remember our deal, don’t you?</p>
+                  <button
+                    onClick={() => setMode("login")}
+                    className="bg-white text-purple-700 px-4 py-2 rounded hover:bg-gray-200"
+                  >
+                    Sign In
+                  </button>
+
+                  {isVerifyingEmail && (
+                    <p className="text-sm text-green-400 text-center mt-3">
+                      ✅ Check your email inbox to verify your account before logging in.
+                    </p>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* DESKTOP: keep your 3D flip */}
+      <div className="relative z-20 hidden md:flex items-center justify-center h-full">
         <div
-          className={`relative w-[90%] max-w-5xl h-auto md:h-[600px] transform-style-preserve-3d duration-700 transition-transform ${
+          className={`relative w-[90%] max-w-5xl h-[600px] duration-700 transition-transform ${
             mode === "register" ? "rotate-y-180" : ""
           }`}
-          style={{
-            transformStyle: "preserve-3d",
-            perspective: "1000px",
-          }}
+          style={{ transformStyle: "preserve-3d", perspective: "1000px" }}
         >
-          <div className="absolute inset-0 w-full min-h-[600px] bg-white/5 backdrop-blur-lg rounded-xl shadow-lg flex flex-col md:flex-row backface-hidden">
+          {/* Front side: Login */}
+          <div className="absolute inset-0 bg-white/5 backdrop-blur-lg rounded-xl shadow-lg flex flex-col md:flex-row backface-hidden">
             <div className="w-full md:w-1/2 p-8">
               <form onSubmit={handleSubmit} className="flex flex-col gap-4 h-full justify-center">
                 <h1 className="text-2xl font-bold">Sign In</h1>
@@ -197,24 +343,20 @@ export default function Login() {
               </form>
 
               {isVerifyingOtp && (
-                <form
-                  onSubmit={handleVerifyOtp}
-                  className="flex flex-col gap-3 mt-3 bg-black/30 p-3 rounded-md animate-fadeIn"
-                >
-                  <input
-                    type="text"
-                    placeholder="Enter OTP code"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    className="p-2 bg-white/10 rounded placeholder-white text-white focus:outline-none"
-                  />
-                  <button
-                    type="submit"
-                    className="bg-green-600 hover:bg-green-700 py-2 rounded transition"
-                  >
-                    Verify OTP
-                  </button>
-                </form>
+                <div className="mt-3 bg-black/30 p-3 rounded-md">
+                  <form onSubmit={handleVerifyOtp} className="flex flex-col gap-3">
+                    <input
+                      type="text"
+                      placeholder="Enter OTP code"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      className="p-2 bg-white/10 rounded placeholder-white text-white focus:outline-none"
+                    />
+                    <button type="submit" className="bg-green-600 hover:bg-green-700 py-2 rounded transition">
+                      Verify OTP
+                    </button>
+                  </form>
+                </div>
               )}
             </div>
 
@@ -235,7 +377,8 @@ export default function Login() {
             </div>
           </div>
 
-          <div className="absolute inset-0 w-full h-full bg-white/5 backdrop-blur-lg rounded-xl shadow-lg flex flex-col md:flex-row backface-hidden [transform:rotateY(180deg)]">
+          {/* Back side: Register */}
+          <div className="absolute inset-0 bg-white/5 backdrop-blur-lg rounded-xl shadow-lg flex flex-col md:flex-row backface-hidden [transform:rotateY(180deg)]">
             <div className="w-full md:w-1/2 p-8">
               <form onSubmit={handleSubmit} className="flex flex-col gap-4 h-full justify-center">
                 <h1 className="text-2xl font-bold">Create Account</h1>
