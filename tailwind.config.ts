@@ -26,25 +26,24 @@ const config: Config = {
     },
   },
   plugins: [
-  require('@tailwindcss/line-clamp'),
-  require('tailwind-scrollbar-hide'),
-  plugin(function ({ addUtilities }) {
-    addUtilities({
-      '.perspective': {
-        perspective: '1000px',
-      },
-      '.rotate-y-180': {
-        transform: 'rotateY(180deg)',
-      },
-      '.backface-hidden': {
-        backfaceVisibility: 'hidden',
-      },
-      '.transform-style': {
-        transformStyle: 'preserve-3d',
-      },
-    });
-  }),
-],
+    require('tailwind-scrollbar-hide'),
+    plugin(function ({ addUtilities }: { addUtilities: any }) {
+      addUtilities({
+        '.perspective': {
+          perspective: '1000px',
+        },
+        '.rotate-y-180': {
+          transform: 'rotateY(180deg)',
+        },
+        '.backface-hidden': {
+          backfaceVisibility: 'hidden',
+        },
+        '.transform-style': {
+          transformStyle: 'preserve-3d',
+        },
+      });
+    }),
+  ],
 };
 
 export default config;
